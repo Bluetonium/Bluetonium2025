@@ -1,44 +1,43 @@
 package frc.lib.math;
 
 public class Conversions {
-    
+
     /**
-     * @param wheelRPS Wheel Velocity: (in Rotations per Second)
+     * @param wheelRPS      Wheel Velocity: (in Rotations per Second)
      * @param circumference Wheel Circumference: (in Meters)
      * @return Wheel Velocity: (in Meters per Second)
      */
-    public static double RPSToMPS(double wheelRPS, double circumference){
-        double wheelMPS = wheelRPS * circumference;
-        return wheelMPS;
+    public static double rotationsPerSecondToRotationsPerSecond(double wheelRPS, double circumference) {
+        return wheelRPS * circumference;
     }
 
     /**
-     * @param wheelMPS Wheel Velocity: (in Meters per Second)
+     * @param wheelMPS      Wheel Velocity: (in Meters per Second)
      * @param circumference Wheel Circumference: (in Meters)
      * @return Wheel Velocity: (in Rotations per Second)
      */
-    public static double MPSToRPS(double wheelMPS, double circumference){
-        double wheelRPS = wheelMPS / circumference;
-        return wheelRPS;
+    public static double metersPerSecondToRotationsPerSecond(double wheelMPS, double circumference) {
+        return wheelMPS / circumference;
     }
 
     /**
      * @param wheelRotations Wheel Position: (in Rotations)
-     * @param circumference Wheel Circumference: (in Meters)
+     * @param circumference  Wheel Circumference: (in Meters)
      * @return Wheel Distance: (in Meters)
      */
-    public static double rotationsToMeters(double wheelRotations, double circumference){
-        double wheelMeters = wheelRotations * circumference;
-        return wheelMeters;
+    public static double rotationsToMeters(double wheelRotations, double circumference) {
+        return wheelRotations * circumference;
     }
 
     /**
-     * @param wheelMeters Wheel Distance: (in Meters)
+     * @param wheelMeters   Wheel Distance: (in Meters)
      * @param circumference Wheel Circumference: (in Meters)
      * @return Wheel Position: (in Rotations)
      */
-    public static double metersToRotations(double wheelMeters, double circumference){
-        double wheelRotations = wheelMeters / circumference;
-        return wheelRotations;
+    public static double metersToRotations(double wheelMeters, double circumference) {
+        return wheelMeters / circumference;
+    }
+
+    private Conversions() {
     }
 }
