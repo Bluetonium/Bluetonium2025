@@ -1,14 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.*;
+import frc.robot.commands.teleop.*;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.ChassisControls;
+
 import frc.robot.subsystems.*;
-import frc.robot.constants.DriverControls;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -20,53 +21,56 @@ import frc.robot.constants.DriverControls;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    /* Controllers */
-    private final Joystick driver = new Joystick(0);
 
-    /* Drive Controls */
+        /* Controllers */
+        private final XboxController driverController = new XboxController(
+                        Constants.ControllerConstants.DRIVER_CONTROLLER_PORT);
 
-    /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+        /* Chassis driver Buttons */
+        private final JoystickButton zeroGyro = new JoystickButton(driverController, ChassisControls.ZERO_GYRO_BUTTON);
 
-    /* Subsystems */
-    private final Swerve swerve = new Swerve();
+        /* Subsystems */
+        private final Swerve swerve;
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
-        swerve.setDefaultCommand(
-                new TeleopSwerve(
-                        swerve,
-                        () -> -driver.getRawAxis(DriverControls.Chassis.TRANSLATION_AXIS),
-                        () -> -driver.getRawAxis(DriverControls.Chassis.STRAFE_AXIS),
-                        () -> -driver.getRawAxis(DriverControls.Chassis.ROTATION_AXIS),
-                        robotCentric::getAsBoolean));
+        /**
+         * The container for the robot. Contains subsystems, OI devices, and commands.
+         */
+        public RobotContainer() {
 
-        // Configure the button bindings
-        configureButtonBindings();
-    }
+                swerve = new Swerve();
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-     * it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
-    private void configureButtonBindings() {
-        /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(swerve::zeroHeading));
-    }
+                swerve.setDefaultCommand(
+                                new TeleopSwerve(
+                                                swerve,
+                                                () -> -driverController.getRawAxis(ChassisControls.TRANSLATION_AXIS),
+                                                () -> -driverController.getRawAxis(ChassisControls.STRAFE_AXIS),
+                                                () -> -driverController.getRawAxis(ChassisControls.ROTATION_AXIS),
+                                                () -> !driverController.getRawButton(ChassisControls.ROBOT_RELATIVE),
+                                                () -> driverController.getRawAxis(ChassisControls.FAST_MODE)));
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return null;
-    }
+                configureButtonBindings();
+        }
+
+        /**
+         * Use this method to define your button->command mappings. Buttons can be
+         * created by
+         * instantiating a {@link GenericHID} or one of its subclasses ({@link
+         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+         * it to a {@link
+         * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+         */
+        private void configureButtonBindings() {
+                /* Driver Buttons */
+                zeroGyro.onTrue(new InstantCommand(swerve::zeroHeading));
+
+        }
+
+        /**
+         * Use this to pass the autonomous command to the main {@link Robot} class.
+         *
+         * @return the command to run in autonomous
+         */
+        public Command getAutonomousCommand() {
+              return null;
+        }
 }

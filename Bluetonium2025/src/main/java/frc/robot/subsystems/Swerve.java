@@ -1,127 +1,132 @@
 package frc.robot.subsystems;
 
-import frc.robot.SwerveModule;
-import frc.robot.constants.SwerveConstants;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.Pigeon2;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.*;
+
+import java.io.File;
+import java.io.IOException;
+
+
+
+import edu.wpi.first.wpilibj.Filesystem;
+import swervelib.parser.SwerveParser;
+import swervelib.SwerveDrive;
+import edu.wpi.first.math.util.Units;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class Swerve extends SubsystemBase {
-    private SwerveDriveOdometry swerveOdometry;
-    private SwerveModule[] mSwerveMods;
-    private Pigeon2 gyro;
+
+    double maximumSpeed = Units.feetToMeters(17.6);
+    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
+    SwerveDrive swerveDrive;
 
     public Swerve() {
-        gyro = new Pigeon2(SensorConstants.PIGEON_ID);
-        gyro.getConfigurator().apply(new Pigeon2Configuration());
-        gyro.setYaw(0);
+        try {
+            swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+        } catch (IOException ioException) {
+            throw new RuntimeException(ioException);
+        }
 
-        mSwerveMods = new SwerveModule[] {
-                new SwerveModule(0, SwerveConstants.Swerve.Mod0.constants),
-                new SwerveModule(1, SwerveConstants.Swerve.Mod1.constants),
-                new SwerveModule(2, SwerveConstants.Swerve.Mod2.constants),
-                new SwerveModule(3, SwerveConstants.Swerve.Mod3.constants)
-        };
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
-        swerveOdometry = new SwerveDriveOdometry(SwerveConstants.Swerve.swerveKinematics, getGyroYaw(),
-                getModulePositions());
     }
 
+
+
+    /**
+     * 
+     * @param translation   the translational speed of the rboot in m/s
+     * @param rotation      the rotational speed of robot in rad/s
+     * @param fieldRelative wether to be head or headless
+     * @param isOpenLoop    wether to run the wheels open loop or closed loop
+     */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        SwerveModuleState[] swerveModuleStates = SwerveConstants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        translation.getX(),
-                        translation.getY(),
-                        rotation,
-                        getHeading())
-                        : new ChassisSpeeds(
-                                translation.getX(),
-                                translation.getY(),
-                                rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.Swerve.MAX_SPEED);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], isOpenLoop);
-        }
+        swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
     }
 
-    /* Used by SwerveControllerCommand in Auto */
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.Swerve.MAX_SPEED);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(desiredStates[mod.getModuleNumber()], false);
-        }
+    public double getMaxVelocity() {
+        return swerveDrive.getMaximumChassisVelocity();
     }
 
+    public double getMaxAngularVelocity() {
+        return swerveDrive.getMaximumChassisAngularVelocity();
+    }
+
+    /**
+     * 
+     * @return returns the current speed of the robot in ChassisSpeeds
+     */
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+        return swerveDrive.getRobotVelocity();
+    }
+
+    /**
+     * 
+     * @param chassisSpeeds the speeds to drive the robot at in ChassisSpeeds
+     */
+    public void driveRobotReleative(ChassisSpeeds chassisSpeeds) {
+        swerveDrive.drive(chassisSpeeds);
+    }
+
+    /**
+     * 
+     * @return Returns the current modules states
+     */
     public SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (SwerveModule mod : mSwerveMods) {
-            states[mod.getModuleNumber()] = mod.getState();
-        }
-        return states;
+        return swerveDrive.getStates();
     }
 
+    /**
+     * 
+     * @return Returns the current module positions
+     */
     public SwerveModulePosition[] getModulePositions() {
-        SwerveModulePosition[] positions = new SwerveModulePosition[4];
-        for (SwerveModule mod : mSwerveMods) {
-            positions[mod.getModuleNumber()] = mod.getPosition();
-        }
-        return positions;
+        return swerveDrive.getModulePositions();
     }
 
+    /**
+     * 
+     * @return Returns the robots positions in meters
+     */
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
+        return swerveDrive.getPose();
     }
 
+    /**
+     * 
+     * @param pose Sets the position of the odometry
+     */
     public void setPose(Pose2d pose) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        swerveDrive.resetOdometry(pose);
     }
 
+    /**
+     * 
+     * @return Gets the current heading of the robot
+     */
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
 
-    public void setHeading(Rotation2d heading) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), heading));
-    }
-
+    /**
+     * Zeroes the robots heading
+     */
     public void zeroHeading() {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        swerveDrive.zeroGyro();
     }
 
+    /**
+     * 
+     * @return Current yaw of the robot
+     */
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        return swerveDrive.getYaw();
     }
 
-    public void resetModulesToAbsolute() {
-        for (SwerveModule mod : mSwerveMods) {
-            mod.resetToAbsolute();
-        }
-    }
-
-    @Override
-    public void periodic() {
-        swerveOdometry.update(getGyroYaw(), getModulePositions());
-
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Velocity", mod.getState().speedMetersPerSecond);
-        }
-    }
 }

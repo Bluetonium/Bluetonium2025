@@ -30,9 +30,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our
-    // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
   }
 
@@ -62,12 +59,12 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    // not needed
+    // nothing rn
   }
 
   @Override
   public void disabledPeriodic() {
-    // not needed
+    // nothing rn
   }
 
   /**
@@ -87,7 +84,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // not needed
+    // nothing rn
   }
 
   @Override
@@ -104,7 +101,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // not needed
+    // nothing rn
   }
 
   @Override
@@ -116,6 +113,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    // Not needed
+    // nothing rn
   }
 }
