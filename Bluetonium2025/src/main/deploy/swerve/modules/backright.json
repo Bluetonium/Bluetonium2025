@@ -1,11 +1,11 @@
 {
   "drive": {
-    "type": "sparkflex",
+    "type": "talonfx",
     "id": 11,
     "canbus": null
   },
   "angle": {
-    "type": "sparkflex",
+    "type": "talonfx",
     "id": 12,
     "canbus": null
   },
