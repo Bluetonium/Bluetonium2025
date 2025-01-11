@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.constant.DirectMethodHandleDesc;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -9,11 +10,22 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -45,6 +57,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
+    private final SwerveRequest.RobotCentric driveRelative = new SwerveRequest.RobotCentric()
+    .withDriveRequestType(DriveRequestType.Velocity);
+        
+    
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -125,6 +141,35 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        RobotConfig config;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+            config = new RobotConfig(58, 710, new ModuleConfig(2, 4, 1.02, DCMotor.getKrakenX60(1), 80, 1), new Translation2d[] {});
+        }
+
+        AutoBuilder.configure(
+        this::getPose, 
+        this::resetPose, 
+        this::getRobotRelativeSpeeds, 
+        this::driveRobotRelative, 
+    new PPHolonomicDriveController(new PIDConstants(5.0, 0.0, 0.0),
+    new PIDConstants(5.0, 0.0, 0.0)),
+    config,
+    ()-> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent())
+        {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+
+    },
+    this
+
+    );
     }
 
     /**
@@ -250,4 +295,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
+    public Pose2d getPose()
+    {
+        return this.getState().Pose;
+    }
+    public void resetPose(Pose2d newPose)
+    {
+        this.resetPose(newPose);
+    }
+    public ChassisSpeeds getRobotRelativeSpeeds()
+    {
+        return this.getState().Speeds;
+    }
+    public void driveRobotRelative(ChassisSpeeds speeds,DriveFeedforwards driveFeedforwards)
+    {
+        setControl(driveRelative.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
+        
+    }
+    
 }
+
