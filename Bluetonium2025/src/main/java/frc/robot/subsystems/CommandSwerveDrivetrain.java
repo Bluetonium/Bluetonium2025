@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.constant.DirectMethodHandleDesc;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -299,10 +298,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     {
         return this.getState().Pose;
     }
-    public void resetPose(Pose2d newPose)
-    {
-        this.resetPose(newPose);
-    }
+
     public ChassisSpeeds getRobotRelativeSpeeds()
     {
         return this.getState().Speeds;
