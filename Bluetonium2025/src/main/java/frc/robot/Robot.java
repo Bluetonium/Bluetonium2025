@@ -4,17 +4,25 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.helperclasses.LimelightHelpers;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  private CommandSwerveDrivetrain drivetrain;
+  private SwerveDriveState driveState;
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    drivetrain = m_robotContainer.drivetrain;
   }
 
   @Override
@@ -23,10 +31,22 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    LimelightHelpers.setPipelineIndex("",LimelightHelpers.pipelines.APRILTAGS.ordinal()); //enum will fuckin
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    driveState = drivetrain.getState();
+    // NOTE: i haven't the faintest idea if 
+    // Timestamp is the right thing to use but it seems like it. not sure if its the difference between the two timestamps is what it wants though.
+    if (LimelightHelpers.getTV("")) {
+      drivetrain.addVisionMeasurement(driveState.Pose, driveState.Timestamp); 
+    }
+    SmartDashboard.putData("Pose",driveState.Pose);
+
+
+  }
 
   @Override
   public void disabledExit() {}
