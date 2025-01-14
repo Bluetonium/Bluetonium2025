@@ -35,7 +35,7 @@ public class LimelightHelpers {
     private static final Map<String, DoubleArrayEntry> doubleArrayEntries = new ConcurrentHashMap<>();
 
     public static enum pipelines {
-        APRILTAGS,
+        LOCALIZATION,
         NOTAPRILTAGSIDK // we'll do something with this later ig
     }
 
