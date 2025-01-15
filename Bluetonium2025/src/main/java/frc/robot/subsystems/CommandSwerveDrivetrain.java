@@ -127,6 +127,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
      * @param modules             Constants for each specific module
      */
+
+    public PPHolonomicDriveController PPdriveController;
+
     public CommandSwerveDrivetrain(
             SwerveDrivetrainConstants drivetrainConstants,
             SwerveModuleConstants<?, ?, ?>... modules) {
@@ -135,6 +138,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
 
+        configurePathPlanner();
+    }
+
+    private void configurePathPlanner() {
         RobotConfig config;
         try {
             config = RobotConfig.fromGUISettings();
@@ -143,7 +150,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             config = new RobotConfig(58, 7.1, new ModuleConfig(0.0508, 4, 1.02, DCMotor.getKrakenX60(1), 80, 1),
                     new Translation2d[] {});
         }
-
+        PPdriveController = new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0.0, 0.0),
+                new PIDConstants(5.0, 0.0, 0.0));
         AutoBuilder.configure(
                 () -> getState().Pose,
                 this::resetPose,
@@ -152,9 +161,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         pathDriveRealtive.withSpeeds(speeds)
                                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-                new PPHolonomicDriveController(
-                        new PIDConstants(5.0, 0.0, 0.0),
-                        new PIDConstants(5.0, 0.0, 0.0)),
+                PPdriveController,
                 config,
                 () -> {
                     Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -167,6 +174,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this
 
         );
+
     }
 
     /**

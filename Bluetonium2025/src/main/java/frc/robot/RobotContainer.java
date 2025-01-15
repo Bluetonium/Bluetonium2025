@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -37,13 +38,19 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     private final SendableChooser<Command> autoChooser;
+    private Command currentAuto;
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final LimelightLocalization localizationLimelights = new LimelightLocalization(drivetrain, "");
 
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
+        currentAuto = autoChooser.getSelected();
         SmartDashboard.putData("Automous", autoChooser);
+        autoChooser.onChange((command) -> currentAuto = command);
+
+        drive.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
+
         configureBindings();
     }
 
@@ -56,8 +63,9 @@ public class RobotContainer {
                                                                                                    // negative Y
                                                                                                    // (forward)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
+                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+                // Drive counterclockwise with
+                // negative X (left)
                 ));
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -79,7 +87,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if (localizationLimelights.hasDetectedTag()) {
-            return autoChooser.getSelected();
+            return currentAuto;
         } else {
             SmartDashboard.putBoolean("TagFound", false);
             return null;

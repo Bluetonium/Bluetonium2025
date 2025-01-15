@@ -7,6 +7,7 @@ import frc.robot.helperclasses.LimelightHelpers;
 public class LimelightLocalization extends SubsystemBase {
     private boolean tagDetected = false;
     private CommandSwerveDrivetrain drivetrain;
+    private boolean enabled = true;
     private String[] limelights;
 
     /***
@@ -31,8 +32,19 @@ public class LimelightLocalization extends SubsystemBase {
         return tagDetected;
     }
 
+    public void enable() {
+        enabled = true;
+    }
+
+    public void disable() {
+        enabled = false;
+    }
+
     @Override
     public void periodic() {
+        if (!enabled)
+            return;
+
         for (String limelight : limelights) {
             if (LimelightHelpers.getTV(limelight)) {
                 tagDetected = true;
