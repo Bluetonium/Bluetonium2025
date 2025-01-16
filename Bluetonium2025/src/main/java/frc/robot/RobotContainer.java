@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.commands.MoveForward;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimelightLocalization;
@@ -86,11 +87,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        if (localizationLimelights.hasDetectedTag()) {
-            return currentAuto;
-        } else {
-            SmartDashboard.putBoolean("TagFound", false);
-            return null;
-        }
+        return new MoveForward(drivetrain, localizationLimelights, currentAuto);
     }
 }
