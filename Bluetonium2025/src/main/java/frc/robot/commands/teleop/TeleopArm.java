@@ -20,9 +20,9 @@ public class TeleopArm extends Command {
     @Override
     public void execute() { // so fuckng much!!
         if (positionOne.getAsBoolean()) {
-            arm.requestTargetPosition(0,true);
+            arm.requestTargetPosition(0,false);
         } else if (positionTwo.getAsBoolean()) {
-            arm.requestTargetPosition(3,true);
+            arm.requestTargetPosition(1,false);
         }
     }
     @Override
