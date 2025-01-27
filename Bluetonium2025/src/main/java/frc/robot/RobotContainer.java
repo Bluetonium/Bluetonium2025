@@ -7,7 +7,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.commands.MoveForward;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimelightLocalization;
@@ -42,17 +41,21 @@ public class RobotContainer {
     private Command currentAuto;
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final LimelightLocalization localizationLimelights = new LimelightLocalization(drivetrain, "");
+    public final LimelightLocalization vision = new LimelightLocalization(drivetrain);
 
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
         currentAuto = autoChooser.getSelected();
         SmartDashboard.putData("Automous", autoChooser);
         autoChooser.onChange((command) -> currentAuto = command);
-
-        drive.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
-
+        // drive.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
+        configureLimelights();
         configureBindings();
+    }
+
+    private void configureLimelights() {
+        vision.addLocalizationLL(LimelightConstants.MAIN_LL);
+
     }
 
     private void configureBindings() {
@@ -87,6 +90,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new MoveForward(drivetrain, localizationLimelights, currentAuto);
+        return currentAuto;
     }
 }
