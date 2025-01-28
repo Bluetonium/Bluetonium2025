@@ -59,7 +59,7 @@ public class LimelightLocalization extends SubsystemBase {
 
             LimelightHelpers.PoseEstimate estimatedPosition = LimelightHelpers
                     .getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-            if (estimatedPosition.tagCount == 0 || Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720)
+            if (estimatedPosition == null || estimatedPosition.tagCount == 0 || Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720)
                 return;
 
             drivetrain.addVisionMeasurement(estimatedPosition.pose,
