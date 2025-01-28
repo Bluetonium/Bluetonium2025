@@ -37,7 +37,7 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-*/
+
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final SendableChooser<Command> autoChooser;
     private Command currentAuto;
@@ -91,7 +91,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
-*/
+
     public Command getAutonomousCommand() {
         return currentAuto;
     }
