@@ -56,7 +56,6 @@ public class ArmSubsystem implements Subsystem {
         slot0.kI = 0;
         slot0.kD = 0.049979;
 
-        // whole lotta shit
         MotionMagicConfigs motionMagic = config.MotionMagic;
         motionMagic.MotionMagicCruiseVelocity = 160;
         motionMagic.MotionMagicAcceleration = 80;        
