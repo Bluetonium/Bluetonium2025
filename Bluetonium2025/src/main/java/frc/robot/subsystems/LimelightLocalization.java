@@ -50,11 +50,11 @@ public class LimelightLocalization extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         if (!enabled)
             return;
-
         for (String limelight : localizationLimelights) {
-            LimelightHelpers.SetRobotOrientation(limelight, gyro.getYaw().getValueAsDouble(),
+            LimelightHelpers.SetRobotOrientation(limelight, drivetrain.getState().Pose.getRotation().getDegrees(),
                     gyro.getAngularVelocityZWorld().getValueAsDouble(), 0, 0, 0, 0);
 
             LimelightHelpers.PoseEstimate estimatedPosition = LimelightHelpers
