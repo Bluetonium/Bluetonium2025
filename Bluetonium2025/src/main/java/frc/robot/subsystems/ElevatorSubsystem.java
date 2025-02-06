@@ -15,7 +15,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.constants.ArmConstants;
 
-public class ArmSubsystem implements Subsystem {
+public class ElevatorSubsystem implements Subsystem {
     private TalonFX armMotor;
     private DigitalInput limitSwitchLow;
     private DigitalInput limitSwitchHigh;
@@ -41,7 +41,7 @@ public class ArmSubsystem implements Subsystem {
      * <img src="https://static.wikia.nocookie.net/qualdies-methlab/images/3/31/Soggycat.png" id="yes" alt="its supposed to be a soggy cat but you're probably offline">
      * 
      */
-    public ArmSubsystem() {
+    public ElevatorSubsystem() {
         //TODO: need to confirm if there's anything else to set
         armMotor = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID); //constants
         armMotor.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);

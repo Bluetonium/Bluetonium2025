@@ -3,14 +3,14 @@ package frc.robot.commands.teleop;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
-public class TeleopArm extends Command {
-    ArmSubsystem arm;
+public class TeleopElevator extends Command {
+    ElevatorSubsystem arm;
     BooleanSupplier positionOne;
     BooleanSupplier positionTwo;
 
-    public TeleopArm(ArmSubsystem arm, BooleanSupplier positionOne, BooleanSupplier positionTwo) {
+    public TeleopElevator(ElevatorSubsystem arm, BooleanSupplier positionOne, BooleanSupplier positionTwo) {
         addRequirements(arm);
         this.arm = arm;
         this.positionOne = positionOne;
