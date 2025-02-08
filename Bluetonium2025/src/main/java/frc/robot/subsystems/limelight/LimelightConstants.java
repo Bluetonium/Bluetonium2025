@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.subsystems.limelight;
 
 import frc.utils.LimelightConfigs;
 

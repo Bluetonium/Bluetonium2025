@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.mechanisms.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -29,13 +30,22 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.driver.Drivers;
+import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+    // Speeds
+    private final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
+                                                                                         // speed
+    private final double MAX_ANGULAR_SPEED = RotationsPerSecond.of(2).in(RadiansPerSecond); // 3/4 of a rotation per
+                                                                                            // second max
+    // angular velocity
+
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -52,7 +62,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
-    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds();
+    // Requests
+    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -139,6 +153,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         configurePathPlanner();
+
+    }
+
+    public void setup() {
+        SwerveStates.setStates();
+        Drivers drivers = RobotContainer.getDrivers();
+
+        setDefaultCommand(
+                // Drivetrain will execute this command periodically
+                applyRequest(
+                        () -> drive.withVelocityX(-drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED) // Drive
+                                .withVelocityY(-drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED) // Drive left
+                                                                                                        // with
+                                                                                                        // // (left)
+                                .withRotationalRate(
+                                        -drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED)));
+
     }
 
     private void configurePathPlanner() {
