@@ -20,9 +20,6 @@ public final class ElevatorConstants {
     public static final double RANGE_OF_ROTATIONS = 87.2727;
 
     // Positions
-    public static final double L1 = 0;
-    public static final double L2 = 0;
-    public static final double L3 = 0;
-    public static final double L4 = 0;
+    public static double[] SCORING_POSITIONS = { 0, 0, 0, 0 };// L1-L4
 
 }
