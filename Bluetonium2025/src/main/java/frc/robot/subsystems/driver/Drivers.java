@@ -12,9 +12,11 @@ import lombok.Setter;
 public class Drivers {
     public static class DriverConfigs {
         @Setter
-        private boolean chassisDriving = false;
-        @Setter
         private int port = 0;
+        @Setter
+        private boolean elevatorControl = false;
+        @Setter
+        private boolean chassisDriving = false;
     }
 
     // Controllers
@@ -26,10 +28,17 @@ public class Drivers {
     public DoubleSupplier chassisControlStrafe;
     public DoubleSupplier chassisControlRotation;
 
-    // Trigger
+    // Triggers
+    // Chassis
     public Trigger wheelsXPosition;
     public Trigger steerWheels;
     public Trigger zeroHeading;
+
+    // Elevator
+    public static Trigger L1;
+    public static Trigger L2;
+    public static Trigger L3;
+    public static Trigger L4;
 
     /***
      * Checks to see if two configurations share any controls and throw an error if
@@ -63,6 +72,15 @@ public class Drivers {
             wheelsXPosition = new Trigger(controller::getXButton);
             steerWheels = new Trigger(controller::getAButton);
             zeroHeading = new Trigger(controller::getLeftBumperButton);
+
+        }
+
+        if (configs.elevatorControl) {
+            // TODO finalize these
+            L1 = new Trigger(() -> controller.getPOV() == 0);
+            L2 = new Trigger(() -> controller.getPOV() == 90);
+            L3 = new Trigger(() -> controller.getPOV() == 180);
+            L4 = new Trigger(() -> controller.getPOV() == 270);
 
         }
 
