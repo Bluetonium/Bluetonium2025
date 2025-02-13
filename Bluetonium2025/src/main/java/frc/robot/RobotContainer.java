@@ -31,6 +31,8 @@ public class RobotContainer {
     @Getter
     private static final Elevator elevator = new Elevator();
     @Getter
+    private static final Arm arm = new Arm();
+    @Getter
     private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     @Getter
     private static final LimelightLocalization vision = new LimelightLocalization(swerve);

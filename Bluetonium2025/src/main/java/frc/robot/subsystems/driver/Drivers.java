@@ -17,6 +17,8 @@ public class Drivers {
         private boolean elevatorControl = false;
         @Setter
         private boolean chassisDriving = false;
+        @Setter
+        private boolean armControl = false;
     }
 
     // Controllers
@@ -39,6 +41,10 @@ public class Drivers {
     public static Trigger L2;
     public static Trigger L3;
     public static Trigger L4;
+
+    // Arm
+    public static Trigger pos1;
+    public static Trigger pos2;
 
     /***
      * Checks to see if two configurations share any controls and throw an error if
@@ -82,6 +88,11 @@ public class Drivers {
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
 
+        }
+
+        if (configs.armControl) {
+            pos1 = new Trigger(() -> controller.getXButton());
+            pos2 = new Trigger(() -> controller.getYButton());
         }
 
     }
