@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
+import frc.utils.Field;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -306,6 +307,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
+    public Command getReefRegion() {
+        return run(() -> {
+            System.out.println(Field.getReefRegion(getState().Pose.getTranslation()));
+        });
+    }
+
     @Override
     public void periodic() {
         /*
@@ -338,7 +345,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - m_lastSimTime;
             m_lastSimTime = currentTime;
-
             /* use the measured time delta, get battery voltage from WPILib */
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });

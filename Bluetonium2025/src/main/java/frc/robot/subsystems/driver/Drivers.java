@@ -30,9 +30,10 @@ public class Drivers {
 
     // Triggers
     // Chassis
-    public Trigger wheelsXPosition;
-    public Trigger steerWheels;
-    public Trigger zeroHeading;
+    public static Trigger wheelsXPosition;
+    public static Trigger steerWheels;
+    public static Trigger zeroHeading;
+    public static Trigger reefAlgin;
 
     // Elevator
     public static Trigger L1;
@@ -72,6 +73,7 @@ public class Drivers {
             wheelsXPosition = new Trigger(controller::getXButton);
             steerWheels = new Trigger(controller::getAButton);
             zeroHeading = new Trigger(controller::getLeftBumperButton);
+            reefAlgin = new Trigger(controller::getAButton);
 
         }
 

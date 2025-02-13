@@ -3,6 +3,7 @@ package frc.robot.subsystems.mechanisms.swerve;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 
@@ -15,14 +16,16 @@ public class SwerveStates {
 
     public static void setStates() {
 
-        drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
-        drivers.steerWheels.whileTrue(swerve.applyRequest(
+        Drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
+        Drivers.steerWheels.whileTrue(swerve.applyRequest(
                 () -> point.withModuleDirection(
                         new Rotation2d(-drivers.chassisControlTranslation.getAsDouble(),
                                 -drivers.chassisControlStrafe.getAsDouble()))));
 
         // reset the field-centric heading on left bumper press
-        drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
+        Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
+        Drivers.reefAlgin.whileTrue(swerve.getReefRegion());
 
     }
+
 }
