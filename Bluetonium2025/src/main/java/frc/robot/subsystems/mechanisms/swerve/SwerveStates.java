@@ -3,7 +3,6 @@ package frc.robot.subsystems.mechanisms.swerve;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.mechanisms.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -12,10 +13,16 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindThenFollowPath;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -307,10 +314,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    public Command getReefRegion() {
-        return run(() -> {
-            System.out.println(Field.getReefRegion(getState().Pose.getTranslation()));
-        });
+    public Command AlignToReefRegion(boolean leftBranch) {
+        Field.REEF_REGIONS region = Field.getReefRegion(getState().Pose.getTranslation());
+
+        return runOnce(() -> {
+            PathPlannerPath path = PathPlannerPath.fromPathPoints(new ArrayList<PathPoint>() {
+            }, new PathConstraints(1, 1, 1, 1), new GoalEndState(0, Rotation2d.kZero));
+            AutoBuilder.followPath(path);
+        }).andThen(AutoBuilder.followPath(path));
     }
 
     @Override

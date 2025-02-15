@@ -1,10 +1,13 @@
 package frc.utils;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class Field {
+    public static final double fieldLength = Units.inchesToMeters(690.876);
+    public static final double fieldWidth = Units.inchesToMeters(317);
+
     private Field() {
     }
 
@@ -16,12 +19,12 @@ public class Field {
 
     // ordered counter-clockwise starting on the right
     public enum REEF_REGIONS {
-        AB,
-        CD,
-        EF,
         GH,
         IJ,
-        KL
+        KL,
+        AB,
+        CD,
+        EF
     }
 
     /***
@@ -70,13 +73,27 @@ public class Field {
         }
     }
 
+    public static boolean isBlue() {
+        return DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue)
+                .equals(DriverStation.Alliance.Blue);
+    }
+
+    public static Translation2d flipIfRed(Translation2d position) {
+        if (!isBlue()) {
+            return new Translation2d(fieldLength - position.getX(), fieldWidth - position.getY());
+        }
+        return position;
+    }
+
     public static REEF_REGIONS getReefRegion(Translation2d robotPosition) {
+        robotPosition = flipIfRed(robotPosition);
         Translation2d reefRelativePosition = robotPosition.minus(REEF_CENTER);
-        double angleToReef = Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX()) + Math.PI / 12;
-        System.out.println("Angle " + Math.toDegrees(angleToReef));
+        double angleToReef = Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX());
+        angleToReef += Math.PI / 6;
         angleToReef = (angleToReef < 0) ? angleToReef + Math.PI * 2 : angleToReef;
+
         int region = (int) Math.floor(angleToReef / ((Math.PI * 2) / 6));
         return REEF_REGIONS.values()[region];
     }
-
 }
