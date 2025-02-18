@@ -342,15 +342,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     private Command getPathToClosestReef() {
+        SwerveDriveState state = getState();
         REEF_REGIONS region = getCurrentRegion();
         Pose2d targetPose = Field.reefRegionToPose(region, false);
+        targetPose = Field.flipIfRed(targetPose);
+
         List<Waypoint> pathPoints = PathPlannerPath
-                .waypointsFromPoses(new Pose2d(getState().Pose.getTranslation(),
-                        new Rotation2d(Field.getAngleToReef(getState().Pose.getTranslation()))), targetPose);
+                .waypointsFromPoses(state.Pose, targetPose);
 
         PathPlannerPath path = new PathPlannerPath(pathPoints, TunerConstants.autoAlignmentConstraints, null,
                 new GoalEndState(0, targetPose.getRotation()));
         path.name = String.format("Aligning Reef Side : %s", region.name());
+        path.preventFlipping = true;
         return AutoBuilder.followPath(path).withName(path.name);
     }
 
