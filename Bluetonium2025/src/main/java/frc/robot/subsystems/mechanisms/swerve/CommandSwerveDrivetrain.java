@@ -3,6 +3,10 @@ package frc.robot.subsystems.mechanisms.swerve;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -13,18 +17,21 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindThenFollowPath;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -35,12 +42,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
 import frc.utils.Field;
+import frc.utils.Field.REEF_REGIONS;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -75,6 +87,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+    // private final Map<REEF_REGIONS,Command> pathfinding
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -315,13 +329,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command AlignToReefRegion(boolean leftBranch) {
-        Field.REEF_REGIONS region = Field.getReefRegion(getState().Pose.getTranslation());
+        return Commands.deferredProxy(this::getPathToClosestReef);
+        /*
+         * Map<REEF_REGIONS, Command> commandMap = new HashMap<REEF_REGIONS, Command>();
+         * for (REEF_REGIONS region : REEF_REGIONS.values()) {
+         * commandMap.put(region,
+         * AutoBuilder.pathfindToPoseFlipped(Field.reefRegionToPose(region, leftBranch),
+         * TunerConstants.autoAlignmentConstraints));
+         * }
+         * return Commands.select(commandMap, this::getCurrentRegion);
+         */
+    }
 
-        return runOnce(() -> {
-            PathPlannerPath path = PathPlannerPath.fromPathPoints(new ArrayList<PathPoint>() {
-            }, new PathConstraints(1, 1, 1, 1), new GoalEndState(0, Rotation2d.kZero));
-            AutoBuilder.followPath(path);
-        }).andThen(AutoBuilder.followPath(path));
+    private Command getPathToClosestReef() {
+        REEF_REGIONS region = getCurrentRegion();
+        Pose2d targetPose = Field.reefRegionToPose(region, false);
+        List<Waypoint> pathPoints = PathPlannerPath
+                .waypointsFromPoses(new Pose2d(getState().Pose.getTranslation(),
+                        new Rotation2d(Field.getAngleToReef(getState().Pose.getTranslation()))), targetPose);
+
+        PathPlannerPath path = new PathPlannerPath(pathPoints, TunerConstants.autoAlignmentConstraints, null,
+                new GoalEndState(0, targetPose.getRotation()));
+        path.name = String.format("Aligning Reef Side : %s", region.name());
+        return AutoBuilder.followPath(path).withName(path.name);
+    }
+
+    public REEF_REGIONS getCurrentRegion() {
+        return Field.getReefRegion(getState().Pose.getTranslation());
     }
 
     @Override

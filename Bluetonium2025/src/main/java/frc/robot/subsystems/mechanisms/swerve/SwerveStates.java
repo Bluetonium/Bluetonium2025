@@ -23,7 +23,7 @@ public class SwerveStates {
 
         // reset the field-centric heading on left bumper press
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
-        Drivers.reefAlgin.whileTrue(swerve.getReefRegion());
+        Drivers.reefAlgin.whileTrue(swerve.AlignToReefRegion(false));
 
     }
 

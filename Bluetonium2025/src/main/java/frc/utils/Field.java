@@ -1,5 +1,7 @@
 package frc.utils;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -73,6 +75,26 @@ public class Field {
         }
     }
 
+    public static Pose2d reefRegionToPose(REEF_REGIONS region, boolean left) {
+        switch (region) {
+            case AB:
+                return new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+            case CD:
+                return new Pose2d(3.5, 2.3, Rotation2d.fromDegrees(60));
+            case EF:
+                return new Pose2d(5.5, 2.3, Rotation2d.fromDegrees(120));
+            case GH:
+                return new Pose2d(6.5, 4, Rotation2d.fromDegrees(180));
+            case IJ:
+                return new Pose2d(5.5, 5.7, Rotation2d.fromDegrees(240));
+            case KL:
+                return new Pose2d(3.5, 5.7, Rotation2d.fromDegrees(300));
+            default:
+                return new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+        }
+
+    }
+
     public static boolean isBlue() {
         return DriverStation.getAlliance()
                 .orElse(DriverStation.Alliance.Blue)
@@ -86,10 +108,14 @@ public class Field {
         return position;
     }
 
-    public static REEF_REGIONS getReefRegion(Translation2d robotPosition) {
+    public static double getAngleToReef(Translation2d robotPosition) {
         robotPosition = flipIfRed(robotPosition);
         Translation2d reefRelativePosition = robotPosition.minus(REEF_CENTER);
-        double angleToReef = Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX());
+        return Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX());
+    }
+
+    public static REEF_REGIONS getReefRegion(Translation2d robotPosition) {
+        double angleToReef = getAngleToReef(robotPosition);
         angleToReef += Math.PI / 6;
         angleToReef = (angleToReef < 0) ? angleToReef + Math.PI * 2 : angleToReef;
 
