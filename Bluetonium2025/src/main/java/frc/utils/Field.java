@@ -10,6 +10,11 @@ public class Field {
     public static final double fieldLength = Units.inchesToMeters(690.876);
     public static final double fieldWidth = Units.inchesToMeters(317);
 
+    /**
+     * how far the reef branches are off from the center of a side of a reef
+     */
+    public static final double REEF_BRANCH_OFFSET = Units.inchesToMeters(12.94 / 2);
+
     private Field() {
     }
 
@@ -76,23 +81,38 @@ public class Field {
     }
 
     public static Pose2d reefRegionToPose(REEF_REGIONS region, boolean left) {
+        Pose2d position;
         switch (region) {
             case AB:
-                return new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+                position = new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+                break;
             case CD:
-                return new Pose2d(3.5, 2.3, Rotation2d.fromDegrees(60));
+                position = new Pose2d(3.5, 2.3, Rotation2d.fromDegrees(60));
+                break;
             case EF:
-                return new Pose2d(5.5, 2.3, Rotation2d.fromDegrees(120));
+                position = new Pose2d(5.5, 2.3, Rotation2d.fromDegrees(120));
+                break;
             case GH:
-                return new Pose2d(6.5, 4, Rotation2d.fromDegrees(180));
+                position = new Pose2d(6.5, 4, Rotation2d.fromDegrees(180));
+                break;
             case IJ:
-                return new Pose2d(5.5, 5.7, Rotation2d.fromDegrees(240));
+                position = new Pose2d(5.5, 5.7, Rotation2d.fromDegrees(240));
+                break;
             case KL:
-                return new Pose2d(3.5, 5.7, Rotation2d.fromDegrees(300));
+                position = new Pose2d(3.5, 5.7, Rotation2d.fromDegrees(300));
+                break;
             default:
-                return new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+                position = new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
+                break;
         }
 
+        double angle = position.getRotation().getRadians() + Math.PI / 2;
+
+        int flip = (left) ? -1 : 1;
+        double xOffset = Math.cos(angle) * REEF_BRANCH_OFFSET * flip;
+        double YOffset = Math.sin(angle) * REEF_BRANCH_OFFSET * flip;
+
+        return new Pose2d(position.getX() - xOffset, position.getY() - YOffset, position.getRotation());
     }
 
     public static boolean isBlue() {

@@ -19,6 +19,7 @@ public class RobotStates {
     public static final Trigger L4 = Drivers.L4;
     public static final Trigger Home = null;// TODO change
 
-    public static final Trigger ReefAlign = Drivers.reefAlgin;
+    public static final Trigger reefAlignLeft = Drivers.reefAlignLeft;
+    public static final Trigger reefAlignRight = Drivers.reefAlignRight;
 
 }

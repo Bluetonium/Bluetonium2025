@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -329,22 +330,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command AlignToReefRegion(boolean leftBranch) {
-        return Commands.deferredProxy(this::getPathToClosestReef);
-        /*
-         * Map<REEF_REGIONS, Command> commandMap = new HashMap<REEF_REGIONS, Command>();
-         * for (REEF_REGIONS region : REEF_REGIONS.values()) {
-         * commandMap.put(region,
-         * AutoBuilder.pathfindToPoseFlipped(Field.reefRegionToPose(region, leftBranch),
-         * TunerConstants.autoAlignmentConstraints));
-         * }
-         * return Commands.select(commandMap, this::getCurrentRegion);
-         */
+        Set<Subsystem> requirements = new HashSet<Subsystem>();
+        requirements.add(this);
+        if (leftBranch)
+            return Commands.defer(this::getPathToReefLeft, requirements);
+        return Commands.defer(this::getPathToReefRight, requirements);
     }
 
-    private Command getPathToClosestReef() {
+    private Command getPathToReefLeft() {
+        return getPathToReef(true);
+    }
+
+    private Command getPathToReefRight() {
+        return getPathToReef(false);
+    }
+
+    private Command getPathToReef(boolean left) {
         SwerveDriveState state = getState();
         REEF_REGIONS region = getCurrentRegion();
-        Pose2d targetPose = Field.reefRegionToPose(region, false);
+        Pose2d targetPose = Field.reefRegionToPose(region, left);
         targetPose = Field.flipIfRed(targetPose);
 
         List<Waypoint> pathPoints = PathPlannerPath

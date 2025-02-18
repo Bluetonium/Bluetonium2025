@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.RobotContainer;
+import frc.robot.RobotStates;
 import frc.robot.subsystems.driver.Drivers;
 
 public class SwerveStates {
@@ -23,7 +24,8 @@ public class SwerveStates {
 
         // reset the field-centric heading on left bumper press
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
-        Drivers.reefAlgin.whileTrue(swerve.AlignToReefRegion(false));
+        RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
+        RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));
 
     }
 
