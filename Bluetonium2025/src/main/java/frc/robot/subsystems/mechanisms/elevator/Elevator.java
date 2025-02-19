@@ -23,6 +23,7 @@ public class Elevator implements Subsystem, NTSendable {
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
 
+    @SuppressWarnings("unused")
     private final SysIdRoutine routine = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
