@@ -87,8 +87,6 @@ public class Drivers {
     }
 
     public Drivers(DriverConfigs driver1Configs, DriverConfigs driver2Configs) {
-
-        System.out.println("Constructed Drivers");
         driver1Controller = new XboxController(driver1Configs.port);
         driver2Controller = new XboxController(driver2Configs.port);
         checkOverlap(driver1Configs, driver2Configs);

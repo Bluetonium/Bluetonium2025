@@ -2,6 +2,9 @@ package frc.robot.subsystems.mechanisms.elevator;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
+import frc.utils.sim.LinearConfig;
+
 public final class ElevatorConstants {
     // Motor
     public static final int ARM_MOTOR_CAN_ID = 20; // find out once more :)
@@ -15,11 +18,21 @@ public final class ElevatorConstants {
     public static final double kV = 0.11485;
     public static final double kA = 0.00081861;
     // Physical stuff
+    public static final double MAX_HEIGHT = 48;
     public static final double LOW_POSITION = 0.0;
-    public static final double HIGH_POSITION = 10.0; // find out what fucking value to do
-    public static final double RANGE_OF_ROTATIONS = 87.2727;
+    public static final double HIGH_POSITION = 48 * 0.999;
+    public static final double GEAR_RATIO = 1;
+    public static final double SPROCKET_SIZE = Units.inchesToMeters(1.87 / 2);
+    public static final double END_GEAR_RATIO = Math.PI * SPROCKET_SIZE * 2 * GEAR_RATIO;
 
     // Positions
-    public static double[] SCORING_POSITIONS = { 0, 0, 0, 0 };// L1-L4
+    public static double[] SCORING_POSITIONS = { 0, HIGH_POSITION / 4, HIGH_POSITION / 2, HIGH_POSITION };// L1-L4
+
+    // SIM
+    public static final LinearConfig SIM_CONFIG = new LinearConfig(.8, 0.35, GEAR_RATIO, SPROCKET_SIZE)
+            .setAngle(75)
+            .setMovingLength(50)
+            .setStaticLength(50)
+            .setMaxHeight(MAX_HEIGHT);
 
 }

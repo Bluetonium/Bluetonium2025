@@ -5,8 +5,11 @@ import edu.wpi.first.networktables.NTSendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotSim;
+import frc.utils.sim.LinearSim;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -17,11 +20,16 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-public class Elevator implements Subsystem, NTSendable {
+public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
+    private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
+    // SIM
+    private final LinearSim sim;
+
+    @SuppressWarnings("unused")
     private final SysIdRoutine routine = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
@@ -78,13 +86,18 @@ public class Elevator implements Subsystem, NTSendable {
         // SoftLimits
         SoftwareLimitSwitchConfigs limitswitch = config.SoftwareLimitSwitch;
         limitswitch.ForwardSoftLimitEnable = true;
-        limitswitch.ForwardSoftLimitThreshold = ElevatorConstants.RANGE_OF_ROTATIONS;
+        limitswitch.ForwardSoftLimitThreshold = ElevatorConstants.HIGH_POSITION *
+                ElevatorConstants.END_GEAR_RATIO;
         limitswitch.ReverseSoftLimitEnable = true;
         limitswitch.ReverseSoftLimitThreshold = 0;
 
         applyConfig();
 
         SendableRegistry.add(this, "Elevator");
+
+        // SIM
+        sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.leftView, motor.getSimState(), "Elevator");
+
         /*
          * BaseStatusSignal.setUpdateFrequencyForAll(250,
          * armMotor.getPosition(),
@@ -95,6 +108,11 @@ public class Elevator implements Subsystem, NTSendable {
          * 
          * SignalLogger.start();
          */
+    }
+
+    public void setup() {
+        ElevatorStates.setStates();
+
     }
 
     private void applyConfig() {
@@ -110,12 +128,24 @@ public class Elevator implements Subsystem, NTSendable {
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
-    public Command requestTargetPosition(double rotations) {
+    public Command requestTargetPosition(double inches) {
+        double rotations = calculateRotationFromDistance(inches);
+        System.out.printf("Calculated Roations : %f\n", rotations);
         return run(() -> {
-            final MotionMagicVoltage request = new MotionMagicVoltage(0);
+            final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(rotations));
         }).withName("Elevator Target Position");
 
+    }
+
+    public double calculateRotationFromDistance(double inches) {
+
+        return inches * ElevatorConstants.END_GEAR_RATIO;
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        sim.simulationPeriodic();
     }
 
     /*
