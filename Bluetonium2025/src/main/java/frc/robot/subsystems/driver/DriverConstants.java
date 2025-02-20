@@ -12,7 +12,8 @@ public class DriverConstants {
         driver1Configs.setPort(0);
 
         // driver2Configs
-        driver2Configs.setPort(2);
+        driver2Configs.setPort(1);
+        driver2Configs.setElevatorControl(true);
 
     }
 }

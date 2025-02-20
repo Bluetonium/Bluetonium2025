@@ -12,7 +12,7 @@ public class ElevatorStates {
         RobotStates.L2.whileTrue(l2());
         RobotStates.L3.whileTrue(l3());
         RobotStates.L4.whileTrue(l4());
-        RobotStates.Home.whileTrue(home());
+        // RobotStates.Home.whileTrue(home());
     }
 
     private static Command l1() {
