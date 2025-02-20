@@ -112,7 +112,6 @@ public class Elevator extends SubsystemBase implements NTSendable {
 
     public void setup() {
         ElevatorStates.setStates();
-
     }
 
     private void applyConfig() {
