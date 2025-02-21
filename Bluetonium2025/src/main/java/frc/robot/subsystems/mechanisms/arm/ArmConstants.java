@@ -1,7 +1,6 @@
 package frc.robot.subsystems.mechanisms.arm;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.utils.sim.ArmConfig;
 
@@ -20,10 +19,7 @@ public class ArmConstants {
     1,
     1,
     1,
-    0,
     180,
     45
     );
-
-
 }

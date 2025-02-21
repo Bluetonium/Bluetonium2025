@@ -62,8 +62,8 @@ public class Elevator extends SubsystemBase implements NTSendable {
      */
     public Elevator() {
         // TODO: need to confirm if there's anything else to set
-        motor = new TalonFX(ElevatorConstants.ARM_MOTOR_CAN_ID); // constants
-        motor.setNeutralMode(ElevatorConstants.ARM_MOTOR_NEUTRAL_MODE);
+        motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
+        motor.setNeutralMode(ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE);
 
         config = new TalonFXConfiguration();
 

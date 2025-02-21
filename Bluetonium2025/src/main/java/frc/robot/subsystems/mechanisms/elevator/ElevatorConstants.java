@@ -7,8 +7,8 @@ import frc.utils.sim.LinearConfig;
 
 public final class ElevatorConstants {
     // Motor
-    public static final int ARM_MOTOR_CAN_ID = 20; // find out once more :)
-    public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
+    public static final int ELEVATOR_MOTOR_CAN_ID = 19; // find out once more :)
+    public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
     // PID
     public static final double kP = 5.1575; // THIS SEEMS VERY WRONG (TODO: probably change this...)
