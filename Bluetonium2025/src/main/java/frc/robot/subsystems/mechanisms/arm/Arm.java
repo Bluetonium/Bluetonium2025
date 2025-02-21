@@ -9,18 +9,19 @@ import frc.utils.sim.ArmSim;
 import frc.robot.RobotSim;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkBase.ControlType;
 
 
 public class Arm extends SubsystemBase implements NTSendable {
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
-    private SparkClosedLoopController armPID;
+    private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every function</h1>
      * <img src="https://static.wikia.nocookie.net/qualdies-methlab/images/3/31/Soggycat.png" id="yes" alt="its supposed to be a soggy cat but you're probably offline">
@@ -38,8 +39,12 @@ public class Arm extends SubsystemBase implements NTSendable {
         slot0.kP = ArmConstants.kP;
         slot0.kI = ArmConstants.kI;
         slot0.kD = ArmConstants.kD;
-        // it goes num of motors, gear ratio, moment of inertia(lol)
-        //armSim = new SingleJointedArmSim(DCMotor.getNeo550(1), 0, 0, 0, 0, 90, false, 0, null);
+
+        MotionMagicConfigs motionMagic = armConfig.MotionMagic;
+        motionMagic.MotionMagicCruiseVelocity = 160;
+        motionMagic.MotionMagicAcceleration = 80;
+        motionMagic.MotionMagicJerk = 1600;
+
         armSim = new ArmSim(ArmConstants.SIM_CONFIG,RobotSim.leftView,arm.getSimState(),"Arm");
 
         applyConfig();
@@ -49,7 +54,7 @@ public class Arm extends SubsystemBase implements NTSendable {
         StatusCode status = arm.getConfigurator().apply(armConfig);
         if (!status.isOK()) {
             DriverStation.reportWarning(
-                    status.getName() + "Failed to apply configs to elevator" + status.getDescription(), false);
+                    status.getName() + "Failed to apply configs to arm" + status.getDescription(), false);
         }
     }
     @Override
@@ -57,17 +62,19 @@ public class Arm extends SubsystemBase implements NTSendable {
     }
 
     @Override
-    public void simulationPeriodic() { // man idfk
+    public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
     }
 
     public void setup() {
+        System.out.println("kacke");
         ArmStates.setStates();
     }
 
     public Command setArmPosition(double position) {
         return run(() -> {
-            armPID.setReference(position,ControlType.kPosition);
+            final MotionMagicVoltage request = mmVoltage;
+            arm.setControl(request.withPosition(position));
         }).withName("Arm Target Position");
     }
 }

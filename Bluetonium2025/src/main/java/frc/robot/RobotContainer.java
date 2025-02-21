@@ -58,6 +58,7 @@ public class RobotContainer {
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
+        arm.setup();
     }
 
     private void configureLimelights() {
