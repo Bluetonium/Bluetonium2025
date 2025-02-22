@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -19,19 +21,15 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -330,6 +328,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command AlignToReefRegion(boolean leftBranch) {
         Set<Subsystem> requirements = new HashSet<Subsystem>();
+
         requirements.add(this);
         if (leftBranch)
             return Commands.defer(this::getPathToReefLeft, requirements);
@@ -349,20 +348,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         REEF_REGIONS region = getCurrentRegion();
         Pose2d targetPose = Field.flipIfRed(Field.reefRegionToPose(region, left));
 
-        Pose2d startingPos;
-        // will error if the speeds are zero so doing this check
-        if (state.Speeds.vxMetersPerSecond != 0 && state.Speeds.vyMetersPerSecond != 0) {
-            startingPos = new Pose2d(state.Pose.getTranslation(),
-                    new Rotation2d(state.Speeds.vxMetersPerSecond, state.Speeds.vyMetersPerSecond));
-        } else {
-            startingPos = state.Pose;
-        }
+        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(),
+                new Rotation2d(Field.getAngleToReef(state.Pose.getTranslation())).plus(Rotation2d.k180deg));
 
         List<Waypoint> pathPoints = PathPlannerPath
                 .waypointsFromPoses(
                         startingPos,
                         targetPose);
-        PathPlannerPath path = new PathPlannerPath(pathPoints, TunerConstants.autoAlignmentConstraints, null,
+        PathPlannerPath path = new PathPlannerPath(
+                pathPoints,
+
+                TunerConstants.autoAlignmentConstraints,
+                null,
                 new GoalEndState(0, targetPose.getRotation()));
 
         path.name = String.format("Aligning Reef Side : %s", region.name());

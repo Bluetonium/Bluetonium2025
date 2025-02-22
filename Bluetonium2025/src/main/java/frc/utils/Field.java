@@ -144,8 +144,8 @@ public class Field {
     }
 
     public static double getAngleToReef(Translation2d robotPosition) {
-        robotPosition = flipIfRed(robotPosition);
-        Translation2d reefRelativePosition = robotPosition.minus(REEF_CENTER);
+        // robotPosition = flipIfRed(robotPosition);
+        Translation2d reefRelativePosition = robotPosition.minus(flipIfRed(REEF_CENTER));
         return Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX());
     }
 
@@ -153,6 +153,10 @@ public class Field {
         double angleToReef = getAngleToReef(robotPosition);
         angleToReef += Math.PI / 6;
         angleToReef = (angleToReef < 0) ? angleToReef + Math.PI * 2 : angleToReef;
+        if (!isBlue()) {
+            angleToReef += Math.PI;
+            angleToReef %= Math.PI * 2;
+        }
 
         int region = (int) Math.floor(angleToReef / ((Math.PI * 2) / 6));
         return REEF_REGIONS.values()[region];
