@@ -2,6 +2,7 @@ package frc.robot.subsystems.mechanisms.arm;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
 public class ArmConstants {
@@ -22,5 +23,5 @@ public class ArmConstants {
     1.0,
     180.0,
     45.0
-    );
+    ).setMount(RobotContainer.getElevator().getSim(),false);
 }

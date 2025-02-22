@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.utils.sim.LinearSim;
+import lombok.Getter;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
@@ -27,7 +28,7 @@ public class Elevator extends SubsystemBase implements NTSendable {
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
     // SIM
-    private final LinearSim sim;
+    @Getter private final LinearSim sim;
 
     @SuppressWarnings("unused")
     private final SysIdRoutine routine = new SysIdRoutine(
