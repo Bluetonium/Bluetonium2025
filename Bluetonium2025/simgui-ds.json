@@ -1,9 +1,4 @@
 {
-  "Keyboard 0 Settings": {
-    "window": {
-      "visible": true
-    }
-  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
@@ -22,16 +17,17 @@
           "keyRate": 0.009999999776482582
         }
       ],
-      "axisCount": 5,
-      "buttonCount": 7,
+      "axisCount": 3,
+      "buttonCount": 8,
       "buttonKeys": [
         90,
         88,
         67,
         86,
-        71,
         -1,
-        -1
+        -1,
+        -1,
+        96
       ],
       "povConfig": [
         {

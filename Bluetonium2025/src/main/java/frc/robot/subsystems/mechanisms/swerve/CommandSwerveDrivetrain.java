@@ -1,6 +1,10 @@
 package frc.robot.subsystems.mechanisms.swerve;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
 import frc.utils.Field;
@@ -173,17 +176,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void setup() {
         SwerveStates.setStates();
-        Drivers drivers = RobotContainer.getDrivers();
 
         setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 applyRequest(
-                        () -> drive.withVelocityX(-drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED) // Drive
-                                .withVelocityY(-drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED) // Drive left
+                        () -> drive.withVelocityX(-Drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED) // Drive
+                                .withVelocityY(-Drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED) // Drive left
                                                                                                         // with
                                                                                                         // // (left)
                                 .withRotationalRate(
-                                        -drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED)));
+                                        -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED)));
 
     }
 

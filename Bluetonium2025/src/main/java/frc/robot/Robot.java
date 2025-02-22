@@ -9,15 +9,20 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import lombok.Getter;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  @Getter
+  private static RobotSim robotSim;
+
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
     SendableRegistry.add(CommandScheduler.getInstance(), "Command Scheduler");
     SmartDashboard.putData(CommandScheduler.getInstance());
+    robotSim = new RobotSim();
   }
 
   @Override
@@ -84,6 +89,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {
-
+    // RobotContainer.getElevator().simulationPeriodic();
   }
 }
