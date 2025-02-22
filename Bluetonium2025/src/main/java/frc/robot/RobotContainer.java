@@ -14,6 +14,7 @@ import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
+import frc.robot.subsystems.mechanisms.coralIntake.CoralIntake;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
@@ -30,6 +31,8 @@ public class RobotContainer {
     // Subsystems
     @Getter
     private static final Elevator elevator = new Elevator();
+    @Getter
+    private static final CoralIntake coralIntake = new CoralIntake();
     @Getter
     private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     @Getter
@@ -57,6 +60,7 @@ public class RobotContainer {
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
+        coralIntake.setup();
     }
 
     private void configureLimelights() {

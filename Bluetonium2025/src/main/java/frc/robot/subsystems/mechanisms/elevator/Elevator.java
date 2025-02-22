@@ -20,6 +20,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import lombok.Getter;
+
 public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
     private TalonFXConfiguration config;
@@ -27,6 +29,7 @@ public class Elevator extends SubsystemBase implements NTSendable {
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
     // SIM
+    @Getter
     private final LinearSim sim;
 
     @SuppressWarnings("unused")
