@@ -1,17 +1,5 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
-import edu.wpi.first.networktables.NTSendable;
-import edu.wpi.first.networktables.NTSendableBuilder;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotSim;
-import frc.utils.sim.LinearSim;
-
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -21,25 +9,23 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.networktables.NTSendable;
+import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotSim;
+import frc.utils.sim.LinearSim;
+
 public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
-    // IM private final LinearSim sim;
-
-    @SuppressWarnings("unused")
-
-                                null, // Use default ramp rate (1 V/s)
-                    null,
-                    null, // Use default timeout (10 s)
-                          // Log state with Phoenix SignalLogger class
-                    state -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                    volts -> motor.setControl(m_sysIdControl.withOutput(volts)),
-                    null,
-                    this));
+    private final LinearSim sim;
 
     @Override
     public void initSendable(NTSendableBuilder builder) {

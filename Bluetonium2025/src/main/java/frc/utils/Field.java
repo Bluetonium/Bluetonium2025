@@ -121,6 +121,13 @@ public class Field {
                 .equals(DriverStation.Alliance.Blue);
     }
 
+    public static Rotation2d flipIfRed(Rotation2d rotation) {
+        if (!isBlue()) {
+            return rotation.plus(Rotation2d.fromDegrees(180));
+        }
+        return rotation;
+    }
+
     public static Pose2d flipIfRed(Pose2d position) {
         Translation2d translation = flipIfRed(position.getTranslation());
         if (!isBlue()) {

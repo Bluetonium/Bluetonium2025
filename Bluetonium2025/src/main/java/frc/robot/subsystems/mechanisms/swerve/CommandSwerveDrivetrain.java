@@ -19,14 +19,19 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -342,16 +347,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Command getPathToReef(boolean left) {
         SwerveDriveState state = getState();
         REEF_REGIONS region = getCurrentRegion();
-        Pose2d targetPose = Field.reefRegionToPose(region, left);
-        targetPose = Field.flipIfRed(targetPose);
+        Pose2d targetPose = Field.flipIfRed(Field.reefRegionToPose(region, left));
+
+        Pose2d startingPos;
+        // will error if the speeds are zero so doing this check
+        if (state.Speeds.vxMetersPerSecond != 0 && state.Speeds.vyMetersPerSecond != 0) {
+            startingPos = new Pose2d(state.Pose.getTranslation(),
+                    new Rotation2d(state.Speeds.vxMetersPerSecond, state.Speeds.vyMetersPerSecond));
+        } else {
+            startingPos = state.Pose;
+        }
 
         List<Waypoint> pathPoints = PathPlannerPath
-                .waypointsFromPoses(state.Pose, targetPose);
-
+                .waypointsFromPoses(
+                        startingPos,
+                        targetPose);
         PathPlannerPath path = new PathPlannerPath(pathPoints, TunerConstants.autoAlignmentConstraints, null,
                 new GoalEndState(0, targetPose.getRotation()));
+
         path.name = String.format("Aligning Reef Side : %s", region.name());
         path.preventFlipping = true;
+
         return AutoBuilder.followPath(path).withName(path.name);
     }
 
