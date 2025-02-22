@@ -8,21 +8,20 @@ import frc.robot.subsystems.driver.Drivers;
 
 public class SwerveStates {
     private static CommandSwerveDrivetrain swerve = RobotContainer.getSwerve();
-    private static Drivers drivers = RobotContainer.getDrivers();
 
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public static void setStates() {
 
-        drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
-        drivers.steerWheels.whileTrue(swerve.applyRequest(
+        Drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
+        Drivers.steerWheels.whileTrue(swerve.applyRequest(
                 () -> point.withModuleDirection(
-                        new Rotation2d(-drivers.chassisControlTranslation.getAsDouble(),
-                                -drivers.chassisControlStrafe.getAsDouble()))));
+                        new Rotation2d(-Drivers.chassisControlTranslation.getAsDouble(),
+                                -Drivers.chassisControlStrafe.getAsDouble()))));
 
         // reset the field-centric heading on left bumper press
-        drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
+        Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
 
     }
 }
