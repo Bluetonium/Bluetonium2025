@@ -9,17 +9,18 @@ public class ArmConstants {
 
     // PID (we'll figure it out eventually!!!)
     
-    public static final double kP = 1;
+    public static final double kP = 100;
     public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double kD = 100;
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
     public static final ArmConfig SIM_CONFIG = new ArmConfig( // TODO: change this shiet
-    1,
-    1,
-    1,
-    1,
-    180,
-    45
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    180.0,
+    45.0
     );
 }

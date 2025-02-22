@@ -17,6 +17,6 @@ public class ArmStates {
     }
 
     private static Command pos2() {
-        return arm.setArmPosition(1).withName("Arm.pos2");
+        return arm.setArmPosition(0.1).withName("Arm.pos2");
     }
 }

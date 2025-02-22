@@ -42,7 +42,7 @@ public class Arm extends SubsystemBase implements NTSendable {
 
         MotionMagicConfigs motionMagic = armConfig.MotionMagic;
         motionMagic.MotionMagicCruiseVelocity = 160;
-        motionMagic.MotionMagicAcceleration = 80;
+        motionMagic.MotionMagicAcceleration = 6000;
         motionMagic.MotionMagicJerk = 1600;
 
         armSim = new ArmSim(ArmConstants.SIM_CONFIG,RobotSim.leftView,arm.getSimState(),"Arm");
@@ -67,7 +67,6 @@ public class Arm extends SubsystemBase implements NTSendable {
     }
 
     public void setup() {
-        System.out.println("kacke");
         ArmStates.setStates();
     }
 
