@@ -1,11 +1,11 @@
-package frc.robot.subsystems.mechanisms.arm;
+package frc.robot.subsystems.mechanisms.shoulder;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
-public class ArmConstants {
+public class ShoulderConstants {
     public static final int ARM_MOTOR_CAN_ID = 19; // we GOTTA figure it out!!!
 
     // PID (we'll figure it out eventually!!!)

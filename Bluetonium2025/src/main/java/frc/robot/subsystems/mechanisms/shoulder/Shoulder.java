@@ -1,4 +1,4 @@
-package frc.robot.subsystems.mechanisms.arm;
+package frc.robot.subsystems.mechanisms.shoulder;
 
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NTSendableBuilder;
@@ -15,37 +15,39 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-
-public class Arm extends SubsystemBase implements NTSendable {
+public class Shoulder extends SubsystemBase implements NTSendable {
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
     /**
-     * <h1>i'm only adding this because it'd feel weird if i didn't add it to every function</h1>
-     * <img src="https://static.wikia.nocookie.net/qualdies-methlab/images/3/31/Soggycat.png" id="yes" alt="its supposed to be a soggy cat but you're probably offline">
+     * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
+     * function</h1>
+     * <img src=
+     * "https://static.wikia.nocookie.net/qualdies-methlab/images/3/31/Soggycat.png"
+     * id="yes" alt="its supposed to be a soggy cat but you're probably offline">
      * 
      */
-    public Arm() {
+    public Shoulder() {
         // dumfayce
-        arm = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID);
-        arm.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);
+        arm = new TalonFX(ShoulderConstants.ARM_MOTOR_CAN_ID);
+        arm.setNeutralMode(ShoulderConstants.ARM_MOTOR_NEUTRAL_MODE);
 
         armConfig = new TalonFXConfiguration();
 
         // PID
         Slot0Configs slot0 = armConfig.Slot0;
-        slot0.kP = ArmConstants.kP;
-        slot0.kI = ArmConstants.kI;
-        slot0.kD = ArmConstants.kD;
+        slot0.kP = ShoulderConstants.kP;
+        slot0.kI = ShoulderConstants.kI;
+        slot0.kD = ShoulderConstants.kD;
 
         MotionMagicConfigs motionMagic = armConfig.MotionMagic;
         motionMagic.MotionMagicCruiseVelocity = 160;
         motionMagic.MotionMagicAcceleration = 6000;
         motionMagic.MotionMagicJerk = 1600;
 
-        armSim = new ArmSim(ArmConstants.SIM_CONFIG,RobotSim.leftView,arm.getSimState(),"Arm");
+        armSim = new ArmSim(ShoulderConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
 
         applyConfig();
     }
@@ -57,6 +59,7 @@ public class Arm extends SubsystemBase implements NTSendable {
                     status.getName() + "Failed to apply configs to arm" + status.getDescription(), false);
         }
     }
+
     @Override
     public void initSendable(NTSendableBuilder builder) {
     }
@@ -64,15 +67,16 @@ public class Arm extends SubsystemBase implements NTSendable {
     @Override
     public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
-        //TODO: figure out a better way to do this!!!!
+        // TODO: figure out a better way to do this!!!!
         armSim.getConfig().setInitialX(0.81 + armSim.getConfig().getMount().getDisplacementX() * 1.1);
         armSim.getConfig().setInitialY(0.35 + armSim.getConfig().getMount().getDisplacementY() * 1.1);
 
-        //System.out.println(armSim.getConfig().getMount().getDisplacementX() + "    " + armSim.getConfig().getMount().getDisplacementY());
+        // System.out.println(armSim.getConfig().getMount().getDisplacementX() + " " +
+        // armSim.getConfig().getMount().getDisplacementY());
     }
 
     public void setup() {
-        ArmStates.setStates();
+        ShoulderStates.setStates();
     }
 
     public Command setArmPosition(double position) {

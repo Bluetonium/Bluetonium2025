@@ -14,8 +14,8 @@ import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
-import frc.robot.subsystems.mechanisms.arm.Arm;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.shoulder.Shoulder;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class RobotContainer {
     @Getter
     private static final Elevator elevator = new Elevator();
     @Getter
-    private static final Arm arm = new Arm();
+    private static final Shoulder arm = new Shoulder();
     @Getter
     private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     @Getter
