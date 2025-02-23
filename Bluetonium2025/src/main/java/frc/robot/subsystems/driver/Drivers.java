@@ -42,6 +42,10 @@ public class Drivers {
     public static Trigger L3;
     public static Trigger L4;
 
+    // Shoulder
+    public static Trigger pos1;
+    public static Trigger pos2;
+
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
         noFunction = function.not();
