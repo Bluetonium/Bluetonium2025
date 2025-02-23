@@ -38,7 +38,9 @@ public class RobotContainer {
     @Getter
     private static final LimelightLocalization vision = new LimelightLocalization(swerve);
     @Getter
-    public static final Drivers drivers = new Drivers(DriverConstants.driver1Configs, DriverConstants.driver2Configs);
+    public static final Drivers driver1 = new Drivers(DriverConstants.driver1Configs);
+    @Getter
+    public static final Drivers driver2 = new Drivers(DriverConstants.driver2Configs);
 
     public RobotContainer() {
 

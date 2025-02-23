@@ -130,7 +130,6 @@ public class Elevator extends SubsystemBase implements NTSendable {
      */
     public Command requestTargetPosition(double inches) {
         double rotations = calculateRotationFromDistance(inches);
-        System.out.printf("Calculated Roations : %f\n", rotations);
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(rotations));
