@@ -5,7 +5,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
 
 public class ShoulderStates {
-    private static Shoulder shoulder = RobotContainer.getArm();
+    private static Shoulder shoulder = RobotContainer.getShoulder();
 
     public static void setStates() {
         RobotStates.pos1.whileTrue(pos1());

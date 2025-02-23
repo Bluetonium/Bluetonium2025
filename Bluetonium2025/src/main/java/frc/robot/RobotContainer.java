@@ -15,6 +15,7 @@ import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.shoulder.Shoulder;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
@@ -32,7 +33,9 @@ public class RobotContainer {
     @Getter
     private static final Elevator elevator = new Elevator();
     @Getter
-    private static final Shoulder arm = new Shoulder();
+    private static final Shoulder shoulder = new Shoulder();
+    @Getter
+    private static final Outtake outtake = new Outtake();
     @Getter
     private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     @Getter
@@ -60,7 +63,8 @@ public class RobotContainer {
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
-        arm.setup();
+        outtake.setup();
+        shoulder.setup();
     }
 
     private void configureLimelights() {

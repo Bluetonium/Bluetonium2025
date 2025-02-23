@@ -28,7 +28,8 @@ public class Elevator extends SubsystemBase implements NTSendable {
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
 
     // SIM
-    @Getter private final LinearSim sim;
+    @Getter
+    private final LinearSim sim;
 
     @SuppressWarnings("unused")
     private final SysIdRoutine routine = new SysIdRoutine(
@@ -138,7 +139,6 @@ public class Elevator extends SubsystemBase implements NTSendable {
     }
 
     public double calculateRotationFromDistance(double inches) {
-
         return inches * ElevatorConstants.END_GEAR_RATIO;
     }
 

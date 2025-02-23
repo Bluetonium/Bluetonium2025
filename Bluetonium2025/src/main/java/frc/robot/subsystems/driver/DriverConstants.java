@@ -38,7 +38,7 @@ public class DriverConstants {
         driver2Configs.setPort(1);
         driver2Configs.setElevatorControl(true);
         driver2Configs.setArmControl(true);
-
+        driver2Configs.setOuttakeControls(true);
         checkOverlap(driver2Configs, driver1Configs);
     }
 }

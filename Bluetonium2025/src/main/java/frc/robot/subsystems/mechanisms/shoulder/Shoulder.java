@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.sim.ArmSim;
+import lombok.Getter;
 import frc.robot.RobotSim;
 
 import com.ctre.phoenix6.StatusCode;
@@ -16,6 +17,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 public class Shoulder extends SubsystemBase implements NTSendable {
+    @Getter
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;

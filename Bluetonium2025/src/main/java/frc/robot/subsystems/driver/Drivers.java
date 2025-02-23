@@ -13,9 +13,11 @@ public class Drivers {
         @Setter
         protected boolean elevatorControl = false;
         @Setter
-        private boolean chassisDriving = false;
+        protected boolean chassisDriving = false;
         @Setter
-        private boolean armControl = false;
+        protected boolean armControl = false;
+        @Setter
+        protected boolean outtakeControls = false;
     }
 
     // Controller
@@ -46,6 +48,9 @@ public class Drivers {
     public static Trigger pos1;
     public static Trigger pos2;
 
+    // outtake
+    public static Trigger outtakeAccept;
+
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
         noFunction = function.not();
@@ -70,8 +75,12 @@ public class Drivers {
         }
 
         if (configs.armControl) {
-            pos1 = new Trigger(() -> controller.getXButton());
-            pos2 = new Trigger(() -> controller.getYButton());
+            pos1 = new Trigger(controller::getXButton);
+            pos2 = new Trigger(controller::getYButton);
+        }
+
+        if (configs.outtakeControls) {
+            outtakeAccept = new Trigger(controller::getAButton);
         }
 
     }
