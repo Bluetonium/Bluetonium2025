@@ -64,6 +64,11 @@ public class Arm extends SubsystemBase implements NTSendable {
     @Override
     public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
+        //TODO: figure out a better way to do this!!!!
+        armSim.getConfig().setInitialX(0.81 + armSim.getConfig().getMount().getDisplacementX() * 1.1);
+        armSim.getConfig().setInitialY(0.35 + armSim.getConfig().getMount().getDisplacementY() * 1.1);
+
+        //System.out.println(armSim.getConfig().getMount().getDisplacementX() + "    " + armSim.getConfig().getMount().getDisplacementY());
     }
 
     public void setup() {
