@@ -14,6 +14,7 @@ public class CoralIntakeConstants {
     public static final double kI = 0;
     public static final double kD = 100;
     public static final NeutralModeValue CORAL_INTAKE_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
+    public static final double acceleration = 10;
 
     // Mount to arm, not elevator! :D
     public static final RollerConfig SIM_CONFIG = new RollerConfig(15)
