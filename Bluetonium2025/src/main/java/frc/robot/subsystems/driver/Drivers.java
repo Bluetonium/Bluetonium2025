@@ -40,6 +40,7 @@ public class Drivers {
     public static Trigger L2;
     public static Trigger L3;
     public static Trigger L4;
+    public static Trigger Home;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -59,10 +60,11 @@ public class Drivers {
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            L1 = new Trigger(() -> controller.getPOV() == 0);
+            L1 = new Trigger(() -> controller.getPOV() == 0).and(noFunction);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
+            Home = new Trigger(() -> controller.getPOV() == 0).and(function);
         }
 
     }

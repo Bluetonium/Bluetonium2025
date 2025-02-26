@@ -17,13 +17,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
+import lombok.Getter;
 
 public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    @Getter
+    private ElevatorPositions elevatorPosition = ElevatorPositions.HOME;
 
     private final LinearSim sim;
 
@@ -114,18 +118,13 @@ public class Elevator extends SubsystemBase implements NTSendable {
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
-    public Command requestTargetPosition(double inches) {
-        double rotations = calculateRotationFromDistance(inches);
+    public Command requestTargetPosition(ElevatorPositions position) {
+
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(rotations));
+            motor.setControl(request.withPosition(position.rotations));
         }).withName("Elevator Target Position");
 
-    }
-
-    public double calculateRotationFromDistance(double inches) {
-
-        return inches * ElevatorConstants.END_GEAR_RATIO;
     }
 
     @Override

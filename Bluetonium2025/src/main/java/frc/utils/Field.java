@@ -24,7 +24,8 @@ public class Field {
     public static final Translation2d REEF_CENTER = new Translation2d(Units.inchesToMeters(176.746),
             Units.inchesToMeters(158.501));
 
-    // ordered counter-clockwise starting on the right
+    // ordered counter-clockwise starting on the right -- honestly idk if that
+    // ordering is still valid
     public enum REEF_REGIONS {
         GH,
         IJ,
