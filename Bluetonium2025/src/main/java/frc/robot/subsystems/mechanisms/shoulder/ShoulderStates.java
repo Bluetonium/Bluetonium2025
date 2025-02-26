@@ -8,15 +8,15 @@ public class ShoulderStates {
     private static Shoulder shoulder = RobotContainer.getShoulder();
 
     public static void setStates() {
-        RobotStates.pos1.whileTrue(pos1());
-        RobotStates.pos2.whileTrue(pos2());
+        RobotStates.pos1.whileTrue(scoringPosition());
+        RobotStates.pos2.whileTrue(coralPassoffPosition());
     }
 
-    private static Command pos1() {
-        return shoulder.setArmPosition(0).withName("Arm.pos1");
+    private static Command scoringPosition() {
+        return shoulder.setArmAngle(ShoulderConstants.SCORING_POSITION).withName("Arm.scoringPosition");
     }
 
-    private static Command pos2() {
-        return shoulder.setArmPosition(0.1).withName("Arm.pos2");
+    private static Command coralPassoffPosition() {
+        return shoulder.setArmAngle(ShoulderConstants.CORAL_PASSOFF_POSITION).withName("Arm.coralPassoffPosition");
     }
 }

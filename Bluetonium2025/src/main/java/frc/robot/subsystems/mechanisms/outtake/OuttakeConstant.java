@@ -21,5 +21,6 @@ public class OuttakeConstant {
     public static final double kD = 0;
 
     public static final RollerConfig ROLLER_SIM_CONFIG = new RollerConfig(4)
-            .setMount(RobotContainer.getShoulder().getArmSim()).setPosition(1.5171, 1.0571);
+            .setMount(RobotContainer.getShoulder().getArmSim())
+            .setPosition(1.341, .35);
 }
