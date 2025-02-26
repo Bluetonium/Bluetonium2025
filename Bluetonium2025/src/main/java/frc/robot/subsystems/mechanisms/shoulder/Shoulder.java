@@ -3,12 +3,16 @@ package frc.robot.subsystems.mechanisms.shoulder;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.sim.ArmSim;
 import lombok.Getter;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.shoulder.ShoulderConstants.ShoulderPositions;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -19,12 +23,14 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-public class Shoulder extends SubsystemBase implements NTSendable {
+public class Shoulder extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    @Getter
+    private ShoulderPositions targetPosition = ShoulderPositions.CORAL_PASSOFF;
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -35,7 +41,6 @@ public class Shoulder extends SubsystemBase implements NTSendable {
      * 
      */
     public Shoulder() {
-        // dumfayce
         arm = new TalonFX(ShoulderConstants.ARM_MOTOR_CAN_ID);
         arm.setNeutralMode(ShoulderConstants.ARM_MOTOR_NEUTRAL_MODE);
 
@@ -68,6 +73,9 @@ public class Shoulder extends SubsystemBase implements NTSendable {
         armSim = new ArmSim(ShoulderConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
 
         applyConfig();
+
+        SendableRegistry.add(this, "Shoulder");
+        SmartDashboard.putData(this);
     }
 
     private void applyConfig() {
@@ -79,27 +87,30 @@ public class Shoulder extends SubsystemBase implements NTSendable {
     }
 
     @Override
-    public void initSendable(NTSendableBuilder builder) {
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Shoulder");
+        builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
     }
 
     @Override
     public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
         // TODO: figure out a better way to do this!!!!
-        // armSim.getConfig().setInitialX(0.81 +
-        // armSim.getConfig().getMount().getDisplacementX() * 1.1);
-        // armSim.getConfig().setInitialY(0.35 +
-        // armSim.getConfig().getMount().getDisplacementY() * 1.1);
+        armSim.getConfig().setInitialX(0.81 +
+                armSim.getConfig().getMount().getDisplacementX() * 1.1);
+        armSim.getConfig().setInitialY(0.35 +
+                armSim.getConfig().getMount().getDisplacementY() * 1.1);
     }
 
     public void setup() {
         ShoulderStates.setStates();
     }
 
-    public Command setArmAngle(double degrees) {
+    public Command setShoulderPosition(ShoulderPositions position) {
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
-            arm.setControl(request.withPosition(Units.degreesToRotations(degrees) * ShoulderConstants.GEAR_RATIO));
-        }).withName("Arm Target Position");
+            arm.setControl(request.withPosition(position.rotations));
+            targetPosition = position;
+        }).withName("Shoulder Target Position");
     }
 }

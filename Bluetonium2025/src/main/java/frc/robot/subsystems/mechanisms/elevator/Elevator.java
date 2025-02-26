@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +23,7 @@ import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositi
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
-public class Elevator extends SubsystemBase {
+public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -35,7 +36,7 @@ public class Elevator extends SubsystemBase {
     private final LinearSim sim;
 
     @Override
-    public void initSendable(SendableBuilder builder) {
+    public void initSendable(NTSendableBuilder builder) {
         super.initSendable(builder);
         builder.setSmartDashboardType("Elevator");
         builder.addStringProperty("Position", () -> elevatorTargetPosition.name(), null);

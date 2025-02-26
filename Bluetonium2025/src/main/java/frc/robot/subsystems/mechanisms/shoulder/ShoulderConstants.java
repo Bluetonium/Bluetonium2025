@@ -2,6 +2,7 @@ package frc.robot.subsystems.mechanisms.shoulder;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
@@ -25,8 +26,16 @@ public class ShoulderConstants {
     public static final double MAX_ANGLE = 120;
 
     // positions
-    public static final double SCORING_POSITION = 100;// perhaps need to make one for L1-L4
-    public static final double CORAL_PASSOFF_POSITION = -90;
+    public static enum ShoulderPositions {
+        SCORING(100),
+        CORAL_PASSOFF(-90);
+
+        public double rotations;
+
+        private ShoulderPositions(double angle) {
+            rotations = Units.degreesToRotations(angle) * GEAR_RATIO;
+        }
+    }
 
     public static final ArmConfig SIM_CONFIG = new ArmConfig( // TODO: change this shiet
             0.81,

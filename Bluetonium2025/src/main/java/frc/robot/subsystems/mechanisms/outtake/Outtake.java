@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotSim;
 import frc.utils.sim.RollerSim;
 
-public class Outtake extends SubsystemBase implements NTSendable {
+public class Outtake extends SubsystemBase {
     private TalonFX motor;
     private RollerSim sim;
     private TalonFXConfiguration motorConfig;
@@ -29,7 +30,7 @@ public class Outtake extends SubsystemBase implements NTSendable {
             .withAcceleration(OuttakeConstant.acceleration);
 
     @Override
-    public void initSendable(NTSendableBuilder builder) {
+    public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
     }
