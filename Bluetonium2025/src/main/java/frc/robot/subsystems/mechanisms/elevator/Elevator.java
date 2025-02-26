@@ -10,11 +10,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.networktables.NTSendable;
-import edu.wpi.first.networktables.NTSendableBuilder;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.NTSendableBuilder;import du.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBimport import du.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,7 +20,7 @@ import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositi
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
-public class Elevator extends SubsystemBase implements NTSendable {
+public class Elevator extends SubsystemBase {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -36,13 +33,13 @@ public class Elevator extends SubsystemBase implements NTSendable {
     private final LinearSim sim;
 
     @Override
-    public void initSendable(NTSendableBuilder builder) {
-        super.initSendable(builder);
+    public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Elevator");
         builder.addStringProperty("Position", () -> elevatorTargetPosition.name(), null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
 
     }
+
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
