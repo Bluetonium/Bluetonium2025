@@ -37,7 +37,8 @@ public class Drivers {
     public static Trigger wheelsXPosition;
     public static Trigger steerWheels;
     public static Trigger zeroHeading;
-
+    public static Trigger reefAlignLeft;
+    public static Trigger reefAlignRight;
     // Elevator
     public static Trigger L1;
     public static Trigger L2;
@@ -63,7 +64,8 @@ public class Drivers {
             wheelsXPosition = new Trigger(controller::getXButton).and(noFunction);
             steerWheels = new Trigger(controller::getAButton).and(noFunction);
             zeroHeading = new Trigger(controller::getLeftBumperButton).and(noFunction);
-
+            reefAlignLeft = new Trigger(controller::getLeftBumperButton);
+            reefAlignRight = new Trigger(controller::getRightBumperButton);
         }
 
         if (configs.elevatorControl) {

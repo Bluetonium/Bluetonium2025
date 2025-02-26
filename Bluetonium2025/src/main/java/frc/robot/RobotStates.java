@@ -26,5 +26,7 @@ public class RobotStates {
 
     // outtake
     public static final Trigger outtakeAccept = Drivers.outtakeAccept;
+    public static final Trigger reefAlignLeft = Drivers.reefAlignLeft;
+    public static final Trigger reefAlignRight = Drivers.reefAlignRight;
 
 }
