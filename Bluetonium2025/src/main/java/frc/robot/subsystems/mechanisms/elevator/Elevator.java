@@ -1,19 +1,8 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
-import du.w
-
-import edu.wpi.first.networktables.NTSendableBuilder;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotSim;
-import frc.utils.sim.LinearSim;
-import lombok.Getter;
-
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.StatusCode;import import om.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -29,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotSim;
 import frc.utils.sim.LinearSim;
+import lombok.Getter;
 
 public class Elevator extends SubsystemBase implements NTSendable {
     private TalonFX motor;
