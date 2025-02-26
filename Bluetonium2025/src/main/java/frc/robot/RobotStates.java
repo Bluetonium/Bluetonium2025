@@ -18,7 +18,7 @@ public class RobotStates {
     public static final Trigger L2 = Drivers.L2;
     public static final Trigger L3 = Drivers.L3;
     public static final Trigger L4 = Drivers.L4;
-    public static final Trigger Home = null;// TODO change
+    public static final Trigger Home = Drivers.Home;// TODO change
 
     // shoulder
     public static final Trigger pos1 = Drivers.pos1;

@@ -11,32 +11,35 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
-public class Elevator extends SubsystemBase implements NTSendable {
+public class Elevator extends SubsystemBase {
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    @Getter
+    private ElevatorPositions elevatorTargetPosition = ElevatorPositions.HOME;
 
     // SIM
     @Getter
     private final LinearSim sim;
 
     @Override
-    public void initSendable(NTSendableBuilder builder) {
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
         builder.setSmartDashboardType("Elevator");
-        builder.addDoubleProperty("Position", () -> motor.getPosition().getValueAsDouble(), null);
+        builder.addStringProperty("Position", () -> elevatorTargetPosition.name(), null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
-        builder.addDoubleArrayProperty("#Scoring Positions", () -> ElevatorConstants.SCORING_POSITIONS,
-                (ScoringPositions) -> ElevatorConstants.SCORING_POSITIONS = ScoringPositions);
 
     }
 
@@ -86,17 +89,6 @@ public class Elevator extends SubsystemBase implements NTSendable {
 
         // SIM
         sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.leftView, motor.getSimState(), "Elevator");
-
-        /*
-         * BaseStatusSignal.setUpdateFrequencyForAll(250,
-         * armMotor.getPosition(),
-         * armMotor.getVelocity(),
-         * armMotor.getMotorVoltage());
-         * 
-         * armMotor.optimizeBusUtilization();
-         * 
-         * SignalLogger.start();
-         */
     }
 
     public void setup() {
@@ -116,17 +108,14 @@ public class Elevator extends SubsystemBase implements NTSendable {
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
-    public Command requestTargetPosition(double inches) {
-        double rotations = calculateRotationFromDistance(inches);
+    public Command requestTargetPosition(ElevatorPositions position) {
+
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(rotations));
+            motor.setControl(request.withPosition(position.rotations));
+            elevatorTargetPosition = position;
         }).withName("Elevator Target Position");
 
-    }
-
-    public double calculateRotationFromDistance(double inches) {
-        return inches * ElevatorConstants.END_GEAR_RATIO;
     }
 
     @Override
