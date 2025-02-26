@@ -33,12 +33,14 @@ public class Drivers {
     public static Trigger wheelsXPosition;
     public static Trigger steerWheels;
     public static Trigger zeroHeading;
-
+    public static Trigger reefAlignLeft;
+    public static Trigger reefAlignRight;
     // Elevator
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
     public static Trigger L4;
+    public static Trigger Home;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -52,15 +54,17 @@ public class Drivers {
             wheelsXPosition = new Trigger(controller::getXButton).and(noFunction);
             steerWheels = new Trigger(controller::getAButton).and(noFunction);
             zeroHeading = new Trigger(controller::getLeftBumperButton).and(noFunction);
-
+            reefAlignLeft = new Trigger(controller::getLeftBumperButton);
+            reefAlignRight = new Trigger(controller::getRightBumperButton);
         }
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            L1 = new Trigger(() -> controller.getPOV() == 0);
+            L1 = new Trigger(() -> controller.getPOV() == 0).and(noFunction);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
+            Home = new Trigger(() -> controller.getPOV() == 0).and(function);
         }
 
     }

@@ -18,7 +18,7 @@ public final class ElevatorConstants {
     public static final double kV = 0.11485;
     public static final double kA = 0.00081861;
     // Physical stuff
-    public static final double MAX_HEIGHT = 48;
+    public static final double MAX_EXTENSION = 32;
     public static final double LOW_POSITION = 0.0;
     public static final double HIGH_POSITION = 48 * 0.999;
     public static final double GEAR_RATIO = 1;
@@ -28,11 +28,25 @@ public final class ElevatorConstants {
     // Positions
     public static double[] SCORING_POSITIONS = { 0, HIGH_POSITION / 4, HIGH_POSITION / 2, HIGH_POSITION };// L1-L4
 
+    public static enum ElevatorPositions {
+        HOME(1),
+        L1(8),
+        L2(16),
+        L3(24),
+        L4(32);
+
+        public final double rotations;
+
+        private ElevatorPositions(double inches) {
+            this.rotations = inches * END_GEAR_RATIO;
+        }
+    }
+
     // SIM
     public static final LinearConfig SIM_CONFIG = new LinearConfig(.8, 0.35, GEAR_RATIO, SPROCKET_SIZE)
             .setAngle(75)
-            .setMovingLength(50)
-            .setStaticLength(50)
-            .setMaxHeight(MAX_HEIGHT);
+            .setMovingLength(36.5)
+            .setStaticLength(36.5)
+            .setMaxHeight(MAX_EXTENSION);
 
 }
