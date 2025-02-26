@@ -9,9 +9,9 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.networktables.NTSendable;
-import edu.wpi.first.networktables.NTSendableBuilder;import du.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBimport import du.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,7 +39,6 @@ public class Elevator extends SubsystemBase {
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
 
     }
-
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
