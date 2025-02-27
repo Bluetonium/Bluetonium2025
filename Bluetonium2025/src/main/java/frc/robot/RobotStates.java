@@ -13,12 +13,15 @@ public class RobotStates {
     public static final Trigger disabled = new Trigger(DriverStation::isDisabled);
     public static final Trigger dsAttached = new Trigger(DriverStation::isDSAttached);
 
+    // elevator and Arm
     public static final Trigger L1 = Drivers.L1;
     public static final Trigger L2 = Drivers.L2;
     public static final Trigger L3 = Drivers.L3;
     public static final Trigger L4 = Drivers.L4;
-    public static final Trigger Home = Drivers.Home;// TODO change
+    public static final Trigger Home = Drivers.Home;
 
+    // outtake
+    public static final Trigger outtakeAccept = Drivers.outtakeAccept;
     public static final Trigger reefAlignLeft = Drivers.reefAlignLeft;
     public static final Trigger reefAlignRight = Drivers.reefAlignRight;
 

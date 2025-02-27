@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,7 +15,9 @@ import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
+import frc.robot.subsystems.mechanisms.arm.Arm;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
 import lombok.Getter;
@@ -30,6 +33,10 @@ public class RobotContainer {
     // Subsystems
     @Getter
     private static final Elevator elevator = new Elevator();
+    @Getter
+    private static final Arm arm = new Arm();
+    @Getter
+    private static final Outtake outtake = new Outtake();
     @Getter
     private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     @Getter
@@ -52,11 +59,14 @@ public class RobotContainer {
         configureBindings();
 
         setupSubsystems();
+
     }
 
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
+        outtake.setup();
+        arm.setup();
     }
 
     private void configureLimelights() {

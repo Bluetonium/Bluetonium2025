@@ -9,8 +9,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.networktables.NTSendable;
-import edu.wpi.first.networktables.NTSendableBuilder;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,17 +26,17 @@ public class Elevator extends SubsystemBase {
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
     @Getter
-    private ElevatorPositions elevatorPosition = ElevatorPositions.HOME;
+    private ElevatorPositions elevatorTargetPosition = ElevatorPositions.HOME;
 
+    // SIM
+    @Getter
     private final LinearSim sim;
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Elevator");
-        builder.addDoubleProperty("Position", () -> motor.getPosition().getValueAsDouble(), null);
+        builder.addStringProperty("Position", () -> elevatorTargetPosition.name(), null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
-        builder.addDoubleArrayProperty("#Scoring Positions", () -> ElevatorConstants.SCORING_POSITIONS,
-                (ScoringPositions) -> ElevatorConstants.SCORING_POSITIONS = ScoringPositions);
 
     }
 
@@ -52,8 +50,8 @@ public class Elevator extends SubsystemBase {
      */
     public Elevator() {
         // TODO: need to confirm if there's anything else to set
-        motor = new TalonFX(ElevatorConstants.ARM_MOTOR_CAN_ID); // constants
-        motor.setNeutralMode(ElevatorConstants.ARM_MOTOR_NEUTRAL_MODE);
+        motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
+        motor.setNeutralMode(ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE);
 
         config = new TalonFXConfiguration();
 
@@ -88,22 +86,10 @@ public class Elevator extends SubsystemBase {
 
         // SIM
         sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.leftView, motor.getSimState(), "Elevator");
-
-        /*
-         * BaseStatusSignal.setUpdateFrequencyForAll(250,
-         * armMotor.getPosition(),
-         * armMotor.getVelocity(),
-         * armMotor.getMotorVoltage());
-         * 
-         * armMotor.optimizeBusUtilization();
-         * 
-         * SignalLogger.start();
-         */
     }
 
     public void setup() {
         ElevatorStates.setStates();
-
     }
 
     private void applyConfig() {
@@ -120,10 +106,10 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(position.rotations));
+            elevatorTargetPosition = position;
         }).withName("Elevator Target Position");
 
     }
