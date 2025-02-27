@@ -21,7 +21,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 public class CoralIntake extends SubsystemBase implements NTSendable {
     private RollerSim intakeSim;
+
     private TalonFX motor;
+
     private TalonFXConfiguration motorConfig;
 
     private final MotionMagicVelocityVoltage VelocityVoltage = new MotionMagicVelocityVoltage(0).withAcceleration(CoralIntakeConstants.acceleration);
@@ -71,17 +73,20 @@ public class CoralIntake extends SubsystemBase implements NTSendable {
     }
 
     public void setup() {
-        setDefaultCommand(run(() -> {
-            motor.stopMotor();
-        }).withName("Stop"));
-
+        setDefaultCommand(stopIntake());
         CoralIntakeStates.setStates();
     }
 
-    //public Command setCoralIntakePosition(double position) {
-    //    return run(() -> {
-    //        final MotionMagicVoltage request = mmVoltage;
-    //        intake.setControl(request.withPosition(position));
-    //    }).withName("Coral Intake Target Position");
-    //}
+    public Command stopIntake() {
+        return run(() -> {
+            motor.stopMotor();
+        }).withName("Coral Intake Stopped");
+    }
+
+    public Command setIntakeVelocity(double velocity) {
+        return run(() -> {
+            final MotionMagicVelocityVoltage request = VelocityVoltage;
+            motor.setControl(request.withVelocity(velocity));
+        }).withName("Coral Intake Running");
+    }
 }

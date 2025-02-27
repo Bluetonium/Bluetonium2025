@@ -19,6 +19,9 @@ public class RobotStates {
     public static final Trigger L4 = Drivers.L4;
     public static final Trigger Home = Drivers.Home;// TODO change
 
+    public static final Trigger intakeCoral = Drivers.intakeCoral;
+    public static final Trigger intakeEjectCoral = Drivers.intakeEjectCoral;
+
     public static final Trigger reefAlignLeft = Drivers.reefAlignLeft;
     public static final Trigger reefAlignRight = Drivers.reefAlignRight;
 

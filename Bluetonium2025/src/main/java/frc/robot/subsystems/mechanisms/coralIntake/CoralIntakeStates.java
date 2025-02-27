@@ -8,15 +8,15 @@ public class CoralIntakeStates {
     private static CoralIntake coralIntake = RobotContainer.getCoralIntake();
 
     public static void setStates() {
-        //RobotStates.pos1.whileTrue(pos1());
-        //RobotStates.pos2.whileTrue(pos2());
+        RobotStates.intakeCoral.whileTrue(spinForward());
+        RobotStates.intakeEjectCoral.whileTrue(spinBackwards());
     }
 
-    //private static Command pos1() {
-    //    return arm.setArmPosition(0).withName("Arm.pos1");
-    //}
+    private static Command spinForward() {
+        return coralIntake.setIntakeVelocity(2);
+    }
 
-    //private static Command pos2() {
-    //    return arm.setArmPosition(0.1).withName("Arm.pos2");
-    //}
+    private static Command spinBackwards() {
+        return coralIntake.setIntakeVelocity(-2);
+    }
 }

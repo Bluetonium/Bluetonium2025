@@ -42,6 +42,9 @@ public class Drivers {
     public static Trigger L4;
     public static Trigger Home;
 
+    public static Trigger intakeCoral;
+    public static Trigger intakeEjectCoral;
+
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
         noFunction = function.not();
@@ -65,6 +68,9 @@ public class Drivers {
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
             Home = new Trigger(() -> controller.getPOV() == 0).and(function);
+
+            intakeCoral = new Trigger(controller::getBButton);
+            intakeEjectCoral = new Trigger(controller::getYButton);
         }
 
     }

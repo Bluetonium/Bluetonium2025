@@ -18,5 +18,5 @@ public class CoralIntakeConstants {
 
     // Mount to arm, not elevator! :D
     public static final RollerConfig SIM_CONFIG = new RollerConfig(15)
-    .setMount(RobotContainer.getElevator().getSim());
+    .setMount(RobotContainer.getElevator().getSim()).setPosition(0.5, 0.6);
 }
