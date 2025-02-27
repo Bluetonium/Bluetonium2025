@@ -1,4 +1,4 @@
-package frc.robot.subsystems.mechanisms.shoulder;
+package frc.robot.subsystems.mechanisms.arm;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
-public class ShoulderConstants {
+public class ArmConstants {
     public static final int ARM_MOTOR_CAN_ID = 19; // we GOTTA figure it out!!!
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
@@ -26,13 +26,15 @@ public class ShoulderConstants {
     public static final double MAX_ANGLE = 120;
 
     // positions
-    public static enum ShoulderPositions {
-        SCORING(100),
-        CORAL_PASSOFF(-90);
+    public static enum ArmPositions {
+        L2(0),
+        L3(0),
+        L4(100),
+        HOME(-90);
 
         public double rotations;
 
-        private ShoulderPositions(double angle) {
+        private ArmPositions(double angle) {
             rotations = Units.degreesToRotations(angle) * GEAR_RATIO;
         }
     }

@@ -106,7 +106,6 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(position.rotations));

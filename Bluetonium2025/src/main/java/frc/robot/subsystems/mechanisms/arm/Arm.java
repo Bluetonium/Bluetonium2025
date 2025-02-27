@@ -1,4 +1,4 @@
-package frc.robot.subsystems.mechanisms.shoulder;
+package frc.robot.subsystems.mechanisms.arm;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -17,18 +17,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotSim;
-import frc.robot.subsystems.mechanisms.shoulder.ShoulderConstants.ShoulderPositions;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.utils.sim.ArmSim;
 import lombok.Getter;
 
-public class Shoulder extends SubsystemBase {
+public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
     @Getter
-    private ShoulderPositions targetPosition = ShoulderPositions.CORAL_PASSOFF;
+    private ArmPositions targetPosition = ArmPositions.HOME;
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -38,41 +38,40 @@ public class Shoulder extends SubsystemBase {
      * id="yes" alt="its supposed to be a soggy cat but you're probably offline">
      * 
      */
-    public Shoulder() {
-        arm = new TalonFX(ShoulderConstants.ARM_MOTOR_CAN_ID);
-        arm.setNeutralMode(ShoulderConstants.ARM_MOTOR_NEUTRAL_MODE);
+    public Arm() {
+        arm = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID);
+        arm.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);
 
         armConfig = new TalonFXConfiguration();
-        armConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
         limitSwitch.ForwardSoftLimitEnable = true;
-        limitSwitch.ForwardSoftLimitThreshold = Units.degreesToRotations(ShoulderConstants.MAX_ANGLE)
-                * ShoulderConstants.GEAR_RATIO;
+        limitSwitch.ForwardSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MAX_ANGLE)
+                * ArmConstants.GEAR_RATIO;
         limitSwitch.ReverseSoftLimitEnable = true;
-        limitSwitch.ReverseSoftLimitThreshold = Units.degreesToRotations(ShoulderConstants.MIN_ANGLE)
-                * ShoulderConstants.GEAR_RATIO;
+        limitSwitch.ReverseSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MIN_ANGLE)
+                * ArmConstants.GEAR_RATIO;
 
         // PID
         Slot0Configs slot0 = armConfig.Slot0;
-        slot0.kP = ShoulderConstants.kP;
-        slot0.kI = ShoulderConstants.kI;
-        slot0.kD = ShoulderConstants.kD;
-        slot0.kV = ShoulderConstants.kV;
-        slot0.kS = ShoulderConstants.kS;
-        slot0.kA = ShoulderConstants.kA;
-        slot0.kG = ShoulderConstants.kG;
+        slot0.kP = ArmConstants.kP;
+        slot0.kI = ArmConstants.kI;
+        slot0.kD = ArmConstants.kD;
+        slot0.kV = ArmConstants.kV;
+        slot0.kS = ArmConstants.kS;
+        slot0.kA = ArmConstants.kA;
+        slot0.kG = ArmConstants.kG;
 
         MotionMagicConfigs motionMagic = armConfig.MotionMagic;
         motionMagic.MotionMagicCruiseVelocity = 160;
         motionMagic.MotionMagicAcceleration = 6000;
         motionMagic.MotionMagicJerk = 1600;
 
-        armSim = new ArmSim(ShoulderConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
+        armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
 
         applyConfig();
 
-        SendableRegistry.add(this, "Shoulder");
+        SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
     }
 
@@ -101,14 +100,14 @@ public class Shoulder extends SubsystemBase {
     }
 
     public void setup() {
-        ShoulderStates.setStates();
+        ArmStates.setStates();
     }
 
-    public Command setShoulderPosition(ShoulderPositions position) {
+    public Command setArmPosition(ArmPositions position) {
         return run(() -> {
             final MotionMagicVoltage request = mmVoltage;
             arm.setControl(request.withPosition(position.rotations));
             targetPosition = position;
-        }).withName("Shoulder Target Position");
+        }).withName("Arm Target Position");
     }
 }
