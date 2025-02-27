@@ -1,5 +1,6 @@
 package frc.robot.subsystems.mechanisms.arm;
 
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -7,7 +8,6 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -68,13 +68,10 @@ public class Arm extends SubsystemBase {
         motionMagic.MotionMagicJerk = 1600;
 
         armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
-
         applyConfig();
-
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
     }
-
     private void applyConfig() {
         StatusCode status = arm.getConfigurator().apply(armConfig);
         if (!status.isOK()) {
