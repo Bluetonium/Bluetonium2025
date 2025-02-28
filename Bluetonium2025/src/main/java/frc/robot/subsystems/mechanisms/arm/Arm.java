@@ -107,4 +107,16 @@ public class Arm extends SubsystemBase {
             targetPosition = position;
         }).withName("Arm Target Position");
     }
+
+    /**
+     * this only really exists in the potentially fringe case that we need it
+     * @return the motor position
+     */
+    public double getArmPosition() {
+        return arm.getPosition().getValueAsDouble();
+    }
+
+    public boolean isArmInSafePosition() {
+        return getArmPosition()<0.1; //TODO: figure out proper value for this
+    }
 }
