@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.driver.DriverConstants;
+import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
@@ -67,6 +68,7 @@ public class RobotContainer {
         elevator.setup();
         outtake.setup();
         arm.setup();
+        DriverStates.setupTestables();
     }
 
     private void configureLimelights() {

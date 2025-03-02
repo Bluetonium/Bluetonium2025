@@ -1,7 +1,6 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.mechanisms.arm.Arm;
 
 import frc.robot.RobotContainer;
@@ -10,7 +9,7 @@ import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositi
 
 public class ElevatorStates {
     private static Elevator elevator = RobotContainer.getElevator();
-    private static Arm arm = RobotContainer.getArm(); //lol
+    private static Arm arm = RobotContainer.getArm(); // lol
 
     public static void setStates() {
         RobotStates.L1.whileTrue(l1()).and(() -> arm.isArmInSafePosition());
@@ -19,12 +18,6 @@ public class ElevatorStates {
         RobotStates.L4.whileTrue(l4());
         RobotStates.Home.whileTrue(home()).and(() -> arm.isArmInSafePosition());
 
-        // sysid
-
-        RobotStates.elevatorQuasForward.whileTrue(quasForward());
-        RobotStates.elevatorQuasBackward.whileTrue(quasBackward());
-        RobotStates.elevatorDynForward.whileTrue(dynForward());
-        RobotStates.elevatorDynBackward.whileTrue(dynBackward());
     }
 
     private static Command l1() {
@@ -47,21 +40,6 @@ public class ElevatorStates {
         return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Elevator Homing");
     }
 
-    //sysID
+    // sysID
 
-    private static Command quasForward() {
-        return elevator.sysIdDynamic(Direction.kForward);
-    }
-
-    private static Command quasBackward() {
-        return elevator.sysIdDynamic(Direction.kForward);
-    }
-
-    private static Command dynForward() {
-        return elevator.sysIdDynamic(Direction.kForward);
-    }
-    
-    private static Command dynBackward() {
-        return elevator.sysIdDynamic(Direction.kForward);
-    }
 }
