@@ -1,12 +1,15 @@
 package frc.robot.subsystems.mechanisms.arm;
 
+import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.util.Units;
@@ -16,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.utils.sim.ArmSim;
@@ -26,10 +30,24 @@ public class Arm extends SubsystemBase {
     private ArmSim armSim;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
+    private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
     @Getter
     private ArmPositions targetPosition = ArmPositions.HOME;
-
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,        // Use default ramp rate (1 V/s)
+            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+            null,        // Use default timeout (10 s)
+                      // Log state with Phoenix SignalLogger class
+            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
+      ),
+      new SysIdRoutine.Mechanism(
+         (volts) -> arm.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+         null,
+         this
+      )
+   );
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
      * function</h1>
@@ -118,5 +136,12 @@ public class Arm extends SubsystemBase {
 
     public boolean isArmInSafePosition() {
         return getArmPosition()<0.1; //TODO: figure out proper value for this
+    }
+    
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
     }
 }

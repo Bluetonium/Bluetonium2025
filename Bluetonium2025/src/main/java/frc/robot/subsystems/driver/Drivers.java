@@ -20,6 +20,8 @@ public class Drivers {
         protected boolean outtakeControls = false;
     }
 
+    private DriverConfigs config;
+
     // Controller
     private final XboxController controller;
 
@@ -52,6 +54,87 @@ public class Drivers {
 
     // outtake
     public static Trigger outtakeAccept;
+
+    // sysid routines
+
+    // arm
+
+    public static Trigger armQuasForward;
+    public static Trigger armQuasBackward;
+    public static Trigger armDynForward;
+    public static Trigger armDynBackward;
+
+    // chassis
+
+    public static Trigger chassisQuasForward;
+    public static Trigger chassisQuasBackward;
+    public static Trigger chassisDynForward;
+    public static Trigger chassisDynBackward;
+
+    // outtake
+
+    public static Trigger outtakeQuasForward;
+    public static Trigger outtakeQuasBackward;
+    public static Trigger outtakeDynForward;
+    public static Trigger outtakeDynBackward;
+
+    // elevator
+
+    public static Trigger elevatorQuasForward;
+    public static Trigger elevatorQuasBackward;
+    public static Trigger elevatorDynForward;
+    public static Trigger elevatorDynBackward;
+
+    private void applyTestConfigs(DriverConfigs configs) {
+
+        // disables all other movement... TODO: allow regular configs to resume!
+
+        chassisControlTranslation = () -> 0.0;
+        chassisControlStrafe = () -> 0.0;
+        chassisControlRotation = () -> 0.0;
+
+        wheelsXPosition = new Trigger(() -> false);
+        steerWheels = new Trigger(() -> false);
+        zeroHeading = new Trigger(() -> false);
+        reefAlignLeft = new Trigger(() -> false);
+        reefAlignRight = new Trigger(() -> false);
+
+        L1 = new Trigger(() -> false);
+        L2 = new Trigger(() -> false);
+        L3 = new Trigger(() -> false);
+        L4 = new Trigger(() -> false);
+        Home = new Trigger(() -> false);
+
+        pos1 = new Trigger(() -> false);
+        pos2 = new Trigger(() -> false);
+
+        outtakeAccept = new Trigger(() -> false);
+        // controller 1 stuff
+
+        //TODO: idk figure out controls im feeling lazy rn
+        if (configs.chassisDriving) {
+            chassisQuasForward = new Trigger(() -> false);
+            chassisQuasBackward = new Trigger(() -> false);
+            chassisDynForward = new Trigger(() -> false);
+            chassisDynBackward = new Trigger(() -> false);
+    
+            elevatorQuasForward = new Trigger(() -> false);
+            elevatorQuasBackward = new Trigger(() -> false);
+            elevatorDynForward = new Trigger(() -> false);
+            elevatorDynBackward = new Trigger(() -> false);
+        } else {
+            outtakeQuasForward = new Trigger(() -> false);
+            outtakeQuasBackward = new Trigger(() -> false);
+            outtakeDynForward = new Trigger(() -> false);
+            outtakeDynBackward = new Trigger(() -> false);
+
+            armQuasForward = new Trigger(() -> false);
+            armQuasBackward = new Trigger(() -> false);
+            armDynForward = new Trigger(() -> false);
+            armDynBackward = new Trigger(() -> false);
+        }  
+
+    }
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -87,9 +170,29 @@ public class Drivers {
             outtakeAccept = new Trigger(controller::getAButton);
         }
 
+        armQuasForward = new Trigger(() -> false);
+        armQuasBackward = new Trigger(() -> false);
+        armDynForward = new Trigger(() -> false);
+        armDynBackward = new Trigger(() -> false);
+
+        chassisQuasForward = new Trigger(() -> false);
+        chassisQuasBackward = new Trigger(() -> false);
+        chassisDynForward = new Trigger(() -> false);
+        chassisDynBackward = new Trigger(() -> false);
+
+        outtakeQuasForward = new Trigger(() -> false);
+        outtakeQuasBackward = new Trigger(() -> false);
+        outtakeDynForward = new Trigger(() -> false);
+        outtakeDynBackward = new Trigger(() -> false);
+
+        elevatorQuasForward = new Trigger(() -> false);
+        elevatorQuasBackward = new Trigger(() -> false);
+        elevatorDynForward = new Trigger(() -> false);
+        elevatorDynBackward = new Trigger(() -> false);
     }
 
     public Drivers(DriverConfigs driverConfigs) {
+        config = driverConfigs;
         controller = new XboxController(driverConfigs.port);
 
         /** setting Configs */
@@ -99,4 +202,9 @@ public class Drivers {
 
     }
 
+    // could make the applyTestConfigs function public and use the config var but it
+    // feels wrong not to mimic applyConfigs
+    public void changeToTest() {
+        applyTestConfigs(config);
+    }
 }

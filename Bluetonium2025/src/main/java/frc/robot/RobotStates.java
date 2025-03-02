@@ -25,4 +25,34 @@ public class RobotStates {
     public static final Trigger reefAlignLeft = Drivers.reefAlignLeft;
     public static final Trigger reefAlignRight = Drivers.reefAlignRight;
 
+    // sysid routines
+
+    //arm
+
+    public static Trigger armQuasForward = Drivers.armQuasForward;
+    public static Trigger armQuasBackward = Drivers.armQuasBackward;
+    public static Trigger armDynForward = Drivers.armDynForward;
+    public static Trigger armDynBackward = Drivers.armDynBackward;
+
+    // chassis
+
+    public static Trigger chassisQuasForward = Drivers.chassisQuasForward;
+    public static Trigger chassisQuasBackward = Drivers.chassisQuasBackward;
+    public static Trigger chassisDynForward = Drivers.chassisDynForward;
+    public static Trigger chassisDynBackward = Drivers.chassisDynBackward;
+
+    //outtake
+
+    public static Trigger outtakeQuasForward = Drivers.outtakeQuasForward;
+    public static Trigger outtakeQuasBackward = Drivers.outtakeQuasBackward;
+    public static Trigger outtakeDynForward = Drivers.outtakeDynForward;
+    public static Trigger outtakeDynBackward = Drivers.outtakeDynBackward;
+
+    // elevator
+
+    public static Trigger elevatorQuasForward = Drivers.elevatorQuasForward;
+    public static Trigger elevatorQuasBackward = Drivers.elevatorQuasBackward;
+    public static Trigger elevatorDynForward = Drivers.elevatorDynForward;
+    public static Trigger elevatorDynBackward = Drivers.elevatorDynBackward;
+
 }

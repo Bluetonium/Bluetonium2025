@@ -14,7 +14,7 @@ public class SwerveStates {
         private static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public static void setStates() {
-
+        //TODO: setup sysid for chassis, dont feel like it rn lol
         Drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
         Drivers.steerWheels.whileTrue(swerve.applyRequest(
                 () -> point.withModuleDirection(

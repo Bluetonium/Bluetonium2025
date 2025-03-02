@@ -1,5 +1,6 @@
 package frc.robot.subsystems.mechanisms.elevator;
-
+import static edu.wpi.first.units.Units.Volts;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
@@ -39,6 +41,21 @@ public class Elevator extends SubsystemBase {
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
 
     }
+
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,        // Use default ramp rate (1 V/s)
+            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+            null,        // Use default timeout (10 s)
+                      // Log state with Phoenix SignalLogger class
+            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
+      ),
+      new SysIdRoutine.Mechanism(
+         (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+         null,
+         this
+      )
+   );
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -119,12 +136,11 @@ public class Elevator extends SubsystemBase {
         sim.simulationPeriodic();
     }
 
-    /*
-     * public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-     * return routine.quasistatic(direction);
-     * }
-     * public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-     * return routine.dynamic(direction);
-     * }
-     */
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
+    }
+    
 }

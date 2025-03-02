@@ -1,11 +1,14 @@
 package frc.robot.subsystems.mechanisms.outtake;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -15,12 +18,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.utils.sim.RollerSim;
 
 public class Outtake extends SubsystemBase {
     private TalonFX motor;
     private RollerSim sim;
+    private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private TalonFXConfiguration motorConfig;
     private DigitalInput coralSensor;
 
@@ -32,6 +37,21 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
     }
+
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,        // Use default ramp rate (1 V/s)
+            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+            null,        // Use default timeout (10 s)
+                      // Log state with Phoenix SignalLogger class
+            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
+      ),
+      new SysIdRoutine.Mechanism(
+         (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+         null,
+         this
+      )
+   );
 
     public Outtake() {
         motor = new TalonFX(OuttakeConstant.OUTTAKE_MOTOR_CAN_ID);
@@ -111,5 +131,12 @@ public class Outtake extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         sim.simulationPeriodic();
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
     }
 }
