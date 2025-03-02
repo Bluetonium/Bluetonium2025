@@ -1,15 +1,21 @@
 package frc.robot.subsystems.driver;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.driver.DriverConstants.TestableSystems;
 
 public class DriverStates {
+    private static SendableChooser<TestableSystems> testChooser;
 
     public static void setupTestables() {
-
+        testChooser = new SendableChooser<>();
         for (TestableSystems system : TestableSystems.values()) {
-            SmartDashboard.putData(system.name(), system.command);
+            testChooser.addOption(system.name(), system);
         }
+        SmartDashboard.putData("Test Command Chooser", testChooser);
+        SmartDashboard.putData("Test Command", Commands.none());
+        testChooser.onChange((system) -> SmartDashboard.putData("Test Command", system.command));
     }
 
 }
