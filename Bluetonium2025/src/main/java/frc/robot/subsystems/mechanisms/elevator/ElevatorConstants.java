@@ -44,7 +44,7 @@ public final class ElevatorConstants {
 
     // SIM
     public static final LinearConfig SIM_CONFIG = new LinearConfig(.8, 0.35, GEAR_RATIO, SPROCKET_SIZE)
-            .setAngle(75)
+            .setAngle(105)
             .setMovingLength(36.5)
             .setStaticLength(36.5)
             .setMaxHeight(MAX_EXTENSION);

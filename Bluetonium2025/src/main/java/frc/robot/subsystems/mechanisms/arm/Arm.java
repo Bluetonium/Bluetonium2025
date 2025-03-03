@@ -35,19 +35,17 @@ public class Arm extends SubsystemBase {
     @Getter
     private ArmPositions targetPosition = ArmPositions.HOME;
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-            null,        // Use default timeout (10 s)
-                      // Log state with Phoenix SignalLogger class
-            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
-      ),
-      new SysIdRoutine.Mechanism(
-         (volts) -> arm.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
-         null,
-         this
-      )
-   );
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                    null, // Use default timeout (10 s)
+                          // Log state with Phoenix SignalLogger class
+                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    (volts) -> arm.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+                    null,
+                    this));
+
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
      * function</h1>
@@ -85,11 +83,12 @@ public class Arm extends SubsystemBase {
         motionMagic.MotionMagicAcceleration = 6000;
         motionMagic.MotionMagicJerk = 1600;
 
-        armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.leftView, arm.getSimState(), "Arm");
+        armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
         applyConfig();
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
     }
+
     private void applyConfig() {
         StatusCode status = arm.getConfigurator().apply(armConfig);
         if (!status.isOK()) {
@@ -128,6 +127,7 @@ public class Arm extends SubsystemBase {
 
     /**
      * this only really exists in the potentially fringe case that we need it
+     * 
      * @return the motor position
      */
     public double getArmPosition() {
@@ -135,12 +135,13 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean isArmInSafePosition() {
-        return getArmPosition()<0.1; //TODO: figure out proper value for this
+        return getArmPosition() < 0.1; // TODO: figure out proper value for this
     }
-    
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }

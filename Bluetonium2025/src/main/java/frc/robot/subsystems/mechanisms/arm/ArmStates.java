@@ -1,7 +1,6 @@
 package frc.robot.subsystems.mechanisms.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;

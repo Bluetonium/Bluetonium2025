@@ -1,4 +1,5 @@
 package frc.robot.subsystems.mechanisms.elevator;
+
 import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
@@ -43,19 +44,16 @@ public class Elevator extends SubsystemBase {
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-            null,        // Use default timeout (10 s)
-                      // Log state with Phoenix SignalLogger class
-            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
-      ),
-      new SysIdRoutine.Mechanism(
-         (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
-         null,
-         this
-      )
-   );
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                    null, // Use default timeout (10 s)
+                          // Log state with Phoenix SignalLogger class
+                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+                    null,
+                    this));
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -102,7 +100,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putData(this);
 
         // SIM
-        sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.leftView, motor.getSimState(), "Elevator");
+        sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Elevator");
     }
 
     public void setup() {
@@ -137,10 +135,11 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.quasistatic(direction);
+        return m_sysIdRoutine.quasistatic(direction);
     }
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.dynamic(direction);
+        return m_sysIdRoutine.dynamic(direction);
     }
-    
+
 }
