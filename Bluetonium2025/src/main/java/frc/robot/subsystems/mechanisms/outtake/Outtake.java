@@ -39,19 +39,16 @@ public class Outtake extends SubsystemBase {
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-            null,        // Use default timeout (10 s)
-                      // Log state with Phoenix SignalLogger class
-            (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())
-      ),
-      new SysIdRoutine.Mechanism(
-         (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
-         null,
-         this
-      )
-   );
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                    null, // Use default timeout (10 s)
+                          // Log state with Phoenix SignalLogger class
+                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+                    null,
+                    this));
 
     public Outtake() {
         motor = new TalonFX(OuttakeConstant.OUTTAKE_MOTOR_CAN_ID);
@@ -68,7 +65,7 @@ public class Outtake extends SubsystemBase {
 
         coralSensor = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
 
-        sim = new RollerSim(OuttakeConstant.ROLLER_SIM_CONFIG, RobotSim.leftView, motor.getSimState(), "Outtake");
+        sim = new RollerSim(OuttakeConstant.ROLLER_SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Outtake");
 
         SendableRegistry.add(this, "Outtake");
         SmartDashboard.putData(this);
@@ -136,6 +133,7 @@ public class Outtake extends SubsystemBase {
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
