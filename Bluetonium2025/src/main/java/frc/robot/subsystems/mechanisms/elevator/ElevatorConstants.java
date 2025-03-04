@@ -18,12 +18,12 @@ public final class ElevatorConstants {
     public static final double kV = 0.12429;
     public static final double kA = 0.0047557;
     public static final double CRUISE_VELOCITY = 200;
-    public static final double ACCELERATION = 200;
+    public static final double ACCELERATION = 100;
 
     // Physical stuff
-    public static final double MAX_EXTENSION = 32;
+    public static final double MAX_EXTENSION = 34.5;
     public static final double LOW_POSITION = 0.0;
-    public static final double HIGH_POSITION = 48 * 0.999;
+    public static final double HIGH_POSITION = MAX_EXTENSION * 0.999;
     public static final double GEAR_RATIO = 20;
     public static final double SPROCKET_SIZE = Units.inchesToMeters(1.87 / 2);
     public static final double END_GEAR_RATIO = Math.PI * SPROCKET_SIZE * 2 * GEAR_RATIO;
@@ -37,7 +37,7 @@ public final class ElevatorConstants {
         L1(8),
         L2(16),
         L3(24),
-        L4(32);
+        L4(34);
 
         public final double rotations;
         public final double inches;

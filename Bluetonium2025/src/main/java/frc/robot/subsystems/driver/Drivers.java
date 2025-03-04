@@ -55,7 +55,7 @@ public class Drivers {
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
-        noFunction = function.negate();
+        noFunction = new Trigger(() -> !controller.getStartButton());
 
         if (configs.chassisDriving) {
             chassisControlTranslation = controller::getLeftY;

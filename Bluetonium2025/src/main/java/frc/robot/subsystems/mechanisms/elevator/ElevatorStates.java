@@ -39,7 +39,7 @@ public class ElevatorStates {
     }
 
     private static Command home() {
-        return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Elevator Homing");
+        return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Going to Home");
     }
 
     // sysID
