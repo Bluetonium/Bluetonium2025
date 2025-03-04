@@ -3,6 +3,7 @@ package frc.robot.subsystems.mechanisms.elevator;
 import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
@@ -75,6 +76,7 @@ public class Elevator extends SubsystemBase {
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
         // PID
         Slot0Configs slot0 = config.Slot0;
         slot0.kS = ElevatorConstants.kS;
@@ -87,9 +89,8 @@ public class Elevator extends SubsystemBase {
 
         // Motion Magic
         MotionMagicConfigs motionMagic = config.MotionMagic;
-        motionMagic.MotionMagicCruiseVelocity = 250;
-        motionMagic.MotionMagicAcceleration = 150;
-        motionMagic.MotionMagicJerk = 1600;
+        motionMagic.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
+        motionMagic.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
 
         // SoftLimits
         SoftwareLimitSwitchConfigs limitswitch = config.SoftwareLimitSwitch;

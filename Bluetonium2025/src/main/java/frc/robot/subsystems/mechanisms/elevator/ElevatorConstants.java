@@ -10,13 +10,16 @@ public final class ElevatorConstants {
     public static final int ELEVATOR_MOTOR_CAN_ID = 14; // find out once more :)
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
-    // PID
-    public static final double kP = 61.853; // THIS SEEMS VERY WRONG (TODO: probably change this...)
+    // PID and motion magic
+    public static final double kP = 1.6141; // THIS SEEMS VERY WRONG (TODO: probably change this...)
     public static final double kI = 0;
-    public static final double kD = 0.45097;
-    public static final double kS = 0.081163;
-    public static final double kV = 0.12399;
-    public static final double kA = 0.001979;
+    public static final double kD = 0.19623;
+    public static final double kS = 0.068232;
+    public static final double kV = 0.12429;
+    public static final double kA = 0.0047557;
+    public static final double CRUISE_VELOCITY = 200;
+    public static final double ACCELERATION = 200;
+
     // Physical stuff
     public static final double MAX_EXTENSION = 32;
     public static final double LOW_POSITION = 0.0;
