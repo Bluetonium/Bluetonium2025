@@ -18,10 +18,13 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
+import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants;
+import frc.robot.subsystems.mechanisms.elevator.ElevatorStates;
 import frc.utils.sim.ArmSim;
 import lombok.Getter;
 
@@ -101,6 +104,7 @@ public class Arm extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Shoulder");
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
+        builder.addDoubleProperty("Current Position", this::getPosition, null);
     }
 
     @Override
@@ -118,24 +122,27 @@ public class Arm extends SubsystemBase {
     }
 
     public Command setArmPosition(ArmPositions position) {
-        return run(() -> {
-            final MotionMagicVoltage request = mmVoltage;
-            arm.setControl(request.withPosition(position.rotations));
-            targetPosition = position;
-        }).withName("Arm Target Position");
+        return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
+                runOnce(() -> {
+                    final MotionMagicVoltage request = mmVoltage;
+                    arm.setControl(request.withPosition(position.rotations));
+                    targetPosition = position;
+                }).withName("Arm Target Position"));
     }
 
     /**
-     * this only really exists in the potentially fringe case that we need it
-     * 
-     * @return the motor position
+     * @return current arm position in radians
      */
-    public double getArmPosition() {
-        return arm.getPosition().getValueAsDouble();
+
+    public double getPosition() {
+        return Units.rotationsToRadians(arm.getPosition().getValueAsDouble() / ArmConstants.GEAR_RATIO);
     }
 
-    public boolean isArmInSafePosition() {
-        return getArmPosition() < 0.1; // TODO: figure out proper value for this
+    private boolean isSafeToMove(ArmPositions targetPosition) {
+        double armY = Math.sin(targetPosition.angle) * ArmConstants.ARM_LENGTH;
+        double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * ElevatorStates.elevatorPosition.getAsDouble();
+        return (armY + elevatorY) > 6;
+
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

@@ -20,22 +20,25 @@ public class ArmConstants {
     public static final double kG = 7;
 
     // arm physical properties
-    public static final double ARM_LENGTH = 0.531;
+    public static final double ARM_LENGTH = 20.90551;
     public static final double GEAR_RATIO = 22;
     public static final double MIN_ANGLE = -90;
     public static final double MAX_ANGLE = 120;
 
     // positions
     public static enum ArmPositions {
+        L1(0),
         L2(0),
         L3(0),
         L4(100),
-        HOME(-90);
+        HOME(90);
 
         public double rotations;
+        public double angle;
 
         private ArmPositions(double angle) {
             rotations = Units.degreesToRotations(angle) * GEAR_RATIO;
+            this.angle = Math.toRadians(angle);
         }
     }
 
@@ -43,7 +46,7 @@ public class ArmConstants {
             0.81,
             0.35,
             GEAR_RATIO,
-            ARM_LENGTH,
+            Units.inchesToMeters(ARM_LENGTH),
             MIN_ANGLE,
             MAX_ANGLE,
             0).setMount(RobotContainer.getElevator().getSim(), true);

@@ -16,9 +16,12 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants;
+import frc.robot.subsystems.mechanisms.arm.ArmStates;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
@@ -115,23 +118,38 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    public boolean isSafeToMove(ElevatorPositions targetPosition) {
+        double armY = Math.sin(ArmStates.armPosition.getAsDouble()) * ArmConstants.ARM_LENGTH;
+        double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * targetPosition.inches;
+        return (armY + elevatorY) > 6;
+    }
+
     /**
      * 
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-        return run(() -> {
-            final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(position.rotations));
-            elevatorTargetPosition = position;
-        }).withName("Elevator Target Position");
+        return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
+                runOnce(() -> {
+                    final MotionMagicVoltage request = mmVoltage;
+                    motor.setControl(request.withPosition(position.rotations));
+                    elevatorTargetPosition = position;
+                }).withName("Elevator Target Position"));
 
     }
 
     @Override
     public void simulationPeriodic() {
         sim.simulationPeriodic();
+    }
+
+    /**
+     * 
+     * @return current elevator position in inches
+     */
+    public double getPosition() {
+        return motor.getPosition().getValueAsDouble() / ElevatorConstants.END_GEAR_RATIO;
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

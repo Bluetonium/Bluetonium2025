@@ -24,6 +24,7 @@ public final class ElevatorConstants {
     public static final double GEAR_RATIO = 1;
     public static final double SPROCKET_SIZE = Units.inchesToMeters(1.87 / 2);
     public static final double END_GEAR_RATIO = Math.PI * SPROCKET_SIZE * 2 * GEAR_RATIO;
+    public static final double MOUNTING_ANGLE = Math.toRadians(75);
 
     // Positions
     public static double[] SCORING_POSITIONS = { 0, HIGH_POSITION / 4, HIGH_POSITION / 2, HIGH_POSITION };// L1-L4
@@ -36,15 +37,17 @@ public final class ElevatorConstants {
         L4(32);
 
         public final double rotations;
+        public final double inches;
 
         private ElevatorPositions(double inches) {
             this.rotations = inches * END_GEAR_RATIO;
+            this.inches = inches;
         }
     }
 
     // SIM
     public static final LinearConfig SIM_CONFIG = new LinearConfig(.8, 0.35, GEAR_RATIO, SPROCKET_SIZE)
-            .setAngle(105)
+            .setAngle(Math.toDegrees(MOUNTING_ANGLE) + 30)
             .setMovingLength(36.5)
             .setStaticLength(36.5)
             .setMaxHeight(MAX_EXTENSION);

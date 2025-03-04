@@ -1,7 +1,8 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.mechanisms.arm.Arm;
 
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
@@ -9,15 +10,16 @@ import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositi
 
 public class ElevatorStates {
     private static Elevator elevator = RobotContainer.getElevator();
-    private static Arm arm = RobotContainer.getArm(); // lol
+    public static DoubleSupplier elevatorPosition;
 
     public static void setStates() {
-        RobotStates.L1.whileTrue(l1()).and(() -> arm.isArmInSafePosition());
-        RobotStates.L2.whileTrue(l2()).and(() -> arm.isArmInSafePosition());
-        RobotStates.L3.whileTrue(l3()).and(() -> arm.isArmInSafePosition());
-        RobotStates.L4.whileTrue(l4());
-        RobotStates.Home.whileTrue(home()).and(() -> arm.isArmInSafePosition());
+        RobotStates.L1.onTrue(l1());
+        RobotStates.L2.onTrue(l2());
+        RobotStates.L3.onTrue(l3());
+        RobotStates.L4.onTrue(l4());
+        RobotStates.Home.onTrue(home());
 
+        elevatorPosition = elevator::getPosition;
     }
 
     private static Command l1() {

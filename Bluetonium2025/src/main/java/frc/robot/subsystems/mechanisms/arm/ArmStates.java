@@ -1,5 +1,7 @@
 package frc.robot.subsystems.mechanisms.arm;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
@@ -7,12 +9,20 @@ import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 
 public class ArmStates {
     private static Arm arm = RobotContainer.getArm();
+    public static DoubleSupplier armPosition;
 
     public static void setStates() {
-        RobotStates.L2.whileTrue(L2());
-        RobotStates.L3.whileTrue(L3());
-        RobotStates.L4.whileTrue(L4());
-        RobotStates.Home.whileTrue(Home());
+        RobotStates.L1.onTrue(L1());
+        RobotStates.L2.onTrue(L2());
+        RobotStates.L3.onTrue(L3());
+        RobotStates.L4.onTrue(L4());
+        RobotStates.Home.onTrue(Home());
+
+        armPosition = arm::getPosition;
+    }
+
+    private static Command L1() {
+        return arm.setArmPosition(ArmPositions.L1).withName("Arm.L1");
     }
 
     private static Command L2() {
