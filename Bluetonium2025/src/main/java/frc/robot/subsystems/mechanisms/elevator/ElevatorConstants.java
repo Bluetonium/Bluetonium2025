@@ -17,6 +17,7 @@ public final class ElevatorConstants {
     public static final double kS = 0.068232;
     public static final double kV = 0.12429;
     public static final double kA = 0.0047557;
+    public static final double kG = 0.2052;
     public static final double CRUISE_VELOCITY = 200;
     public static final double ACCELERATION = 100;
 

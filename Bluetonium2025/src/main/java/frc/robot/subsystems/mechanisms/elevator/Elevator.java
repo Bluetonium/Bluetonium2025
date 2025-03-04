@@ -3,7 +3,6 @@ package frc.robot.subsystems.mechanisms.elevator;
 import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
@@ -70,7 +69,6 @@ public class Elevator extends SubsystemBase {
      * 
      */
     public Elevator() {
-        // TODO: need to confirm if there's anything else to set
         motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
 
         config = new TalonFXConfiguration();
@@ -83,7 +81,7 @@ public class Elevator extends SubsystemBase {
         slot0.kV = ElevatorConstants.kV;
         slot0.kA = ElevatorConstants.kA;
         slot0.kP = ElevatorConstants.kP;
-        // slot0.kG = something, TODO: figure this value as it gave a negative lol
+        slot0.kG = ElevatorConstants.kG;
         slot0.kI = ElevatorConstants.kI;
         slot0.kD = ElevatorConstants.kD;
 
