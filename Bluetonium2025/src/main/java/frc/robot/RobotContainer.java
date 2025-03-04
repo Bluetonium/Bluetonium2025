@@ -8,9 +8,11 @@ import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
@@ -27,27 +29,30 @@ public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+    private final double INIT_DELAY = 0.1;
 
     private final SendableChooser<Command> autoChooser;
     private Command currentAuto;
 
     // Subsystems
     @Getter
-    private static final Elevator elevator = new Elevator();
+    private static Elevator elevator;
     @Getter
-    private static final Arm arm = new Arm();
+    private static Arm arm;
     @Getter
-    private static final Outtake outtake = new Outtake();
+    private static Outtake outtake;
     @Getter
-    private static final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
+    private static CommandSwerveDrivetrain swerve;
     @Getter
-    private static final LimelightLocalization vision = new LimelightLocalization(swerve);
+    private static LimelightLocalization vision;
     @Getter
-    public static final Drivers driver1 = new Drivers(DriverConstants.driver1Configs);
+    public static Drivers driver1;
     @Getter
-    public static final Drivers driver2 = new Drivers(DriverConstants.driver2Configs);
+    public static Drivers driver2;
 
     public RobotContainer() {
+        initalizeSubsystems();
+        RobotStates.setupStates();
 
         // Auto chooser
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -58,7 +63,30 @@ public class RobotContainer {
         // configure everything
         configureLimelights();
         configureBindings();
+        setupSubsystems();
 
+    }
+
+    private void initalizeSubsystems() {
+        elevator = new Elevator();
+        Timer.delay(INIT_DELAY);
+        arm = new Arm();
+        Timer.delay(INIT_DELAY);
+        outtake = new Outtake();
+        Timer.delay(INIT_DELAY);
+        swerve = TunerConstants.createDrivetrain();
+        Timer.delay(INIT_DELAY);
+        vision = new LimelightLocalization(swerve);
+        Timer.delay(INIT_DELAY);
+        driver1 = new Drivers(DriverConstants.driver1Configs);
+        Timer.delay(INIT_DELAY);
+        driver2 = new Drivers(DriverConstants.driver2Configs);
+    }
+
+    public void resetRobotState() {
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().getActiveButtonLoop().clear();
+        RobotStates.setupStates();
         setupSubsystems();
 
     }
