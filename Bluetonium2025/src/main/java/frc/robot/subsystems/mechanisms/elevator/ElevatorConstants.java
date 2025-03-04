@@ -11,17 +11,17 @@ public final class ElevatorConstants {
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
     // PID
-    public static final double kP = 5.1575; // THIS SEEMS VERY WRONG (TODO: probably change this...)
+    public static final double kP = 61.853; // THIS SEEMS VERY WRONG (TODO: probably change this...)
     public static final double kI = 0;
-    public static final double kD = 0.049979;
-    public static final double kS = 0.13066;
-    public static final double kV = 0.11485;
-    public static final double kA = 0.00081861;
+    public static final double kD = 0.45097;
+    public static final double kS = 0.081163;
+    public static final double kV = 0.12399;
+    public static final double kA = 0.001979;
     // Physical stuff
     public static final double MAX_EXTENSION = 32;
     public static final double LOW_POSITION = 0.0;
     public static final double HIGH_POSITION = 48 * 0.999;
-    public static final double GEAR_RATIO = 1;
+    public static final double GEAR_RATIO = 20;
     public static final double SPROCKET_SIZE = Units.inchesToMeters(1.87 / 2);
     public static final double END_GEAR_RATIO = Math.PI * SPROCKET_SIZE * 2 * GEAR_RATIO;
     public static final double MOUNTING_ANGLE = Math.toRadians(75);

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -41,9 +42,10 @@ public class Elevator extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Elevator");
-        builder.addStringProperty("Position", () -> elevatorTargetPosition.name(), null);
+        builder.addStringProperty("Target Position", () -> elevatorTargetPosition.name(), null);
+        builder.addDoubleProperty("Position", this::getPosition, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
-
+        builder.addDoubleProperty("Current", () -> motor.getStatorCurrent().getValueAsDouble(), null);
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -52,7 +54,7 @@ public class Elevator extends SubsystemBase {
                     Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
                           // Log state with Phoenix SignalLogger class
-                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+                    (state) -> SignalLogger.writeString("SysIdElevator_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
                     null,
@@ -69,10 +71,10 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // TODO: need to confirm if there's anything else to set
         motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
-        motor.setNeutralMode(ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE);
 
         config = new TalonFXConfiguration();
-
+        config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         // PID
         Slot0Configs slot0 = config.Slot0;
         slot0.kS = ElevatorConstants.kS;
@@ -85,8 +87,8 @@ public class Elevator extends SubsystemBase {
 
         // Motion Magic
         MotionMagicConfigs motionMagic = config.MotionMagic;
-        motionMagic.MotionMagicCruiseVelocity = 160;
-        motionMagic.MotionMagicAcceleration = 80;
+        motionMagic.MotionMagicCruiseVelocity = 250;
+        motionMagic.MotionMagicAcceleration = 150;
         motionMagic.MotionMagicJerk = 1600;
 
         // SoftLimits
