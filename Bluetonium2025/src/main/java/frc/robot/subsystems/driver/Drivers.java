@@ -52,6 +52,7 @@ public class Drivers {
 
     // outtake
     public static Trigger outtakeAccept;
+    public static Trigger outtakeEject;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -85,6 +86,7 @@ public class Drivers {
 
         if (configs.outtakeControls) {
             outtakeAccept = new Trigger(controller::getAButton);
+            outtakeEject = new Trigger(()->false); //TODO: fuckin figure out a button
         }
 
     }

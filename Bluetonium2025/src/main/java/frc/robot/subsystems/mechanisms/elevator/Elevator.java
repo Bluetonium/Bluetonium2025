@@ -28,6 +28,7 @@ import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
 public class Elevator extends SubsystemBase {
+    private double desiredPosition;
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -131,6 +132,7 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
+        desiredPosition = position.inches;
         return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
                 runOnce(() -> {
                     final MotionMagicVoltage request = mmVoltage;
@@ -153,6 +155,15 @@ public class Elevator extends SubsystemBase {
         return motor.getPosition().getValueAsDouble() / ElevatorConstants.END_GEAR_RATIO;
     }
 
+    /**
+     * 
+     * @return if the elevator is *close enough* to desired position
+     */
+    public boolean elevatorIsAtDesiredPosition() {
+        return Math.abs(getPosition()-desiredPosition)<ElevatorConstants.POSITION_TOLERANCE;
+    }
+
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
@@ -160,5 +171,4 @@ public class Elevator extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
-
 }
