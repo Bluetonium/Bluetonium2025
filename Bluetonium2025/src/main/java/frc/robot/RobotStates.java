@@ -21,6 +21,8 @@ public class RobotStates {
         Home = Drivers.Home;
 
         outtakeAccept = Drivers.outtakeAccept;
+        outtakeEject = Drivers.outtakeEject;
+
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
     }
@@ -40,6 +42,9 @@ public class RobotStates {
 
     // outtake
     public static Trigger outtakeAccept;
+    public static Trigger outtakeEject;
+
+    // limelight (probably idfk)
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
 }

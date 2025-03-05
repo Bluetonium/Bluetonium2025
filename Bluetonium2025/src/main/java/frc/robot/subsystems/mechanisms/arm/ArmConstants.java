@@ -19,6 +19,10 @@ public class ArmConstants {
     public static final double kA = 0.002;
     public static final double kG = 7;
 
+    // safety
+    public static final double POSITION_TOLERANCE = 0.5; //bear in mind that this is used to determine if it is safe rather than actually move the elevator itself
+
+
     // arm physical properties
     public static final double ARM_LENGTH = 20.90551;
     public static final double GEAR_RATIO = 22;

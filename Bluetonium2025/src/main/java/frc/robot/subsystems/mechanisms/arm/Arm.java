@@ -31,6 +31,7 @@ import lombok.Getter;
 public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
+    private double desiredAngle;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -122,6 +123,7 @@ public class Arm extends SubsystemBase {
     }
 
     public Command setArmPosition(ArmPositions position) {
+        desiredAngle = position.angle;
         return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
                 runOnce(() -> {
                     final MotionMagicVoltage request = mmVoltage;
@@ -142,7 +144,10 @@ public class Arm extends SubsystemBase {
         double armY = Math.sin(targetPosition.angle) * ArmConstants.ARM_LENGTH;
         double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * ElevatorStates.elevatorPosition.getAsDouble();
         return (armY + elevatorY) > 6;
+    }
 
+    public boolean armIsAtDesiredPosition() {
+        return Math.abs(getPosition()-desiredAngle)<ArmConstants.POSITION_TOLERANCE;
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
