@@ -11,6 +11,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -32,12 +34,13 @@ public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private double desiredAngle;
-    private TalonFX arm;
+    private SparkMax arm;
     private TalonFXConfiguration armConfig;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
     @Getter
     private ArmPositions targetPosition = ArmPositions.HOME;
+    /* 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
@@ -49,6 +52,7 @@ public class Arm extends SubsystemBase {
                     (volts) -> arm.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
                     null,
                     this));
+    */
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -59,8 +63,8 @@ public class Arm extends SubsystemBase {
      * 
      */
     public Arm() {
-        arm = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID);
-        arm.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);
+        arm = new SparkMax(ArmConstants.ARM_MOTOR_CAN_ID,MotorType.kBrushless);
+        arm.
 
         armConfig = new TalonFXConfiguration();
 
@@ -100,7 +104,6 @@ public class Arm extends SubsystemBase {
                     status.getName() + "Failed to apply configs to arm" + status.getDescription(), false);
         }
     }
-
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Shoulder");
@@ -149,7 +152,7 @@ public class Arm extends SubsystemBase {
     public boolean armIsAtDesiredPosition() {
         return Math.abs(getPosition()-desiredAngle)<ArmConstants.POSITION_TOLERANCE;
     }
-
+    /*
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
@@ -157,4 +160,5 @@ public class Arm extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
+        */
 }
