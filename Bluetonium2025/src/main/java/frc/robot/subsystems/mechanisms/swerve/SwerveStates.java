@@ -8,13 +8,13 @@ import frc.robot.RobotStates;
 import frc.robot.subsystems.driver.Drivers;
 
 public class SwerveStates {
-        private static CommandSwerveDrivetrain swerve = RobotContainer.getSwerve();
+    private static CommandSwerveDrivetrain swerve = RobotContainer.getSwerve();
 
-        private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public static void setStates() {
-        //TODO: setup sysid for chassis, dont feel like it rn lol
+        // TODO: setup sysid for chassis, dont feel like it rn lol
         Drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
         Drivers.steerWheels.whileTrue(swerve.applyRequest(
                 () -> point.withModuleDirection(
@@ -25,6 +25,7 @@ public class SwerveStates {
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
         RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
         RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));
+        RobotStates.coralStationAlign.whileTrue(swerve.AlignToCoralStation());
 
     }
 

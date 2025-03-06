@@ -1,5 +1,6 @@
 package frc.utils;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -122,36 +123,58 @@ public class Field {
                 .equals(DriverStation.Alliance.Blue);
     }
 
-    public static Rotation2d flipIfRed(Rotation2d rotation) {
+    public static Rotation2d rotateIfRed(Rotation2d rotation) {
         if (!isBlue()) {
             return rotation.plus(Rotation2d.fromDegrees(180));
         }
         return rotation;
     }
 
-    public static Pose2d flipIfRed(Pose2d position) {
-        Translation2d translation = flipIfRed(position.getTranslation());
+    /**
+     * rotates the position and rotation 180 degrees around field center if your on
+     * red aliance,
+     * otherwise returns position
+     * 
+     * @param position position to be rotated
+     * @return
+     */
+    public static Pose2d rotateIfRed(Pose2d position) {
         if (!isBlue()) {
-            return new Pose2d(translation, position.getRotation().plus(Rotation2d.fromDegrees(180)));
+            return new Pose2d(
+                    rotateIfRed(position.getTranslation()), position.getRotation().plus(Rotation2d.fromDegrees(180)));
         }
-        return new Pose2d(translation, position.getRotation());
+        return position;
     }
 
-    public static Translation2d flipIfRed(Translation2d position) {
+    /**
+     * Mirrors the position and rotation around the vertical center line of the
+     * field
+     * 
+     * @param position position to be mirrored
+     * @return
+     */
+    public static Pose2d mirrorIfRed(Pose2d position) {
+        if (!isBlue()) {
+            return new Pose2d(fieldLength - position.getX(), position.getY(),
+                    Rotation2d.k180deg.minus(position.getRotation()));
+        }
+        return position;
+    }
+
+    public static Translation2d rotateIfRed(Translation2d position) {
         if (!isBlue()) {
             return new Translation2d(fieldLength - position.getX(), fieldWidth - position.getY());
         }
         return position;
     }
 
-    public static double getAngleToReef(Translation2d robotPosition) {
-        // robotPosition = flipIfRed(robotPosition);
-        Translation2d reefRelativePosition = robotPosition.minus(flipIfRed(REEF_CENTER));
-        return Math.atan2(reefRelativePosition.getY(), reefRelativePosition.getX());
+    public static double getAngleTo(Translation2d robotPosition, Translation2d target) {
+        Translation2d relativePosition = robotPosition.minus(target);
+        return Math.atan2(relativePosition.getY(), relativePosition.getX());
     }
 
     public static REEF_REGIONS getReefRegion(Translation2d robotPosition) {
-        double angleToReef = getAngleToReef(robotPosition);
+        double angleToReef = getAngleTo(robotPosition, rotateIfRed(REEF_CENTER));
         angleToReef += Math.PI / 6;
         angleToReef = (angleToReef < 0) ? angleToReef + Math.PI * 2 : angleToReef;
         if (!isBlue()) {

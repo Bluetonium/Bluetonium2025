@@ -21,8 +21,10 @@ public class RobotStates {
         Home = Drivers.Home;
 
         outtakeAccept = Drivers.outtakeAccept;
+
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
+        coralStationAlign = Drivers.coralStationAlign;
     }
 
     public static Trigger teleop;
@@ -40,6 +42,9 @@ public class RobotStates {
 
     // outtake
     public static Trigger outtakeAccept;
+
+    // chassis
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
+    public static Trigger coralStationAlign;
 }

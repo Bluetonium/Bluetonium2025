@@ -325,7 +325,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command AlignToReefRegion(boolean leftBranch) {
         Set<Subsystem> requirements = new HashSet<Subsystem>();
-
         requirements.add(this);
         if (leftBranch)
             return Commands.defer(this::getPathToReefLeft, requirements);
@@ -344,13 +343,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
 
-        // I replaced this code with the code below it.
-        //
-        // Pose2d startingPos = new Pose2d(state.Pose.getTranslation(),
-        // new
-        // Rotation2d(Field.getAngleToReef(state.Pose.getTranslation())).plus(Rotation2d.k180deg));
+        // finding a rotation because for waypoints rotation is heading (direction we
+        // wanna be heading) so we us the angle to target so we head towards target at
+        // first
+        Rotation2d angleToTarget = Rotation2d
+                .fromRadians(Field.getAngleTo(state.Pose.getTranslation(), targetPos.getTranslation()))
+                .plus(Rotation2d.k180deg);
 
-        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), state.Pose.getRotation());
+        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), angleToTarget);
 
         List<Waypoint> pathPoints = PathPlannerPath
                 .waypointsFromPoses(
@@ -369,8 +369,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return AutoBuilder.followPath(path).withName(path.name);
     }
 
+    public Command AlignToCoralStation() {
+        Set<Subsystem> requirements = new HashSet<Subsystem>();
+        requirements.add(this);
+        return Commands.defer(this::getPathToCoralStation, requirements);
+    }
+
     // Drive to coral station
-    public Command getPathToCoralStation() {
+    private Command getPathToCoralStation() {
+        final double angle = Math.toRadians(54);
+
         SwerveDriveState state = getState();
         Pose2d fieldPos = state.Pose;
 
@@ -386,26 +394,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (fieldPos.getY() < fieldDividerLine) {
             goalX = distance;
             goalY = distance;
-            rotation = Math.toRadians(180 + 54);
+            rotation = Math.PI + angle;
         } else {
             goalX = distance;
             goalY = Field.fieldWidth - distance;
-            rotation = Math.toRadians(180 + 306);
+            rotation = Math.PI - angle;
         }
 
         Rotation2d goalRotation = new Rotation2d(rotation);
 
         Pose2d goalPos = new Pose2d(goalX, goalY, goalRotation);
 
-        goalPos = Field.flipIfRed(goalPos);
-
-        return createPath(goalPos, "Aligning to Coral Station : ");
+        goalPos = Field.mirrorIfRed(goalPos);
+        return createPath(goalPos, "Aligning to Coral Station");
     }
 
     // Drive to reef
     private Command getPathToReef(boolean left) {
         REEF_REGIONS region = getCurrentRegion();
-        Pose2d targetPos = Field.flipIfRed(Field.reefRegionToPose(region, left));
+        Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
 
         return createPath(targetPos, "Aligning Reef Side : " + region.name());
     }
