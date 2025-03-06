@@ -340,29 +340,74 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getPathToReef(false);
     }
 
-    private Command getPathToReef(boolean left) {
+    // Drive to target position
+    private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
-        REEF_REGIONS region = getCurrentRegion();
-        Pose2d targetPose = Field.flipIfRed(Field.reefRegionToPose(region, left));
 
-        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(),
-                new Rotation2d(Field.getAngleToReef(state.Pose.getTranslation())).plus(Rotation2d.k180deg));
+        // I replaced this code with the code below it.
+        //
+        // Pose2d startingPos = new Pose2d(state.Pose.getTranslation(),
+        // new
+        // Rotation2d(Field.getAngleToReef(state.Pose.getTranslation())).plus(Rotation2d.k180deg));
+
+        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), state.Pose.getRotation());
 
         List<Waypoint> pathPoints = PathPlannerPath
                 .waypointsFromPoses(
                         startingPos,
-                        targetPose);
+                        targetPos);
         PathPlannerPath path = new PathPlannerPath(
                 pathPoints,
 
                 TunerConstants.autoAlignmentConstraints,
                 null,
-                new GoalEndState(0, targetPose.getRotation()));
+                new GoalEndState(0, targetPos.getRotation()));
 
-        path.name = String.format("Aligning Reef Side : %s", region.name());
+        path.name = name;
         path.preventFlipping = true;
 
         return AutoBuilder.followPath(path).withName(path.name);
+    }
+
+    // Drive to coral station
+    public Command getPathToCoralStation() {
+        SwerveDriveState state = getState();
+        Pose2d fieldPos = state.Pose;
+
+        double fieldDividerLine = Field.fieldWidth / 2;
+
+        double distance = 1.25; // 1.25 from the x direction, and 1.25 from the y. Not diagonal. Manhattan
+                                // Distance.
+
+        double goalX = 0;
+        double goalY = 0;
+        double rotation = 0;
+
+        if (fieldPos.getY() < fieldDividerLine) {
+            goalX = distance;
+            goalY = distance;
+            rotation = Math.toRadians(180 + 54);
+        } else {
+            goalX = distance;
+            goalY = Field.fieldWidth - distance;
+            rotation = Math.toRadians(180 + 306);
+        }
+
+        Rotation2d goalRotation = new Rotation2d(rotation);
+
+        Pose2d goalPos = new Pose2d(goalX, goalY, goalRotation);
+
+        goalPos = Field.flipIfRed(goalPos);
+
+        return createPath(goalPos, "Aligning to Coral Station : ");
+    }
+
+    // Drive to reef
+    private Command getPathToReef(boolean left) {
+        REEF_REGIONS region = getCurrentRegion();
+        Pose2d targetPos = Field.flipIfRed(Field.reefRegionToPose(region, left));
+
+        return createPath(targetPos, "Aligning Reef Side : " + region.name());
     }
 
     public REEF_REGIONS getCurrentRegion() {
