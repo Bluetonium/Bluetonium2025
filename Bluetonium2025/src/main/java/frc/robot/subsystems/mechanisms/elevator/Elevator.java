@@ -121,7 +121,10 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isSafeToMove(ElevatorPositions targetPosition) {
-        double armY = Math.sin(ArmStates.armPosition.getAsDouble()) * ArmConstants.ARM_LENGTH;
+        double armAngle = ArmStates.armPosition.getAsDouble();
+        if (armAngle > Math.toRadians(ArmConstants.MAX_ANGLE_TO_MOVE_ELEVATOR))
+            return false;
+        double armY = Math.sin(armAngle) * ArmConstants.ARM_LENGTH;
         double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * targetPosition.inches;
         return (armY + elevatorY) > 6;
     }
@@ -160,9 +163,8 @@ public class Elevator extends SubsystemBase {
      * @return if the elevator is *close enough* to desired position
      */
     public boolean elevatorIsAtDesiredPosition() {
-        return Math.abs(getPosition()-desiredPosition)<ElevatorConstants.POSITION_TOLERANCE;
+        return Math.abs(getPosition() - desiredPosition) < ElevatorConstants.POSITION_TOLERANCE;
     }
-
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
