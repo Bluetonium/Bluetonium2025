@@ -1,5 +1,11 @@
 package frc.robot.subsystems.mechanisms.outtake;
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -11,15 +17,20 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants;
 import frc.utils.sim.RollerSim;
 
@@ -40,19 +51,31 @@ public class Outtake extends SubsystemBase {
         // builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
     }
 
-    /*
-    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                    null, // Use default ramp rate (1 V/s)
-                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                    null, // Use default timeout (10 s)
-                          // Log state with Phoenix SignalLogger class
-                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
-            new SysIdRoutine.Mechanism(
-                    (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
-                    null,
-                    this));
-    */
+    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
+    private final MutAngle m_angle = Radians.mutable(0);
+    private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
+    private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              motor::setVoltage,
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("outtaee")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            motor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .angularPosition(m_angle.mut_replace(motor.getEncoder().getPosition(), Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(motor.getEncoder().getVelocity(), RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
     public Outtake() {
         motor = new SparkMax(OuttakeConstant.OUTTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         closedLoopController = motor.getClosedLoopController();
@@ -135,7 +158,7 @@ public class Outtake extends SubsystemBase {
     public void simulationPeriodic() {
         sim.simulationPeriodic();
     }
-    /*
+    
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
@@ -143,5 +166,5 @@ public class Outtake extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
-    */
+    
 }
