@@ -1,17 +1,14 @@
 package frc.robot.subsystems.mechanisms.arm;
 
-import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.REVLibError;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.util.Units;
@@ -22,8 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorStates;
@@ -34,10 +29,10 @@ public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private double desiredAngle;
+
     private SparkMax arm;
-    private TalonFXConfiguration armConfig;
-    private final VoltageOut m_sysIdControl = new VoltageOut(0);
-    private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    private SparkClosedLoopController closedLoopController;
+    private SparkMaxConfig armConfig;
     @Getter
     private ArmPositions targetPosition = ArmPositions.HOME;
     /* 
@@ -64,10 +59,15 @@ public class Arm extends SubsystemBase {
      */
     public Arm() {
         arm = new SparkMax(ArmConstants.ARM_MOTOR_CAN_ID,MotorType.kBrushless);
-        arm.
+        closedLoopController = arm.getClosedLoopController();
 
-        armConfig = new TalonFXConfiguration();
-
+        armConfig = new SparkMaxConfig();
+        armConfig.softLimit
+        .forwardSoftLimitEnabled(true)
+        .forwardSoftLimit(Units.degreesToRotations(ArmConstants.MAX_ANGLE) * ArmConstants.GEAR_RATIO)
+        .reverseSoftLimitEnabled(true)
+        .reverseSoftLimit(Units.degreesToRotations(ArmConstants.MIN_ANGLE) * ArmConstants.GEAR_RATIO);
+        /*
         SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
         limitSwitch.ForwardSoftLimitEnable = true;
         limitSwitch.ForwardSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MAX_ANGLE)
@@ -75,33 +75,31 @@ public class Arm extends SubsystemBase {
         limitSwitch.ReverseSoftLimitEnable = true;
         limitSwitch.ReverseSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MIN_ANGLE)
                 * ArmConstants.GEAR_RATIO;
-
+        */
         // PID
-        Slot0Configs slot0 = armConfig.Slot0;
-        slot0.kP = ArmConstants.kP;
-        slot0.kI = ArmConstants.kI;
-        slot0.kD = ArmConstants.kD;
-        slot0.kV = ArmConstants.kV;
-        slot0.kS = ArmConstants.kS;
-        slot0.kA = ArmConstants.kA;
-        slot0.kG = ArmConstants.kG;
+        armConfig.closedLoop
+        .p(ArmConstants.kP)
+        .i(ArmConstants.kI)
+        .d(ArmConstants.kD);
+        
+        armConfig.idleMode(IdleMode.kBrake);
 
-        MotionMagicConfigs motionMagic = armConfig.MotionMagic;
-        motionMagic.MotionMagicCruiseVelocity = 160;
-        motionMagic.MotionMagicAcceleration = 6000;
-        motionMagic.MotionMagicJerk = 1600;
-
-        armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
+        armConfig.closedLoop.maxMotion
+        .maxVelocity(160)
+        .maxAcceleration(600);
+        //TODO: sim for neo arm!!!
+        //armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
         applyConfig();
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
     }
 
     private void applyConfig() {
-        StatusCode status = arm.getConfigurator().apply(armConfig);
-        if (!status.isOK()) {
+        REVLibError error = arm.configure(armConfig,ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        if (error.equals(REVLibError.kOk)) {
             DriverStation.reportWarning(
-                    status.getName() + "Failed to apply configs to arm" + status.getDescription(), false);
+                error.name() + "Failed to apply configs to arm", false);
         }
     }
     @Override
@@ -110,7 +108,7 @@ public class Arm extends SubsystemBase {
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
         builder.addDoubleProperty("Current Position", this::getPosition, null);
     }
-
+    /*
     @Override
     public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
@@ -120,17 +118,21 @@ public class Arm extends SubsystemBase {
         armSim.getConfig().setInitialY(0.35 +
                 armSim.getConfig().getMount().getDisplacementY() * 1.1);
     }
+    */
 
     public void setup() {
         ArmStates.setStates();
     }
 
     public Command setArmPosition(ArmPositions position) {
-        desiredAngle = position.angle;
+        closedLoopController.setReference(position.rotations, ControlType.kMAXMotionPositionControl,
+          ClosedLoopSlot.kSlot0);
+
+        desiredAngle = position.angle / ArmConstants.GEAR_RATIO;
         return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
                 runOnce(() -> {
-                    final MotionMagicVoltage request = mmVoltage;
-                    arm.setControl(request.withPosition(position.rotations));
+                    closedLoopController.setReference(position.rotations, ControlType.kMAXMotionPositionControl,
+                        ClosedLoopSlot.kSlot0);                    
                     targetPosition = position;
                 }).withName("Arm Target Position"));
     }
@@ -140,7 +142,7 @@ public class Arm extends SubsystemBase {
      */
 
     public double getPosition() {
-        return Units.rotationsToRadians(arm.getPosition().getValueAsDouble() / ArmConstants.GEAR_RATIO);
+        return Units.rotationsToRadians(arm.getEncoder().getPosition() / ArmConstants.GEAR_RATIO);
     }
 
     private boolean isSafeToMove(ArmPositions targetPosition) {
