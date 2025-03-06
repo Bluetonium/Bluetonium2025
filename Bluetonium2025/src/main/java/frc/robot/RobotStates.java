@@ -14,7 +14,7 @@ public class RobotStates {
         disabled = new Trigger(DriverStation::isDisabled);
         dsAttached = new Trigger(DriverStation::isDSAttached);
 
-        L1 = Drivers.L1;
+        coralPassOff = Drivers.coralPassOff;
         L2 = Drivers.L2;
         L3 = Drivers.L3;
         L4 = Drivers.L4;
@@ -34,7 +34,7 @@ public class RobotStates {
     public static Trigger dsAttached;
 
     // elevator and Arm
-    public static Trigger L1;
+    public static Trigger coralPassOff;
     public static Trigger L2;
     public static Trigger L3;
     public static Trigger L4;
