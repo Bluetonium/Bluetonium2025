@@ -73,12 +73,13 @@ public class Elevator extends SubsystemBase {
      * 
      */
     public Elevator() {
+        SignalLogger.start();
         motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
 
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // PID
         Slot0Configs slot0 = config.Slot0;
@@ -151,16 +152,16 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
-        if (!isSafeToMove(elevatorPosition)) {
+        if (/*!isSafeToMove(elevatorPosition)*/true==false) {
             return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
                     .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
                     .andThen(requestTargetPosition(elevatorPosition))
                     .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
                     .andThen(arm.setArmPosition(armPosition));
         }
-        return requestTargetPosition(elevatorPosition)
-                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
-                .andThen(arm.setArmPosition(armPosition));
+        return requestTargetPosition(elevatorPosition);
+               // .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                //.andThen(arm.setArmPosition(armPosition));
     }
 
     @Override

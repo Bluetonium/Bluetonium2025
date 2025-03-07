@@ -15,7 +15,11 @@ public class DriverStates {
         }
         SmartDashboard.putData("Test Command Chooser", testChooser);
         SmartDashboard.putData("Test Command", Commands.none());
-        testChooser.onChange((system) -> SmartDashboard.putData("Test Command", system.command));
+        //testChooser.setDefaultOption("funny", DriverConstants.TestableSystems.ARM_DYANMIC_FORWARD);
+        testChooser.onChange((system) -> {
+            if (system != null)
+            SmartDashboard.putData("Test Command", system.command);
+        });
     }
 
 }

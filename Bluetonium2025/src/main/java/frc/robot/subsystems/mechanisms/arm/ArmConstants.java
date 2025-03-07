@@ -20,7 +20,7 @@ public class ArmConstants {
 
     // safety
     public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
-                                                                       // it is safe
+                                                               // it is safe
     // rather than actually move the elevator itself
 
     // arm physical properties
