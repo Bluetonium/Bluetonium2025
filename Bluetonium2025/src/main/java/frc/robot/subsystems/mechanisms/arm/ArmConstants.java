@@ -24,11 +24,13 @@ public class ArmConstants {
                                                                        // it is safe
     // rather than actually move the elevator itself
 
+
     // arm physical properties
     public static final double ARM_LENGTH = 20.90551;
     public static final double GEAR_RATIO = 22;
     public static final double MIN_ANGLE = -90;
     public static final double MAX_ANGLE = 120;
+    public static final double MAX_ANGLE_TO_MOVE_ELEVATOR = 100;// degrees
 
     // positions
     public static enum ArmPositions {
