@@ -7,7 +7,7 @@ import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
 public class ArmConstants {
-    public static final int ARM_MOTOR_CAN_ID = 19; // we GOTTA figure it out!!!
+    public static final int ARM_MOTOR_CAN_ID = 16; // we GOTTA figure it out!!!
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
     // PID (we'll figure it out eventually!!!)
@@ -21,9 +21,10 @@ public class ArmConstants {
 
     // safety
     public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
-                                                                       // it is safe
+                                                               // it is safe
     // rather than actually move the elevator itself
 
+    public static final int ABSOLUTE_ENCODER_CHANNEL = 8;
 
     // arm physical properties
     public static final double ARM_LENGTH = 20.90551;

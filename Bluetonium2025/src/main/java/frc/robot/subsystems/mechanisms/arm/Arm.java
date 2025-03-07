@@ -1,5 +1,7 @@
 package frc.robot.subsystems.mechanisms.arm;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -9,13 +11,18 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +35,8 @@ import lombok.Getter;
 public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
+    private DutyCycleEncoder absoluteEncoder;
+    private DigitalInput input = new DigitalInput(0);
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -36,8 +45,8 @@ public class Arm extends SubsystemBase {
     private ArmPositions targetPosition = ArmPositions.HOME;
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    null, // Use default ramp rate (1 V/s)
-                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                    Volts.of(0.1).per(Second),
+                    Volts.of(0.4), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
                           // Log state with Phoenix SignalLogger class
                     (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
@@ -56,9 +65,10 @@ public class Arm extends SubsystemBase {
      */
     public Arm() {
         arm = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID);
-        arm.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);
 
+        absoluteEncoder = new DutyCycleEncoder(ArmConstants.ABSOLUTE_ENCODER_CHANNEL);
         armConfig = new TalonFXConfiguration();
+        armConfig.MotorOutput.NeutralMode = ArmConstants.ARM_MOTOR_NEUTRAL_MODE;
 
         SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
         limitSwitch.ForwardSoftLimitEnable = true;
@@ -102,6 +112,8 @@ public class Arm extends SubsystemBase {
         builder.setSmartDashboardType("Shoulder");
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
         builder.addDoubleProperty("Current Position", this::getPosition, null);
+        builder.addDoubleProperty("Enchdorder", () -> absoluteEncoder.get(),null);
+
     }
 
     @Override

@@ -54,6 +54,7 @@ public class Outtake extends SubsystemBase {
     private final MutVoltage m_appliedVoltage = Volts.mutable(0);
     private final MutAngle m_angle = Radians.mutable(0);
     private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
+    /*
     private final SysIdRoutine m_sysIdRoutine =
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
@@ -76,7 +77,8 @@ public class Outtake extends SubsystemBase {
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("shooter")
               this));
-    public Outtake() {
+    */
+              public Outtake() {
         motor = new SparkMax(OuttakeConstant.OUTTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         closedLoopController = motor.getClosedLoopController();
         motorConfig = new SparkMaxConfig();
@@ -158,7 +160,7 @@ public class Outtake extends SubsystemBase {
     public void simulationPeriodic() {
         sim.simulationPeriodic();
     }
-    
+    /*
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
@@ -166,5 +168,6 @@ public class Outtake extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
+        */
     
 }
