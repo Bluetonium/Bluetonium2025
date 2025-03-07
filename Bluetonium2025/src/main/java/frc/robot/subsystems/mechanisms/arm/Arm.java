@@ -1,35 +1,27 @@
 package frc.robot.subsystems.mechanisms.arm;
 
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.revrobotics.REVLibError;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorStates;
@@ -40,38 +32,23 @@ public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private double desiredAngle;
-
-    private SparkMax arm;
-    private SparkClosedLoopController closedLoopController;
-    private SparkMaxConfig armConfig;
+    private TalonFX arm;
+    private TalonFXConfiguration armConfig;
+    private final VoltageOut m_sysIdControl = new VoltageOut(0);
+    private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
     @Getter
     private ArmPositions targetPosition = ArmPositions.HOME;
-
-    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
-    private final MutAngle m_angle = Radians.mutable(0);
-    private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
-    private final SysIdRoutine m_sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new SysIdRoutine.Config(),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              arm::setVoltage,
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              log -> {
-                // Record a frame for the shooter motor.
-                log.motor("arm")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            arm.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(arm.getEncoder().getPosition(), Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(arm.getEncoder().getVelocity(), RotationsPerSecond));
-              },
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                    null, // Use default timeout (10 s)
+                          // Log state with Phoenix SignalLogger class
+                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    (volts) -> arm.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
+                    null,
+                    this));
 
     /**
      * <h1>i'm only adding this because it'd feel weird if i didn't add it to every
@@ -82,16 +59,11 @@ public class Arm extends SubsystemBase {
      * 
      */
     public Arm() {
-        arm = new SparkMax(ArmConstants.ARM_MOTOR_CAN_ID,MotorType.kBrushless);
-        closedLoopController = arm.getClosedLoopController();
+        arm = new TalonFX(ArmConstants.ARM_MOTOR_CAN_ID);
+        arm.setNeutralMode(ArmConstants.ARM_MOTOR_NEUTRAL_MODE);
 
-        armConfig = new SparkMaxConfig();
-        armConfig.softLimit
-        .forwardSoftLimitEnabled(true)
-        .forwardSoftLimit(Units.degreesToRotations(ArmConstants.MAX_ANGLE) * ArmConstants.GEAR_RATIO)
-        .reverseSoftLimitEnabled(true)
-        .reverseSoftLimit(Units.degreesToRotations(ArmConstants.MIN_ANGLE) * ArmConstants.GEAR_RATIO);
-        /*
+        armConfig = new TalonFXConfiguration();
+
         SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
         limitSwitch.ForwardSoftLimitEnable = true;
         limitSwitch.ForwardSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MAX_ANGLE)
@@ -99,40 +71,43 @@ public class Arm extends SubsystemBase {
         limitSwitch.ReverseSoftLimitEnable = true;
         limitSwitch.ReverseSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MIN_ANGLE)
                 * ArmConstants.GEAR_RATIO;
-        */
+
         // PID
-        armConfig.closedLoop
-        .p(ArmConstants.kP)
-        .i(ArmConstants.kI)
-        .d(ArmConstants.kD);
+        Slot0Configs slot0 = armConfig.Slot0;
+        slot0.kP = ArmConstants.kP;
+        slot0.kI = ArmConstants.kI;
+        slot0.kD = ArmConstants.kD;
+        slot0.kV = ArmConstants.kV;
+        slot0.kS = ArmConstants.kS;
+        slot0.kA = ArmConstants.kA;
+        slot0.kG = ArmConstants.kG;
 
-        armConfig.idleMode(IdleMode.kBrake);
+        MotionMagicConfigs motionMagic = armConfig.MotionMagic;
+        motionMagic.MotionMagicCruiseVelocity = 160;
+        motionMagic.MotionMagicAcceleration = 6000;
+        motionMagic.MotionMagicJerk = 1600;
 
-        armConfig.closedLoop.maxMotion
-        .maxVelocity(160)
-        .maxAcceleration(600);
-        //TODO: sim for neo arm!!!
-        //armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
+        armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
         applyConfig();
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
     }
 
     private void applyConfig() {
-        REVLibError error = arm.configure(armConfig,ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        if (error.equals(REVLibError.kOk)) {
+        StatusCode status = arm.getConfigurator().apply(armConfig);
+        if (!status.isOK()) {
             DriverStation.reportWarning(
-                error.name() + "Failed to apply configs to arm", false);
+                    status.getName() + "Failed to apply configs to arm" + status.getDescription(), false);
         }
     }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Shoulder");
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
         builder.addDoubleProperty("Current Position", this::getPosition, null);
     }
-    /*
+
     @Override
     public void simulationPeriodic() { // man idfkcv
         armSim.simulationPeriodic();
@@ -142,21 +117,17 @@ public class Arm extends SubsystemBase {
         armSim.getConfig().setInitialY(0.35 +
                 armSim.getConfig().getMount().getDisplacementY() * 1.1);
     }
-    */
 
     public void setup() {
         ArmStates.setStates();
     }
 
     public Command setArmPosition(ArmPositions position) {
-        closedLoopController.setReference(position.rotations, ControlType.kMAXMotionPositionControl,
-          ClosedLoopSlot.kSlot0);
-
-        desiredAngle = position.angle / ArmConstants.GEAR_RATIO;
+        desiredAngle = position.angle;
         return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
                 runOnce(() -> {
-                    closedLoopController.setReference(position.rotations, ControlType.kMAXMotionPositionControl,
-                        ClosedLoopSlot.kSlot0);                    
+                    final MotionMagicVoltage request = mmVoltage;
+                    arm.setControl(request.withPosition(position.rotations));
                     targetPosition = position;
                 }).withName("Arm Target Position"));
     }
@@ -166,7 +137,7 @@ public class Arm extends SubsystemBase {
      */
 
     public double getPosition() {
-        return Units.rotationsToRadians(arm.getEncoder().getPosition() / ArmConstants.GEAR_RATIO);
+        return Units.rotationsToRadians(arm.getPosition().getValueAsDouble() / ArmConstants.GEAR_RATIO);
     }
 
     private boolean isSafeToMove(ArmPositions targetPosition) {
@@ -178,7 +149,7 @@ public class Arm extends SubsystemBase {
     public boolean armIsAtDesiredPosition() {
         return Math.abs(getPosition()-desiredAngle)<ArmConstants.POSITION_TOLERANCE;
     }
-    
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
