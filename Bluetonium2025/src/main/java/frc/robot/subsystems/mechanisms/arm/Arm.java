@@ -1,7 +1,6 @@
 package frc.robot.subsystems.mechanisms.arm;
 
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -11,16 +10,12 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,7 +31,6 @@ public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
     private DutyCycleEncoder absoluteEncoder;
-    private DigitalInput input = new DigitalInput(0);
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -109,10 +103,11 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Shoulder");
+        super.initSendable(builder);
+        builder.setSmartDashboardType("Arm");
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
         builder.addDoubleProperty("Current Position", this::getPosition, null);
-        builder.addDoubleProperty("Enchdorder", () -> absoluteEncoder.get(),null);
+        builder.addDoubleProperty("Absolute Encoder Position", () -> absoluteEncoder.get(), null);
 
     }
 
@@ -127,6 +122,8 @@ public class Arm extends SubsystemBase {
     }
 
     public void setup() {
+        double currentPos = absoluteEncoder.get() - ArmConstants.ABSOLUTE_ENCODER_OFFSET;
+        arm.setPosition(currentPos * ArmConstants.GEAR_RATIO);
         arm.stopMotor();
         ArmStates.setStates();
     }

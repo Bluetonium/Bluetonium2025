@@ -45,6 +45,7 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
         builder.setSmartDashboardType("Elevator");
         builder.addStringProperty("Target Position", () -> elevatorTargetPosition.name(), null);
         builder.addDoubleProperty("Position", this::getPosition, null);
@@ -127,7 +128,6 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-
     public boolean isSafeToMove(ElevatorPositions targetPosition) {
         double armAngle = ArmStates.armPosition.getAsDouble();
         if (armAngle > Math.toRadians(ArmConstants.MAX_ANGLE_TO_MOVE_ELEVATOR))
@@ -152,16 +152,16 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
-        if (/*!isSafeToMove(elevatorPosition)*/true==false) {
+        if (!isSafeToMove(elevatorPosition)) {
             return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
                     .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
                     .andThen(requestTargetPosition(elevatorPosition))
                     .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
                     .andThen(arm.setArmPosition(armPosition));
         }
-        return requestTargetPosition(elevatorPosition);
-               // .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
-                //.andThen(arm.setArmPosition(armPosition));
+        return requestTargetPosition(elevatorPosition)
+                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                .andThen(arm.setArmPosition(armPosition));
     }
 
     @Override

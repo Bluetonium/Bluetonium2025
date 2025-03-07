@@ -9,6 +9,8 @@ import frc.utils.sim.ArmConfig;
 public class ArmConstants {
     public static final int ARM_MOTOR_CAN_ID = 19;
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
+    public static final int ABSOLUTE_ENCODER_CHANNEL = 8;
+    public static final double ABSOLUTE_ENCODER_OFFSET = 0.1385748;// units of rotatations
 
     public static final double kP = 1400;
     public static final double kI = 0;
@@ -20,7 +22,7 @@ public class ArmConstants {
 
     // safety
     public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
-                                                               // it is safe
+    // it is safe
     // rather than actually move the elevator itself
 
     // arm physical properties

@@ -77,10 +77,9 @@ public class Drivers {
 
         if (configs.outtakeControls) {
 
-            outtakeAccept = new Trigger(() -> controller.getLeftTriggerAxis() > .5);// should only need to be a button
-                                                                                    // if we are using as
+            outtakeAccept = new Trigger(() -> controller.getLeftTriggerAxis() > .5);
             // intake.. which we might so yay
-            outtakeEject = new Trigger(() -> controller.getRightTriggerAxis() > .5); // TODO: fuckin figure out a button
+            outtakeEject = new Trigger(() -> controller.getRightTriggerAxis() > .5);
         }
 
     }
