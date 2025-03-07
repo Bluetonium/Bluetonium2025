@@ -20,8 +20,10 @@ public class ArmConstants {
     public static final double kG = 7;
 
     // safety
-    public static final double POSITION_TOLERANCE = 0.5; // bear in mind that this is used to determine if it is safe
-                                                         // rather than actually move the elevator itself
+    public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
+                                                                       // it is safe
+    // rather than actually move the elevator itself
+
 
     // arm physical properties
     public static final double ARM_LENGTH = 20.90551;
@@ -32,10 +34,11 @@ public class ArmConstants {
 
     // positions
     public static enum ArmPositions {
-        L1(0),
-        L2(0),
-        L3(0),
-        L4(100),
+        CORAL_PASS_OFF(-45),
+        L2(10),
+        L3(10),
+        L4(110),
+        TRANSITION_STATE(0),
         HOME(90);
 
         public double rotations;
@@ -47,7 +50,7 @@ public class ArmConstants {
         }
     }
 
-    public static final ArmConfig SIM_CONFIG = new ArmConfig( // TODO: change this shiet
+    public static final ArmConfig SIM_CONFIG = new ArmConfig(
             0.81,
             0.35,
             GEAR_RATIO,

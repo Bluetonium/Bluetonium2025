@@ -11,7 +11,7 @@ public final class ElevatorConstants {
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
 
     // PID and motion magic
-    public static final double kP = 1.6141; // THIS SEEMS VERY WRONG (TODO: probably change this...)
+    public static final double kP = 1.6141;
     public static final double kI = 0;
     public static final double kD = 0.19623;
     public static final double kS = 0.068232;
@@ -39,8 +39,8 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        L1(8),
-        L2(16),
+        CORAL_PASS_OFF(20),
+        L2(24),
         L3(24),
         L4(34);
 

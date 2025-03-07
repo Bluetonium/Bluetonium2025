@@ -20,19 +20,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotContainer;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.arm.Arm;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants;
 import frc.robot.subsystems.mechanisms.arm.ArmStates;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
 public class Elevator extends SubsystemBase {
-    private double desiredPosition;
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    private Arm arm;
     @Getter
     private ElevatorPositions elevatorTargetPosition = ElevatorPositions.HOME;
 
@@ -74,7 +77,8 @@ public class Elevator extends SubsystemBase {
 
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // PID
         Slot0Configs slot0 = config.Slot0;
@@ -109,7 +113,9 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setup() {
+        arm = RobotContainer.getArm();
         ElevatorStates.setStates();
+
     }
 
     private void applyConfig() {
@@ -119,6 +125,7 @@ public class Elevator extends SubsystemBase {
                     status.getName() + "Failed to apply configs to elevator" + status.getDescription(), false);
         }
     }
+
 
     public boolean isSafeToMove(ElevatorPositions targetPosition) {
         double armAngle = ArmStates.armPosition.getAsDouble();
@@ -134,15 +141,26 @@ public class Elevator extends SubsystemBase {
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
-    public Command requestTargetPosition(ElevatorPositions position) {
-        desiredPosition = position.inches;
-        return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
-                runOnce(() -> {
-                    final MotionMagicVoltage request = mmVoltage;
-                    motor.setControl(request.withPosition(position.rotations));
-                    elevatorTargetPosition = position;
-                }).withName("Elevator Target Position"));
+    private Command requestTargetPosition(ElevatorPositions position) {
+        return runOnce(() -> {
+            final MotionMagicVoltage request = mmVoltage;
+            motor.setControl(request.withPosition(position.rotations));
+            elevatorTargetPosition = position;
+        }).withName("Elevator Target Position");
 
+    }
+
+    public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
+        if (!isSafeToMove(elevatorPosition)) {
+            return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
+                    .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
+                    .andThen(requestTargetPosition(elevatorPosition))
+                    .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                    .andThen(arm.setArmPosition(armPosition));
+        }
+        return requestTargetPosition(elevatorPosition)
+                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                .andThen(arm.setArmPosition(armPosition));
     }
 
     @Override
@@ -163,7 +181,8 @@ public class Elevator extends SubsystemBase {
      * @return if the elevator is *close enough* to desired position
      */
     public boolean elevatorIsAtDesiredPosition() {
-        return Math.abs(getPosition() - desiredPosition) < ElevatorConstants.POSITION_TOLERANCE;
+        return Math.abs(getPosition() - elevatorTargetPosition.inches) < ElevatorConstants.POSITION_TOLERANCE;
+
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

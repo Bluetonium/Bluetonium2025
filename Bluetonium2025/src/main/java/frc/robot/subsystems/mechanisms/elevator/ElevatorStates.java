@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 
 public class ElevatorStates {
@@ -13,7 +14,7 @@ public class ElevatorStates {
     public static DoubleSupplier elevatorPosition;
 
     public static void setStates() {
-        RobotStates.L1.onTrue(l1());
+        RobotStates.coralPassOff.onTrue(coralPassOff());
         RobotStates.L2.onTrue(l2());
         RobotStates.L3.onTrue(l3());
         RobotStates.L4.onTrue(l4());
@@ -22,24 +23,25 @@ public class ElevatorStates {
         elevatorPosition = elevator::getPosition;
     }
 
-    private static Command l1() {
-        return elevator.requestTargetPosition(ElevatorPositions.L1).withName("Elevator.L1");
+    private static Command coralPassOff() {
+        return elevator.checkArmAndMove(ElevatorPositions.CORAL_PASS_OFF, ArmPositions.CORAL_PASS_OFF)
+                .withName("Elevator.L1");
     }
 
     private static Command l2() {
-        return elevator.requestTargetPosition(ElevatorPositions.L2).withName("Elevator.l2");
+        return elevator.checkArmAndMove(ElevatorPositions.L2, ArmPositions.L2).withName("Elevator.l2");
     }
 
     private static Command l3() {
-        return elevator.requestTargetPosition(ElevatorPositions.L3).withName("Elevator.l3");
+        return elevator.checkArmAndMove(ElevatorPositions.L3, ArmPositions.L3).withName("Elevator.l3");
     }
 
     private static Command l4() {
-        return elevator.requestTargetPosition(ElevatorPositions.L4).withName("Elevator.l4");
+        return elevator.checkArmAndMove(ElevatorPositions.L4, ArmPositions.L4).withName("Elevator.l4");
     }
 
     private static Command home() {
-        return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Going to Home");
+        return elevator.checkArmAndMove(ElevatorPositions.HOME, ArmPositions.HOME).withName("Going to Home");
     }
 
     // sysID

@@ -18,20 +18,16 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
-import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants;
-import frc.robot.subsystems.mechanisms.elevator.ElevatorStates;
 import frc.utils.sim.ArmSim;
 import lombok.Getter;
 
 public class Arm extends SubsystemBase {
     @Getter
     private ArmSim armSim;
-    private double desiredAngle;
     private TalonFX arm;
     private TalonFXConfiguration armConfig;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -123,13 +119,11 @@ public class Arm extends SubsystemBase {
     }
 
     public Command setArmPosition(ArmPositions position) {
-        desiredAngle = position.angle;
-        return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
-                runOnce(() -> {
-                    final MotionMagicVoltage request = mmVoltage;
-                    arm.setControl(request.withPosition(position.rotations));
-                    targetPosition = position;
-                }).withName("Arm Target Position"));
+        return runOnce(() -> {
+            final MotionMagicVoltage request = mmVoltage;
+            arm.setControl(request.withPosition(position.rotations));
+            targetPosition = position;
+        }).withName("Arm Target Position");
     }
 
     /**
@@ -140,14 +134,8 @@ public class Arm extends SubsystemBase {
         return Units.rotationsToRadians(arm.getPosition().getValueAsDouble() / ArmConstants.GEAR_RATIO);
     }
 
-    private boolean isSafeToMove(ArmPositions targetPosition) {
-        double armY = Math.sin(targetPosition.angle) * ArmConstants.ARM_LENGTH;
-        double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * ElevatorStates.elevatorPosition.getAsDouble();
-        return (armY + elevatorY) > 6;
-    }
-
     public boolean armIsAtDesiredPosition() {
-        return Math.abs(getPosition()-desiredAngle)<ArmConstants.POSITION_TOLERANCE;
+        return Math.abs(getPosition() - targetPosition.angle) < ArmConstants.POSITION_TOLERANCE;
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
