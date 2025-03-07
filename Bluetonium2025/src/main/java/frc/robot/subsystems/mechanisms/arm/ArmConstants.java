@@ -7,10 +7,9 @@ import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
 public class ArmConstants {
-    public static final int ARM_MOTOR_CAN_ID = 19; // we GOTTA figure it out!!!
-    public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
+    public static final int ARM_MOTOR_CAN_ID = 19;
+    public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
 
-    // PID (we'll figure it out eventually!!!)
     public static final double kP = 1400;
     public static final double kI = 0;
     public static final double kD = 160;
@@ -24,10 +23,9 @@ public class ArmConstants {
                                                                        // it is safe
     // rather than actually move the elevator itself
 
-
     // arm physical properties
     public static final double ARM_LENGTH = 20.90551;
-    public static final double GEAR_RATIO = 22;
+    public static final double GEAR_RATIO = 20;
     public static final double MIN_ANGLE = -90;
     public static final double MAX_ANGLE = 120;
     public static final double MAX_ANGLE_TO_MOVE_ELEVATOR = 100;// degrees

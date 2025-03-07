@@ -115,7 +115,7 @@ public class Elevator extends SubsystemBase {
     public void setup() {
         arm = RobotContainer.getArm();
         ElevatorStates.setStates();
-
+        motor.stopMotor();
     }
 
     private void applyConfig() {

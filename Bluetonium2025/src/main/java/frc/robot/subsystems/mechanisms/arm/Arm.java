@@ -115,6 +115,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setup() {
+        arm.stopMotor();
         ArmStates.setStates();
     }
 
