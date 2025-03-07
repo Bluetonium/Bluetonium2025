@@ -46,6 +46,7 @@ public class Drivers {
     public static Trigger L4;
     public static Trigger Home;
 
+    public static Trigger STOP;
     // outtake
     public static Trigger outtakeAccept;
     public static Trigger outtakeEject;
@@ -73,6 +74,7 @@ public class Drivers {
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
             Home = new Trigger(() -> controller.getPOV() == 0).and(function);
+            STOP = new Trigger(()->controller.getXButtonPressed());
         }
 
         if (configs.outtakeControls) {

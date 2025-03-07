@@ -7,18 +7,18 @@ import frc.robot.RobotContainer;
 import frc.utils.sim.ArmConfig;
 
 public class ArmConstants {
-    public static final int ARM_MOTOR_CAN_ID = 19;
+    public static final int ARM_MOTOR_CAN_ID = 16;
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
     public static final int ABSOLUTE_ENCODER_CHANNEL = 8;
     public static final double ABSOLUTE_ENCODER_OFFSET = 0.1385748;// units of rotatations
 
-    public static final double kP = 1400;
+    public static final double kP = 119.16;
     public static final double kI = 0;
-    public static final double kD = 160;
-    public static final double kV = 0;
-    public static final double kS = 0.4;
-    public static final double kA = 0.002;
-    public static final double kG = 7;
+    public static final double kD = 38.285;
+    public static final double kV = 11.146;
+    public static final double kS = 0.19305; //came out as negative :(
+    public static final double kA = 0.34718;
+    public static final double kG = 0.078246;
 
     // safety
     public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
@@ -45,7 +45,7 @@ public class ArmConstants {
         public double angle;
 
         private ArmPositions(double angle) {
-            rotations = Units.degreesToRotations(angle) * GEAR_RATIO;
+            rotations = Units.degreesToRotations(angle);
             this.angle = Math.toRadians(angle);
         }
     }

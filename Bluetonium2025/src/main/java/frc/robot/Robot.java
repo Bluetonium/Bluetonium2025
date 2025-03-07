@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +34,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
+    SignalLogger.stop();
   }
 
   @Override
@@ -62,6 +65,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    SignalLogger.start();
     m_robotContainer.resetRobotState();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

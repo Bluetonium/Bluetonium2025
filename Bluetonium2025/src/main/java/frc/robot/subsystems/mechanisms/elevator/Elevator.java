@@ -74,7 +74,6 @@ public class Elevator extends SubsystemBase {
      * 
      */
     public Elevator() {
-        SignalLogger.start();
         motor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_CAN_ID); // constants
 
         config = new TalonFXConfiguration();
@@ -149,6 +148,13 @@ public class Elevator extends SubsystemBase {
             elevatorTargetPosition = position;
         }).withName("Elevator Target Position");
 
+    }
+
+    public Command stopEverything() {
+        return runOnce(() -> {
+            motor.stopMotor();
+            arm.stopEverything();
+        });
     }
 
     public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {

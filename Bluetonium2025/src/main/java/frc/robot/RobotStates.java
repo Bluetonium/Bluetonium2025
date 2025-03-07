@@ -20,6 +20,8 @@ public class RobotStates {
         L4 = Drivers.L4;
         Home = Drivers.Home;
 
+        STOP = Drivers.STOP;
+
         outtakeAccept = Drivers.outtakeAccept;
         outtakeEject = Drivers.outtakeEject;
 
@@ -39,6 +41,8 @@ public class RobotStates {
     public static Trigger L3;
     public static Trigger L4;
     public static Trigger Home;
+
+    public static Trigger STOP;
 
     // outtake
     public static Trigger outtakeAccept;

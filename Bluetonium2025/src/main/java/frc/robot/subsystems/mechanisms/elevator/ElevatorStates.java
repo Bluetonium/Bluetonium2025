@@ -19,6 +19,7 @@ public class ElevatorStates {
         RobotStates.L3.onTrue(l3());
         RobotStates.L4.onTrue(l4());
         RobotStates.Home.onTrue(home());
+        RobotStates.STOP.onTrue(stop());
 
         elevatorPosition = elevator::getPosition;
     }
@@ -44,6 +45,9 @@ public class ElevatorStates {
         return elevator.checkArmAndMove(ElevatorPositions.HOME, ArmPositions.HOME).withName("Going to Home");
     }
 
+    private static Command stop() {
+        return elevator.stopEverything();
+    }
     // sysID
 
 }

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers.DriverConfigs;
 import frc.robot.subsystems.mechanisms.arm.Arm;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
 
 public class DriverConstants {
@@ -58,7 +59,9 @@ public class DriverConstants {
         ARM_QUASISTATIC_FORWARD(arm.sysIdQuasistatic(Direction.kForward)),
         ARM_QUASISTATIC_REVERSE(arm.sysIdQuasistatic(Direction.kReverse)),
         ARM_DYANMIC_FORWARD(arm.sysIdDynamic(Direction.kForward)),
-        ARM_DYANMIC_REVERSE(arm.sysIdDynamic(Direction.kReverse));
+        ARM_DYANMIC_REVERSE(arm.sysIdDynamic(Direction.kReverse)),
+        ARM_POSITION_TEST(arm.setArmPosition(ArmPositions.L2));
+
 
         public final Command command;
 
