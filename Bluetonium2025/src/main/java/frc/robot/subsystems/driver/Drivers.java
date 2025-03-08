@@ -50,6 +50,7 @@ public class Drivers {
     // outtake
     public static Trigger outtakeAccept;
     public static Trigger outtakeEject;
+    public static Trigger outtakeReverse;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -62,26 +63,27 @@ public class Drivers {
 
             wheelsXPosition = new Trigger(controller::getXButton).and(noFunction);
             steerWheels = new Trigger(controller::getAButton).and(noFunction);
-            zeroHeading = new Trigger(controller::getLeftBumperButton).and(noFunction);
+            zeroHeading = new Trigger(controller::getBButton).and(noFunction);
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
         }
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            coralPassOff = new Trigger(() -> controller.getPOV() == 0).and(noFunction);
+            coralPassOff = new Trigger(() -> controller.getPOV() == 0);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
-            Home = new Trigger(() -> controller.getPOV() == 0).and(function);
-            STOP = new Trigger(()->controller.getXButtonPressed());
+            Home = new Trigger(controller::getYButton);
+            STOP = new Trigger(() -> controller.getXButtonPressed());
         }
 
         if (configs.outtakeControls) {
 
-            outtakeAccept = new Trigger(() -> controller.getLeftTriggerAxis() > .5);
+            outtakeAccept = new Trigger(controller::getLeftBumperButton);
             // intake.. which we might so yay
-            outtakeEject = new Trigger(() -> controller.getRightTriggerAxis() > .5);
+            outtakeEject = new Trigger(controller::getRightBumperButton);
+            outtakeReverse = new Trigger(controller::getBButton);
         }
 
     }

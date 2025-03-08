@@ -129,7 +129,7 @@ public class Elevator extends SubsystemBase {
 
     public boolean isSafeToMove(ElevatorPositions targetPosition) {
         double armAngle = ArmStates.armPosition.getAsDouble();
-        if (armAngle > Math.toRadians(ArmConstants.MAX_ANGLE_TO_MOVE_ELEVATOR))
+        if (armAngle >= Math.toRadians(ArmConstants.MAX_ANGLE_TO_MOVE_ELEVATOR))
             return false;
         double armY = Math.sin(armAngle) * ArmConstants.ARM_LENGTH;
         double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * targetPosition.inches;
@@ -158,7 +158,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
-        if (!isSafeToMove(elevatorPosition)) {
+        if (true) {
             return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
                     .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
                     .andThen(requestTargetPosition(elevatorPosition))

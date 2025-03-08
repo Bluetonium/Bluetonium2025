@@ -39,7 +39,7 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        CORAL_PASS_OFF(20),
+        CORAL_PASS_OFF(6.5),
         L2(24),
         L3(24),
         L4(34);

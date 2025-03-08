@@ -7,11 +7,15 @@ import frc.utils.sim.RollerConfig;
 
 public class OuttakeConstant {
     public static final int OUTTAKE_MOTOR_CAN_ID = 17; // we GOTTA figure it out!!!
-    public static final NeutralModeValue OUTTAKE_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
+    public static final NeutralModeValue OUTTAKE_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once
+                                                                                              // more :)
     public static final int CORAL_SENSOR_CHANNEL = 1;
 
     // stuff
-    public static final double runningVelocity = 5;
+    public static final double INTAKE_SPEED = 0.3;
+    public static final double EJECT_FAST_SPEED = 0.6;
+    public static final double EJECT_SLOW_SPEED = 0.3;
+
     public static final double acceleration = 10;
     public static final double ejectionDelay = 2;// delay between not sensing a coral and stopping ejecting
 

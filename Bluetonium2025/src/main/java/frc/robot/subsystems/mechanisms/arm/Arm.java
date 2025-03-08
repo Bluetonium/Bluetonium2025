@@ -1,14 +1,11 @@
 package frc.robot.subsystems.mechanisms.arm;
 
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -41,7 +38,7 @@ public class Arm extends SubsystemBase {
     private ArmPositions targetPosition = ArmPositions.HOME;
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    //Volts.of(0.25).per(Second),
+                    // Volts.of(0.25).per(Second),
                     null,
                     Volts.of(2), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
@@ -67,20 +64,22 @@ public class Arm extends SubsystemBase {
         armConfig = new TalonFXConfiguration();
         armConfig.MotorOutput.NeutralMode = ArmConstants.ARM_MOTOR_NEUTRAL_MODE;
         armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-/*
-        SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
-        limitSwitch.ForwardSoftLimitEnable = true;
-        limitSwitch.ForwardSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MAX_ANGLE)
-                * ArmConstants.GEAR_RATIO;
-        limitSwitch.ReverseSoftLimitEnable = true;
-        limitSwitch.ReverseSoftLimitThreshold = Units.degreesToRotations(ArmConstants.MIN_ANGLE)
-                * ArmConstants.GEAR_RATIO;
-*/
+        /*
+         * SoftwareLimitSwitchConfigs limitSwitch = armConfig.SoftwareLimitSwitch;
+         * limitSwitch.ForwardSoftLimitEnable = true;
+         * limitSwitch.ForwardSoftLimitThreshold =
+         * Units.degreesToRotations(ArmConstants.MAX_ANGLE)P
+         * ArmConstants.GEAR_RATIO;
+         * limitSwitch.ReverseSoftLimitEnable = true;
+         * limitSwitch.ReverseSoftLimitThreshold =
+         * Units.degreesToRotations(ArmConstants.MIN_ANGLE)
+         * ArmConstants.GEAR_RATIO;
+         */
         // PID
         Slot0Configs slot0 = armConfig.Slot0;
         armConfig.Feedback.SensorToMechanismRatio = ArmConstants.GEAR_RATIO;
         armConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    
+
         slot0.kP = ArmConstants.kP;
         slot0.kI = ArmConstants.kI;
         slot0.kD = ArmConstants.kD;
@@ -90,11 +89,12 @@ public class Arm extends SubsystemBase {
         slot0.kG = ArmConstants.kG;
 
         MotionMagicConfigs motionMagic = armConfig.MotionMagic;
-        motionMagic.MotionMagicCruiseVelocity = 1;
-        motionMagic.MotionMagicAcceleration = 1;
+        motionMagic.MotionMagicCruiseVelocity = 0.5;
+        motionMagic.MotionMagicAcceleration = 0.5;
         motionMagic.MotionMagicJerk = 16;
 
         armSim = new ArmSim(ArmConstants.SIM_CONFIG, RobotSim.rightView, arm.getSimState(), "Arm");
+
         applyConfig();
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
@@ -117,9 +117,10 @@ public class Arm extends SubsystemBase {
         super.initSendable(builder);
         builder.setSmartDashboardType("Arm");
         builder.addStringProperty("Target Position", () -> targetPosition.name(), null);
-        builder.addDoubleProperty("Current Position", () ->getPosition() / (Math.PI*2), null);
-        builder .addDoubleProperty("Target Position Rotation", () -> targetPosition.angle,null);
-        builder.addDoubleProperty("Absolute Encoder Position", () -> absoluteEncoder.get(), null);
+        builder.addDoubleProperty("Current Position - Rotations", () -> arm.getPosition().getValueAsDouble() * 360,
+                null);
+        builder.addDoubleProperty("Target Position  - Rotations", () -> targetPosition.rotations, null);
+        builder.addDoubleProperty("Absolute Encoder Position - Rotations", () -> absoluteEncoder.get(), null);
 
     }
 
@@ -135,7 +136,7 @@ public class Arm extends SubsystemBase {
 
     public void setup() {
         double currentPos = absoluteEncoder.get() - ArmConstants.ABSOLUTE_ENCODER_OFFSET;
-        arm.setPosition(currentPos * ArmConstants.GEAR_RATIO);
+        arm.setPosition(currentPos);
         arm.stopMotor();
         ArmStates.setStates();
     }
@@ -153,7 +154,7 @@ public class Arm extends SubsystemBase {
      */
 
     public double getPosition() {
-        return Units.rotationsToRadians(arm.getPosition().getValueAsDouble() / ArmConstants.GEAR_RATIO);
+        return Units.rotationsToRadians(arm.getPosition().getValueAsDouble());
     }
 
     public boolean armIsAtDesiredPosition() {

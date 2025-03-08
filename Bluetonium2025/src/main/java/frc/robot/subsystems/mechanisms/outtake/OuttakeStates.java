@@ -9,11 +9,17 @@ public class OuttakeStates {
     private static Outtake outtake = RobotContainer.getOuttake();
     private static Elevator elevator = RobotContainer.getElevator();
     private static Arm arm = RobotContainer.getArm();
+
     public static void setupStates() {
         // lmao!!!!!
         boolean isInPosition = elevator.elevatorIsAtDesiredPosition() && arm.armIsAtDesiredPosition();
-        RobotStates.outtakeAccept.whileTrue(outtake.outtakeAccept()).and(()->isInPosition);
-        RobotStates.outtakeEject.whileTrue(outtake.outtakeEject()).and(()->isInPosition);
+        RobotStates.outtakeAccept.whileTrue(outtake.outtakeAccept()).and(() -> isInPosition);
+
+        RobotStates.outtakeEject.whileTrue(outtake.outtakeEject(OuttakeConstant.EJECT_FAST_SPEED))
+                .and(() -> isInPosition);
+
+        RobotStates.outakeReverse.whileTrue(outtake.outtakeReverse());
+
         // RobotStates.reef
         // sys id (this states file dry as hell dawg)
 

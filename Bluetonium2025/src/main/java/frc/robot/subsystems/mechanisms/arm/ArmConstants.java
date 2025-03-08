@@ -16,28 +16,28 @@ public class ArmConstants {
     public static final double kI = 0;
     public static final double kD = 38.285;
     public static final double kV = 11.146;
-    public static final double kS = 0.19305; //came out as negative :(
+    public static final double kS = 0.19305; // came out as negative :(
     public static final double kA = 0.34718;
     public static final double kG = 0.078246;
 
     // safety
-    public static final double POSITION_TOLERANCE = Math.toRadians(5); // bear in mind that this is used to determine if
+    public static final double POSITION_TOLERANCE = Math.toRadians(2); // bear in mind that this is used to determine if
     // it is safe
     // rather than actually move the elevator itself
 
     // arm physical properties
-    public static final double ARM_LENGTH = 20.90551;
+    public static final double ARM_LENGTH = 23.5;
     public static final double GEAR_RATIO = 100;
     public static final double MIN_ANGLE = -90;
     public static final double MAX_ANGLE = 120;
-    public static final double MAX_ANGLE_TO_MOVE_ELEVATOR = 100;// degrees
+    public static final double MAX_ANGLE_TO_MOVE_ELEVATOR = 83;// degrees
 
     // positions
     public static enum ArmPositions {
-        CORAL_PASS_OFF(-45),
-        L2(10),
-        L3(10),
-        L4(110),
+        CORAL_PASS_OFF(38),
+        L2(30),
+        L3(30),
+        L4(100),
         TRANSITION_STATE(0),
         HOME(90);
 

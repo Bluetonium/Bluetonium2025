@@ -1,11 +1,9 @@
 package frc.robot.subsystems.mechanisms.outtake;
 
 import com.revrobotics.REVLibError;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -73,6 +71,9 @@ public class Outtake extends SubsystemBase {
         motor = new SparkMax(OuttakeConstant.OUTTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         closedLoopController = motor.getClosedLoopController();
         motorConfig = new SparkMaxConfig();
+        motorConfig.smartCurrentLimit(30);
+        motorConfig.idleMode(IdleMode.kBrake);
+        motorConfig.inverted(true);
         motorConfig.closedLoop
                 .p(ArmConstants.kP)
                 .i(ArmConstants.kI)
@@ -107,33 +108,41 @@ public class Outtake extends SubsystemBase {
         OuttakeStates.setupStates();
     }
 
+    public Command outtakeReverse() {
+        return new FunctionalCommand(
+                () -> motor.set(-OuttakeConstant.INTAKE_SPEED), () -> {
+                }, (interuppted) -> motor.set(0), () -> false, this);
+    }
+
     public Command outtakeAccept() {
         return new FunctionalCommand(
                 () -> {
-                    closedLoopController.setReference(OuttakeConstant.runningVelocity,
-                            ControlType.kMAXMotionVelocityControl,
-                            ClosedLoopSlot.kSlot0);
+                    motor.set(OuttakeConstant.INTAKE_SPEED);
+                    // closedLoopController.setReference(OuttakeConstant.runningVelocity,
+                    // ControlType.kMAXMotionVelocityControl,
+                    // ClosedLoopSlot.kSlot0);
                 },
                 () -> {// nothing to do here
                 },
                 (interupted) -> {
-                    closedLoopController.setReference(0, ControlType.kMAXMotionVelocityControl,
-                            ClosedLoopSlot.kSlot0);
+                    motor.set(0.0);
+
+                    // closedLoopController.setReference(0, ControlType.kMAXMotionVelocityControl,
+                    // ClosedLoopSlot.kSlot0);
                 },
                 () -> {
-                    return coralSensor.get();
+                    return false;
+                    // return coralSensor.get();
                 },
                 this).withName("OutakeAccept");
     }
 
-    public Command outtakeEject() {
+    public Command outtakeEject(double speed) {
         Timer ejectionTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
                     ejectionTimer.reset();
-                    closedLoopController.setReference(OuttakeConstant.runningVelocity,
-                            ControlType.kMAXMotionVelocityControl,
-                            ClosedLoopSlot.kSlot0);
+                    motor.set(speed);
                 },
                 () -> {
                     if (!coralSensor.get() && ejectionTimer.isRunning()) {
@@ -141,8 +150,10 @@ public class Outtake extends SubsystemBase {
                     }
                 },
                 (interupted) -> {
-                    closedLoopController.setReference(0, ControlType.kMAXMotionVelocityControl,
-                            ClosedLoopSlot.kSlot0);
+                    motor.set(0.0);
+
+                    // closedLoopController.setReference(0, ControlType.kMAXMotionVelocityControl,
+                    // ClosedLoopSlot.kSlot0);
                     ejectionTimer.stop();
                 },
                 () -> {

@@ -27,6 +27,7 @@ public class RobotStates {
 
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
+        outakeReverse = Drivers.outtakeReverse;
     }
 
     public static Trigger teleop;
@@ -47,6 +48,7 @@ public class RobotStates {
     // outtake
     public static Trigger outtakeAccept;
     public static Trigger outtakeEject;
+    public static Trigger outakeReverse;
 
     // limelight (probably idfk)
     public static Trigger reefAlignLeft;
