@@ -158,16 +158,12 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
-        if (true) {
-            return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
-                    .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
-                    .andThen(requestTargetPosition(elevatorPosition))
-                    .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
-                    .andThen(arm.setArmPosition(armPosition));
-        }
-        return requestTargetPosition(elevatorPosition)
+        return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
+                .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
+                .andThen(requestTargetPosition(elevatorPosition))
                 .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
                 .andThen(arm.setArmPosition(armPosition));
+
     }
 
     @Override
