@@ -78,9 +78,7 @@ public class Elevator extends SubsystemBase {
 
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
-
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
         // PID
         Slot0Configs slot0 = config.Slot0;
         slot0.kS = ElevatorConstants.kS;
@@ -141,7 +139,7 @@ public class Elevator extends SubsystemBase {
      * @param rotations   the position you want it to go to. Range from 0-1
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
-    private Command requestTargetPosition(ElevatorPositions position) {
+    public Command requestTargetPosition(ElevatorPositions position) {
         return runOnce(() -> {
             final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(position.rotations));
@@ -163,6 +161,23 @@ public class Elevator extends SubsystemBase {
                 .andThen(requestTargetPosition(elevatorPosition))
                 .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
                 .andThen(arm.setArmPosition(armPosition));
+
+    }
+
+    /**
+     * this will automate the deep hang when it is set up
+     * 
+     * @param elevatorPosition
+     * @param armPosition
+     * @return
+     */
+    public Command deepHangSequence(ElevatorPositions elevatorPosition, ElevatorPositions secondPosition,
+            ArmPositions armPosition) {
+        return arm.setArmPosition(armPosition)
+                .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
+                .andThen(requestTargetPosition(elevatorPosition))
+                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                .andThen(requestTargetPosition(secondPosition));
 
     }
 
