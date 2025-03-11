@@ -338,7 +338,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getPathToReef(false);
     }
 
-    // Drive to target position
+    /**
+     * Drives to a target position using PathPlanner
+     * @param targetPos target position to drive to
+     * @param name name
+     */
     private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
 
