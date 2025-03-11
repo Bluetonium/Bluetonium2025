@@ -56,9 +56,9 @@ public class Drivers {
             chassisControlStrafe = controller::getLeftX;
             chassisControlRotation = controller::getRightX;
 
-            wheelsXPosition = new Trigger(controller::getXButton).and(noFunction);
-            steerWheels = new Trigger(controller::getAButton).and(noFunction);
-            zeroHeading = new Trigger(controller::getBButton).and(noFunction);
+            wheelsXPosition = new Trigger(controller::getXButton);
+            steerWheels = new Trigger(controller::getAButton);
+            zeroHeading = new Trigger(controller::getBButton);
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
