@@ -14,20 +14,15 @@ public class RobotStates {
         disabled = new Trigger(DriverStation::isDisabled);
         dsAttached = new Trigger(DriverStation::isDSAttached);
 
-        coralPassOff = Drivers.coralPassOff;
-        L2 = Drivers.L2;
-        L3 = Drivers.L3;
-        L4 = Drivers.L4;
         Home = Drivers.Home;
-
+        deepHangSequence = Drivers.deepHangSequence;
+        setupDeepHang = Drivers.setupDeepHang;
+        moveElevatorDeephang = Drivers.moveElevatorDeephang;
+        runningArm = Drivers.runningArm;
         STOP = Drivers.STOP;
-
-        outtakeAccept = Drivers.outtakeAccept;
-        outtakeEject = Drivers.outtakeEject;
 
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
-        outakeReverse = Drivers.outtakeReverse;
     }
 
     public static Trigger teleop;
@@ -37,18 +32,12 @@ public class RobotStates {
     public static Trigger dsAttached;
 
     // elevator and Arm
-    public static Trigger coralPassOff;
-    public static Trigger L2;
-    public static Trigger L3;
-    public static Trigger L4;
     public static Trigger Home;
-
+    public static Trigger deepHangSequence;
+    public static Trigger setupDeepHang;
+    public static Trigger moveElevatorDeephang;
+    public static Trigger runningArm;
     public static Trigger STOP;
-
-    // outtake
-    public static Trigger outtakeAccept;
-    public static Trigger outtakeEject;
-    public static Trigger outakeReverse;
 
     // limelight (probably idfk)
     public static Trigger reefAlignLeft;

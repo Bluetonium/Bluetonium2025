@@ -10,7 +10,7 @@ public class ArmConstants {
     public static final int ARM_MOTOR_CAN_ID = 16;
     public static final NeutralModeValue ARM_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
     public static final int ABSOLUTE_ENCODER_CHANNEL = 8;
-    public static final double ABSOLUTE_ENCODER_OFFSET = 0.1385748;// units of rotatations
+    public static final double ABSOLUTE_ENCODER_OFFSET = 0.8216;// units of rotatations
 
     public static final double kP = 119.16;
     public static final double kI = 0;
@@ -34,12 +34,10 @@ public class ArmConstants {
 
     // positions
     public static enum ArmPositions {
-        CORAL_PASS_OFF(38),
-        L2(30),
-        L3(30),
-        L4(100),
         TRANSITION_STATE(0),
-        HOME(90);
+        HOME(0),
+        DEEPHANG(45), // TODO: find out lol
+        SETUPDEEPHIGH(-90);
 
         public double rotations;
         public double angle;

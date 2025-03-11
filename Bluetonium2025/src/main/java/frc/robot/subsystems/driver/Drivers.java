@@ -16,8 +16,6 @@ public class Drivers {
         protected boolean chassisDriving = false;
         @Setter
         protected boolean armControl = false;
-        @Setter
-        protected boolean outtakeControls = false;
     }
 
     // Controller
@@ -40,17 +38,13 @@ public class Drivers {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     // Elevator
-    public static Trigger coralPassOff;
-    public static Trigger L2;
-    public static Trigger L3;
-    public static Trigger L4;
     public static Trigger Home;
+    public static Trigger deepHangSequence;
+    public static Trigger setupDeepHang;
+    public static Trigger moveElevatorDeephang;
+    public static Trigger runningArm;
 
     public static Trigger STOP;
-    // outtake
-    public static Trigger outtakeAccept;
-    public static Trigger outtakeEject;
-    public static Trigger outtakeReverse;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -70,22 +64,13 @@ public class Drivers {
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            coralPassOff = new Trigger(() -> controller.getPOV() == 0);
-            L2 = new Trigger(() -> controller.getPOV() == 90);
-            L3 = new Trigger(() -> controller.getPOV() == 180);
-            L4 = new Trigger(() -> controller.getPOV() == 270);
             Home = new Trigger(controller::getYButton);
             STOP = new Trigger(() -> controller.getXButtonPressed());
+            deepHangSequence = new Trigger(controller::getLeftBumperButton);
+            setupDeepHang = new Trigger(controller::getAButton);
+            moveElevatorDeephang = new Trigger(controller::getBButton);
+            runningArm = new Trigger(controller::getRightBumperButton);
         }
-
-        if (configs.outtakeControls) {
-
-            outtakeAccept = new Trigger(controller::getLeftBumperButton);
-            // intake.. which we might so yay
-            outtakeEject = new Trigger(controller::getRightBumperButton);
-            outtakeReverse = new Trigger(controller::getBButton);
-        }
-
     }
 
     public Drivers(DriverConfigs driverConfigs) {

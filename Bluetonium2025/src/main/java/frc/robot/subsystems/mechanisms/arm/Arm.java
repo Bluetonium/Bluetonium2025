@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -62,6 +64,16 @@ public class Arm extends SubsystemBase {
 
         absoluteEncoder = new DutyCycleEncoder(ArmConstants.ABSOLUTE_ENCODER_CHANNEL);
         armConfig = new TalonFXConfiguration();
+        CurrentLimitsConfigs currentLimit = armConfig.CurrentLimits;
+        currentLimit.StatorCurrentLimitEnable = false;
+        // currentLimit.StatorCurrentLimit = 10; // is very low
+
+        SoftwareLimitSwitchConfigs softLimit = armConfig.SoftwareLimitSwitch;
+        softLimit.ForwardSoftLimitEnable = true;
+        softLimit.ForwardSoftLimitThreshold = ArmConstants.ArmPositions.DEEPHANG.rotations;
+        softLimit.ReverseSoftLimitEnable = true;
+        softLimit.ReverseSoftLimitThreshold = ArmConstants.ArmPositions.SETUPDEEPHIGH.rotations;
+
         armConfig.MotorOutput.NeutralMode = ArmConstants.ARM_MOTOR_NEUTRAL_MODE;
         armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         /*
@@ -98,6 +110,10 @@ public class Arm extends SubsystemBase {
         applyConfig();
         SendableRegistry.add(this, "Arm");
         SmartDashboard.putData(this);
+    }
+
+    public Command setSpeed(double speed) {
+        return run(() -> arm.set(speed));
     }
 
     private void applyConfig() {
