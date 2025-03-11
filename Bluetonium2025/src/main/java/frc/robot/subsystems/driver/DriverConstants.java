@@ -46,7 +46,6 @@ public class DriverConstants {
         driver2Configs.setPort(1);
         driver2Configs.setElevatorControl(true);
         driver2Configs.setArmControl(true);
-        driver2Configs.setOuttakeControls(true);
         checkOverlap(driver2Configs, driver1Configs);
     }
 
@@ -54,7 +53,11 @@ public class DriverConstants {
         ELEVATOR_QUASISTATIC_FORWARD(elevator.sysIdQuasistatic(Direction.kForward)),
         ELEVATOR_QUASISTATIC_REVERSE(elevator.sysIdQuasistatic(Direction.kReverse)),
         ELEVATOR_DYNAMIC_FORWARD(elevator.sysIdDynamic(Direction.kForward)),
-        ELEVATOR_DYNAMIC_REVERSE(elevator.sysIdDynamic(Direction.kReverse));
+        ELEVATOR_DYNAMIC_REVERSE(elevator.sysIdDynamic(Direction.kReverse)),
+        ARM_QUASISTATIC_FORWARD(arm.sysIdQuasistatic(Direction.kForward)),
+        ARM_QUASISTATIC_REVERSE(arm.sysIdQuasistatic(Direction.kReverse)),
+        ARM_DYANMIC_FORWARD(arm.sysIdDynamic(Direction.kForward)),
+        ARM_DYANMIC_REVERSE(arm.sysIdDynamic(Direction.kReverse));
 
         public final Command command;
 

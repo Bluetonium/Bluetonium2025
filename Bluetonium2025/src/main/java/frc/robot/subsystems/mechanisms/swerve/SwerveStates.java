@@ -21,7 +21,6 @@ public class SwerveStates {
                         new Rotation2d(-Drivers.chassisControlTranslation.getAsDouble(),
                                 -Drivers.chassisControlStrafe.getAsDouble()))));
 
-        // reset the field-centric heading on left bumper press
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
         RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
         RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));

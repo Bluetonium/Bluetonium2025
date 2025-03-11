@@ -16,8 +16,6 @@ public class Drivers {
         protected boolean chassisDriving = false;
         @Setter
         protected boolean armControl = false;
-        @Setter
-        protected boolean outtakeControls = false;
     }
 
     // Controller
@@ -41,18 +39,13 @@ public class Drivers {
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
     // Elevator
-    public static Trigger L1;
-    public static Trigger L2;
-    public static Trigger L3;
-    public static Trigger L4;
     public static Trigger Home;
+    public static Trigger deepHangSequence;
+    public static Trigger setupDeepHang;
+    public static Trigger moveElevatorDeephang;
+    public static Trigger runningArm;
 
-    // Shoulder
-    public static Trigger pos1;
-    public static Trigger pos2;
-
-    // outtake
-    public static Trigger outtakeAccept;
+    public static Trigger STOP;
 
     private void applyConfigs(DriverConfigs configs) {
         function = new Trigger(controller::getStartButton);
@@ -65,7 +58,7 @@ public class Drivers {
 
             wheelsXPosition = new Trigger(controller::getXButton).and(noFunction);
             steerWheels = new Trigger(controller::getAButton).and(noFunction);
-            zeroHeading = new Trigger(controller::getLeftBumperButton).and(noFunction);
+            zeroHeading = new Trigger(controller::getBButton).and(noFunction);
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
@@ -73,22 +66,13 @@ public class Drivers {
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            L1 = new Trigger(() -> controller.getPOV() == 0).and(noFunction);
-            L2 = new Trigger(() -> controller.getPOV() == 90);
-            L3 = new Trigger(() -> controller.getPOV() == 180);
-            L4 = new Trigger(() -> controller.getPOV() == 270);
-            Home = new Trigger(() -> controller.getPOV() == 0).and(function);
+            Home = new Trigger(controller::getYButton);
+            STOP = new Trigger(() -> controller.getXButtonPressed());
+            deepHangSequence = new Trigger(controller::getLeftBumperButton);
+            setupDeepHang = new Trigger(controller::getAButton);
+            moveElevatorDeephang = new Trigger(controller::getBButton);
+            runningArm = new Trigger(controller::getRightBumperButton);
         }
-
-        if (configs.armControl) {
-            pos1 = new Trigger(controller::getXButton);
-            pos2 = new Trigger(controller::getYButton);
-        }
-
-        if (configs.outtakeControls) {
-            outtakeAccept = new Trigger(controller::getAButton);
-        }
-
     }
 
     public Drivers(DriverConfigs driverConfigs) {

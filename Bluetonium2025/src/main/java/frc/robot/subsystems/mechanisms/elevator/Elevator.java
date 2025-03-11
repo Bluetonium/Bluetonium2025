@@ -20,9 +20,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotContainer;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.mechanisms.arm.Arm;
 import frc.robot.subsystems.mechanisms.arm.ArmConstants;
 import frc.robot.subsystems.mechanisms.arm.ArmStates;
+import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
@@ -32,6 +35,7 @@ public class Elevator extends SubsystemBase {
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private final MotionMagicVoltage mmVoltage = new MotionMagicVoltage(0);
+    private Arm arm;
     @Getter
     private ElevatorPositions elevatorTargetPosition = ElevatorPositions.HOME;
 
@@ -41,6 +45,7 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
         builder.setSmartDashboardType("Elevator");
         builder.addStringProperty("Target Position", () -> elevatorTargetPosition.name(), null);
         builder.addDoubleProperty("Position", this::getPosition, null);
@@ -74,7 +79,6 @@ public class Elevator extends SubsystemBase {
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
         // PID
         Slot0Configs slot0 = config.Slot0;
         slot0.kS = ElevatorConstants.kS;
@@ -108,7 +112,9 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setup() {
+        arm = RobotContainer.getArm();
         ElevatorStates.setStates();
+        motor.stopMotor();
     }
 
     private void applyConfig() {
@@ -120,7 +126,10 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isSafeToMove(ElevatorPositions targetPosition) {
-        double armY = Math.sin(ArmStates.armPosition.getAsDouble()) * ArmConstants.ARM_LENGTH;
+        double armAngle = ArmStates.armPosition.getAsDouble();
+        if (armAngle >= Math.toRadians(ArmConstants.MAX_ANGLE_TO_MOVE_ELEVATOR))
+            return false;
+        double armY = Math.sin(armAngle) * ArmConstants.ARM_LENGTH;
         double elevatorY = Math.sin(ElevatorConstants.MOUNTING_ANGLE) * targetPosition.inches;
         return (armY + elevatorY) > 6;
     }
@@ -131,12 +140,44 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-        return Commands.waitUntil(() -> isSafeToMove(position)).andThen(
-                runOnce(() -> {
-                    final MotionMagicVoltage request = mmVoltage;
-                    motor.setControl(request.withPosition(position.rotations));
-                    elevatorTargetPosition = position;
-                }).withName("Elevator Target Position"));
+        return runOnce(() -> {
+            final MotionMagicVoltage request = mmVoltage;
+            motor.setControl(request.withPosition(position.rotations));
+            elevatorTargetPosition = position;
+        }).withName("Elevator Target Position");
+
+    }
+
+    public Command stopEverything() {
+        return runOnce(() -> {
+            motor.stopMotor();
+            arm.stopEverything();
+        });
+    }
+
+    public Command checkArmAndMove(ElevatorPositions elevatorPosition, ArmPositions armPosition) {
+        return arm.setArmPosition(ArmPositions.TRANSITION_STATE)
+                .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
+                .andThen(requestTargetPosition(elevatorPosition))
+                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                .andThen(arm.setArmPosition(armPosition));
+
+    }
+
+    /**
+     * this will automate the deep hang when it is set up
+     * 
+     * @param elevatorPosition
+     * @param armPosition
+     * @return
+     */
+    public Command deepHangSequence(ElevatorPositions elevatorPosition, ElevatorPositions secondPosition,
+            ArmPositions armPosition) {
+        return arm.setArmPosition(armPosition)
+                .andThen(Commands.waitUntil(arm::armIsAtDesiredPosition))
+                .andThen(requestTargetPosition(elevatorPosition))
+                .andThen(Commands.waitUntil(this::elevatorIsAtDesiredPosition))
+                .andThen(requestTargetPosition(secondPosition));
 
     }
 
@@ -153,6 +194,15 @@ public class Elevator extends SubsystemBase {
         return motor.getPosition().getValueAsDouble() / ElevatorConstants.END_GEAR_RATIO;
     }
 
+    /**
+     * 
+     * @return if the elevator is *close enough* to desired position
+     */
+    public boolean elevatorIsAtDesiredPosition() {
+        return Math.abs(getPosition() - elevatorTargetPosition.inches) < ElevatorConstants.POSITION_TOLERANCE;
+
+    }
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
@@ -160,5 +210,4 @@ public class Elevator extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
-
 }

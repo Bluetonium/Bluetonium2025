@@ -20,7 +20,6 @@ import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
 import frc.robot.subsystems.mechanisms.arm.Arm;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
-import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
 import lombok.Getter;
@@ -39,8 +38,6 @@ public class RobotContainer {
     private static Elevator elevator;
     @Getter
     private static Arm arm;
-    @Getter
-    private static Outtake outtake;
     @Getter
     private static CommandSwerveDrivetrain swerve;
     @Getter
@@ -72,8 +69,6 @@ public class RobotContainer {
         Timer.delay(INIT_DELAY);
         arm = new Arm();
         Timer.delay(INIT_DELAY);
-        outtake = new Outtake();
-        Timer.delay(INIT_DELAY);
         swerve = TunerConstants.createDrivetrain();
         Timer.delay(INIT_DELAY);
         vision = new LimelightLocalization(swerve);
@@ -94,7 +89,6 @@ public class RobotContainer {
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
-        outtake.setup();
         arm.setup();
         DriverStates.setupTestables();
     }
