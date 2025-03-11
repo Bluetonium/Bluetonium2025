@@ -23,6 +23,7 @@ public class RobotStates {
 
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
+        coralStationAlign = Drivers.coralStationAlign;
     }
 
     public static Trigger teleop;
@@ -39,7 +40,11 @@ public class RobotStates {
     public static Trigger runningArm;
     public static Trigger STOP;
 
-    // limelight (probably idfk)
+    // outtake
+    public static Trigger outtakeAccept;
+
+    // chassis
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
+    public static Trigger coralStationAlign;
 }

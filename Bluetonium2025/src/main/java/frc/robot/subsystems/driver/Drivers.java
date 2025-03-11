@@ -37,6 +37,7 @@ public class Drivers {
     public static Trigger zeroHeading;
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
+    public static Trigger coralStationAlign;
     // Elevator
     public static Trigger Home;
     public static Trigger deepHangSequence;
@@ -60,6 +61,7 @@ public class Drivers {
             zeroHeading = new Trigger(controller::getBButton).and(noFunction);
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
+            coralStationAlign = new Trigger(controller::getYButton);
         }
 
         if (configs.elevatorControl) {

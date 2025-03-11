@@ -324,7 +324,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command AlignToReefRegion(boolean leftBranch) {
         Set<Subsystem> requirements = new HashSet<Subsystem>();
-
         requirements.add(this);
         if (leftBranch)
             return Commands.defer(this::getPathToReefLeft, requirements);
@@ -339,29 +338,82 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getPathToReef(false);
     }
 
-    private Command getPathToReef(boolean left) {
+    // Drive to target position
+    private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
-        REEF_REGIONS region = getCurrentRegion();
-        Pose2d targetPose = Field.flipIfRed(Field.reefRegionToPose(region, left));
 
-        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(),
-                new Rotation2d(Field.getAngleToReef(state.Pose.getTranslation())).plus(Rotation2d.k180deg));
+        // finding a rotation because for waypoints rotation is heading (direction we
+        // wanna be heading) so we us the angle to target so we head towards target at
+        // first
+        Rotation2d angleToTarget = Rotation2d
+                .fromRadians(Field.getAngleTo(state.Pose.getTranslation(), targetPos.getTranslation()))
+                .plus(Rotation2d.k180deg);
+
+        Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), angleToTarget);
 
         List<Waypoint> pathPoints = PathPlannerPath
                 .waypointsFromPoses(
                         startingPos,
-                        targetPose);
+                        targetPos);
         PathPlannerPath path = new PathPlannerPath(
                 pathPoints,
 
                 TunerConstants.autoAlignmentConstraints,
                 null,
-                new GoalEndState(0, targetPose.getRotation()));
+                new GoalEndState(0, targetPos.getRotation()));
 
-        path.name = String.format("Aligning Reef Side : %s", region.name());
+        path.name = name;
         path.preventFlipping = true;
 
         return AutoBuilder.followPath(path).withName(path.name);
+    }
+
+    public Command AlignToCoralStation() {
+        Set<Subsystem> requirements = new HashSet<Subsystem>();
+        requirements.add(this);
+        return Commands.defer(this::getPathToCoralStation, requirements);
+    }
+
+    // Drive to coral station
+    private Command getPathToCoralStation() {
+        final double angle = Math.toRadians(54);
+
+        SwerveDriveState state = getState();
+        Pose2d fieldPos = state.Pose;
+
+        double fieldDividerLine = Field.fieldWidth / 2;
+
+        double distance = 1.25; // 1.25 from the x direction, and 1.25 from the y. Not diagonal. Manhattan
+                                // Distance.
+
+        double goalX = 0;
+        double goalY = 0;
+        double rotation = 0;
+
+        if (fieldPos.getY() < fieldDividerLine) {
+            goalX = distance;
+            goalY = distance;
+            rotation = Math.PI + angle;
+        } else {
+            goalX = distance;
+            goalY = Field.fieldWidth - distance;
+            rotation = Math.PI - angle;
+        }
+
+        Rotation2d goalRotation = new Rotation2d(rotation);
+
+        Pose2d goalPos = new Pose2d(goalX, goalY, goalRotation);
+
+        goalPos = Field.mirrorIfRed(goalPos);
+        return createPath(goalPos, "Aligning to Coral Station");
+    }
+
+    // Drive to reef
+    private Command getPathToReef(boolean left) {
+        REEF_REGIONS region = getCurrentRegion();
+        Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
+
+        return createPath(targetPos, "Aligning Reef Side : " + region.name());
     }
 
     public REEF_REGIONS getCurrentRegion() {
