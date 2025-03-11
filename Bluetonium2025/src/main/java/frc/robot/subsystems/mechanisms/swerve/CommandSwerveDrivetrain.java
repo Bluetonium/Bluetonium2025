@@ -199,7 +199,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         PPdriveController = new PPHolonomicDriveController(
                 new PIDConstants(5.0, 0.0, 0.0),
-                new PIDConstants(5.0, 0.0, 0.0));
+                new PIDConstants(8, 0.0, 0.2));
         AutoBuilder.configure(
                 () -> getState().Pose,
                 this::resetPose,
