@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,12 +27,14 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -351,23 +355,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // first
         Rotation2d angleToTarget = Rotation2d
                 .fromRadians(Field.getAngleTo(state.Pose.getTranslation(), targetPos.getTranslation()))
-                .plus(Rotation2d.k180deg);
+                .plus(Rotation2d.k180deg); //(probably) the problem child; .plus calls rotateBy which can return 0,0 and thus crashes
 
         Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), angleToTarget);
-
         List<Waypoint> pathPoints = PathPlannerPath
                 .waypointsFromPoses(
                         startingPos,
                         targetPos);
+
+                        
+        List<RotationTarget> rotationTargets = Arrays.asList(
+            new RotationTarget(0.5,targetPos.getRotation())
+        );
         PathPlannerPath path = new PathPlannerPath(
                 pathPoints,
-
+                rotationTargets,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
                 TunerConstants.autoAlignmentConstraints,
                 null,
-                new GoalEndState(0, targetPos.getRotation()));
+                new GoalEndState(0, targetPos.getRotation()),
+                false);
 
         path.name = name;
         path.preventFlipping = true;
+        //RotationTarget e = new RotationTarget();
 
         return AutoBuilder.followPath(path).withName(path.name);
     }
