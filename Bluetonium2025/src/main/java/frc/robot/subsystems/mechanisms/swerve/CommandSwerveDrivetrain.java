@@ -78,7 +78,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // Requests
     private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
+            .withDeadband(MAX_SPEED * 0.05).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     // private final Map<REEF_REGIONS,Command> pathfinding
@@ -179,12 +179,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 applyRequest(
-                        () -> drive.withVelocityX(-Drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED) // Drive
-                                .withVelocityY(-Drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED) // Drive left
-                                                                                                        // with
-                                                                                                        // // (left)
+                        () -> drive
+                                .withVelocityX(
+                                        -Math.pow(Drivers.chassisControlTranslation.getAsDouble(), 3) * MAX_SPEED) // Drive
+                                .withVelocityY(-Math.pow(Drivers.chassisControlStrafe.getAsDouble(), 3) * MAX_SPEED) // Drive
+                                                                                                                     // left
+                                // with
+                                // // (left)
                                 .withRotationalRate(
-                                        -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED)));
+                                        -Math.pow(Drivers.chassisControlRotation.getAsDouble(), 3)
+                                                * MAX_ANGULAR_SPEED)));
 
     }
 
@@ -340,8 +344,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /**
      * Drives to a target position using PathPlanner
+     * 
      * @param targetPos target position to drive to
-     * @param name name
+     * @param name      name
      */
     private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
