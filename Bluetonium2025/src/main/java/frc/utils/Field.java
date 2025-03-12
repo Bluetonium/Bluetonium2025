@@ -1,11 +1,11 @@
 package frc.utils;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
 
 public class Field {
     public static final double fieldLength = Units.inchesToMeters(690.876);
@@ -34,6 +34,20 @@ public class Field {
         AB,
         CD,
         EF
+    }
+
+    private static final double REEF_OFFSET = Units.inchesToMeters(32.75 + 16.5 + 5);// 32.75 is the width of the reef,
+                                                                                     // 16.5 is the chassis width and
+                                                                                     // bumper width
+    private static final Pose2d[] REEF_SCORING_LOCATIONS = new Pose2d[6];
+    static {
+        for (int i = 0; i < 6; i++) {
+            double angle = (Math.PI / 3) * i;
+            REEF_SCORING_LOCATIONS[i] = new Pose2d(
+                    Math.cos(angle) * REEF_OFFSET + REEF_CENTER.getX(),
+                    Math.sin(angle) * REEF_OFFSET + REEF_CENTER.getY(),
+                    Rotation2d.fromRadians(angle).plus(Rotation2d.k180deg));
+        }
     }
 
     /***
@@ -83,30 +97,7 @@ public class Field {
     }
 
     public static Pose2d reefRegionToPose(REEF_REGIONS region, boolean left) {
-        Pose2d position;
-        switch (region) {
-            case AB:
-                position = new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
-                break;
-            case CD:
-                position = new Pose2d(3.5, 2.3, Rotation2d.fromDegrees(60));
-                break;
-            case EF:
-                position = new Pose2d(5.5, 2.3, Rotation2d.fromDegrees(120));
-                break;
-            case GH:
-                position = new Pose2d(6.5, 4, Rotation2d.fromDegrees(180));
-                break;
-            case IJ:
-                position = new Pose2d(5.5, 5.7, Rotation2d.fromDegrees(240));
-                break;
-            case KL:
-                position = new Pose2d(3.5, 5.7, Rotation2d.fromDegrees(300));
-                break;
-            default:
-                position = new Pose2d(2.5, 4, Rotation2d.fromDegrees(0));
-                break;
-        }
+        Pose2d position = REEF_SCORING_LOCATIONS[region.ordinal()];
 
         double angle = position.getRotation().getRadians() + Math.PI / 2;
 
