@@ -15,11 +15,12 @@ public class RobotStates {
         dsAttached = new Trigger(DriverStation::isDSAttached);
 
         Home = Drivers.Home;
-        deepHangSequence = Drivers.deepHangSequence;
-        setupDeepHang = Drivers.setupDeepHang;
-        moveElevatorDeephang = Drivers.moveElevatorDeephang;
-        runningArm = Drivers.runningArm;
-        STOP = Drivers.STOP;
+
+        L1 = Drivers.L1;
+        L2 = Drivers.L2;
+        L3 = Drivers.L3;
+        L4 = Drivers.L4;
+        Intake = Drivers.Intake;
 
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
@@ -32,16 +33,13 @@ public class RobotStates {
     public static Trigger disabled;
     public static Trigger dsAttached;
 
-    // elevator and Arm
+    // elevator
     public static Trigger Home;
-    public static Trigger deepHangSequence;
-    public static Trigger setupDeepHang;
-    public static Trigger moveElevatorDeephang;
-    public static Trigger runningArm;
-    public static Trigger STOP;
-
-    // outtake
-    public static Trigger outtakeAccept;
+    public static Trigger Intake;
+    public static Trigger L1;
+    public static Trigger L2;
+    public static Trigger L3;
+    public static Trigger L4;
 
     // chassis
     public static Trigger reefAlignLeft;

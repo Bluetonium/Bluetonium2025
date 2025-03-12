@@ -39,8 +39,11 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        SETUPDEEPHANG(8),
-        DEEPHANG(12);
+        INTAKE(10),
+        L1(4),
+        L2(8),
+        L3(12),
+        L4(32);
 
         public final double rotations;
         public final double inches;

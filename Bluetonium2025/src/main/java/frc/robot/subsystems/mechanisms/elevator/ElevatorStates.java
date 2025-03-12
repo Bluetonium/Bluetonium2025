@@ -6,52 +6,49 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
-import frc.robot.subsystems.mechanisms.arm.Arm;
-import frc.robot.subsystems.mechanisms.arm.ArmConstants.ArmPositions;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 
 public class ElevatorStates {
     private static Elevator elevator = RobotContainer.getElevator();
-    private static Arm arm = RobotContainer.getArm();
     public static DoubleSupplier elevatorPosition;
 
     public static void setStates() {
 
         RobotStates.Home.onTrue(home());
-        RobotStates.STOP.onTrue(stop());
-        RobotStates.deepHangSequence.onTrue(deepHangSequence());
-        RobotStates.setupDeepHang.onTrue(setupDeepHang());
-        RobotStates.moveElevatorDeephang.onTrue(moveElevatorDeephang());
-        RobotStates.runningArm.onTrue(runningArm());
+        RobotStates.L1.onTrue(L1());
+        RobotStates.L2.onTrue(L2());
+        RobotStates.L3.onTrue(L3());
+        RobotStates.L4.onTrue(L4());
+        RobotStates.Intake.onTrue(Intake());
         elevatorPosition = elevator::getPosition;
     }
 
     private static Command home() {
-        return elevator.checkArmAndMove(ElevatorPositions.HOME, ArmPositions.HOME).withName("Going to Home");
+        return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Elevator.Home");
     }
 
-    private static Command stop() {
-        return elevator.stopEverything();
+    private static Command Intake() {
+        return elevator.requestTargetPosition(ElevatorPositions.INTAKE).withName("Elevator.Intake");
     }
 
-    private static Command deepHangSequence() {
-        return elevator.deepHangSequence(ElevatorPositions.DEEPHANG, ElevatorPositions.HOME, ArmPositions.HOME)
-                .withName("Going to Home");
+    private static Command L1() {
+        return elevator.requestTargetPosition(ElevatorPositions.L1)
+                .withName("Elevator.L1");
     }
 
-    private static Command setupDeepHang() {
-        return elevator.checkArmAndMove(ElevatorPositions.SETUPDEEPHANG, ArmPositions.SETUPDEEPHIGH)
-                .withName("Going to Deephang");
+    private static Command L2() {
+        return elevator.requestTargetPosition(ElevatorPositions.L2)
+                .withName("Elevator.L2");
     }
 
-    private static Command moveElevatorDeephang() {
-        return elevator.requestTargetPosition(ElevatorPositions.DEEPHANG)
-                .withName("Going to Deephang");
+    private static Command L3() {
+        return elevator.requestTargetPosition(ElevatorPositions.L3)
+                .withName("Elevator.L3");
     }
 
-    private static Command runningArm() {
-        return arm.setSpeed(1);
+    private static Command L4() {
+        return elevator.requestTargetPosition(ElevatorPositions.L4)
+                .withName("Elevator.L4");
     }
-    // sysID
 
 }
