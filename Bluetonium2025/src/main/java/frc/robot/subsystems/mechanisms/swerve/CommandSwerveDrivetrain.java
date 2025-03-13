@@ -34,7 +34,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -344,8 +343,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /**
      * Drives to a target position using PathPlanner
+     * 
      * @param targetPos target position to drive to
-     * @param name name
+     * @param name      name
      */
     private Command createPath(Pose2d targetPos, String name) {
         SwerveDriveState state = getState();
@@ -355,7 +355,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // first
         Rotation2d angleToTarget = Rotation2d
                 .fromRadians(Field.getAngleTo(state.Pose.getTranslation(), targetPos.getTranslation()))
-                .plus(Rotation2d.k180deg); //(probably) the problem child; .plus calls rotateBy which can return 0,0 and thus crashes
+                .plus(Rotation2d.k180deg); // (probably) the problem child; .plus calls rotateBy which can return 0,0
+                                           // and thus crashes
 
         Pose2d startingPos = new Pose2d(state.Pose.getTranslation(), angleToTarget);
         List<Waypoint> pathPoints = PathPlannerPath
@@ -363,10 +364,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         startingPos,
                         targetPos);
 
-                        
         List<RotationTarget> rotationTargets = Arrays.asList(
-            new RotationTarget(0.5,targetPos.getRotation())
-        );
+                new RotationTarget(0.5, targetPos.getRotation()));
         PathPlannerPath path = new PathPlannerPath(
                 pathPoints,
                 rotationTargets,
@@ -380,7 +379,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         path.name = name;
         path.preventFlipping = true;
-        //RotationTarget e = new RotationTarget();
+        // RotationTarget e = new RotationTarget();
 
         return AutoBuilder.followPath(path).withName(path.name);
     }

@@ -15,7 +15,7 @@ public class Drivers {
         @Setter
         protected boolean chassisDriving = false;
         @Setter
-        protected boolean armControl = false;
+        protected boolean outtakeControl = false;
     }
 
     // Controller
@@ -36,14 +36,16 @@ public class Drivers {
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
     // Elevator
-    public static Trigger Home;
-    public static Trigger Intake;
+    public static Trigger home;
+    public static Trigger intakePosition;
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
     public static Trigger L4;
 
-    public static Trigger STOP;
+    // Outtake
+    public static Trigger intake;
+    public static Trigger outtake;
 
     private void applyConfigs(DriverConfigs configs) {
 
@@ -62,13 +64,17 @@ public class Drivers {
 
         if (configs.elevatorControl) {
             // TODO finalize these
-            Home = new Trigger(controller::getYButton);
-            STOP = new Trigger(() -> controller.getXButtonPressed());
-            Intake = new Trigger(controller::getLeftBumperButton);
+            home = new Trigger(controller::getYButton);
+            intakePosition = new Trigger(controller::getLeftBumperButton);
             L1 = new Trigger(() -> controller.getPOV() == 0);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
             L4 = new Trigger(() -> controller.getPOV() == 270);
+        }
+
+        if (configs.outtakeControl) {
+            intake = new Trigger(controller::getAButton);
+            outtake = new Trigger(controller::getBButton);
         }
     }
 
@@ -79,3 +85,4 @@ public class Drivers {
     }
 
 }
+// hello world

@@ -2,7 +2,6 @@ package frc.robot.subsystems.mechanisms.outtake;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import frc.robot.RobotContainer;
 import frc.utils.sim.RollerConfig;
 
 public class OuttakeConstant {
@@ -11,9 +10,10 @@ public class OuttakeConstant {
     public static final int CORAL_SENSOR_CHANNEL = 1;
 
     // stuff
-    public static final double runningVelocity = 5;
-    public static final double acceleration = 10;
-    public static final double ejectionDelay = 2;// delay between not sensing a coral and stopping ejecting
+    public static final double OUTTAKE_VELOCITY = 5;
+    public static final double INTAKE_VELOCITY = 3;
+    public static final double ACCELERATION = 10;
+    public static final double EJECTION_DELAY = 1;// delay between not sensing a coral and stopping ejecting
 
     // PID (we'll figure it out eventually!!!)
     public static final double kP = 5;
@@ -21,6 +21,5 @@ public class OuttakeConstant {
     public static final double kD = 0;
 
     public static final RollerConfig ROLLER_SIM_CONFIG = new RollerConfig(4)
-            .setMount(RobotContainer.getArm().getArmSim())
             .setPosition(1.341, .35);
 }

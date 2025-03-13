@@ -30,7 +30,7 @@ public class Outtake extends SubsystemBase {
     private DigitalInput coralSensor;
 
     private MotionMagicVelocityVoltage mmVelocityVoltage = new MotionMagicVelocityVoltage(0)
-            .withAcceleration(OuttakeConstant.acceleration);
+            .withAcceleration(OuttakeConstant.ACCELERATION);
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -81,7 +81,7 @@ public class Outtake extends SubsystemBase {
 
     public void setup() {
         setDefaultCommand(run(() -> {
-            motor.stopMotor();
+            motor.setControl(mmVelocityVoltage.withVelocity(0));
         }).withName("Stop"));
 
         OuttakeStates.setupStates();
@@ -90,7 +90,7 @@ public class Outtake extends SubsystemBase {
     public Command outtakeAccept() {
         return new FunctionalCommand(
                 () -> {
-                    motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.runningVelocity));
+                    motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {// nothing to do here
                 },
@@ -109,7 +109,7 @@ public class Outtake extends SubsystemBase {
                 () -> {
                     ejectionTimer.reset();
 
-                    motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.runningVelocity));
+                    motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
                     if (!coralSensor.get() && ejectionTimer.isRunning()) {
@@ -121,7 +121,7 @@ public class Outtake extends SubsystemBase {
                     ejectionTimer.stop();
                 },
                 () -> {
-                    return ejectionTimer.hasElapsed(OuttakeConstant.ejectionDelay);
+                    return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
                 }, this).withName("Outtake Eject");
     }
 

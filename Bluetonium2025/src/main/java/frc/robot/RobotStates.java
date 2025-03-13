@@ -14,13 +14,14 @@ public class RobotStates {
         disabled = new Trigger(DriverStation::isDisabled);
         dsAttached = new Trigger(DriverStation::isDSAttached);
 
-        Home = Drivers.Home;
-
+        home = Drivers.home;
+        intakePosition = Drivers.intakePosition;
         L1 = Drivers.L1;
         L2 = Drivers.L2;
         L3 = Drivers.L3;
         L4 = Drivers.L4;
-        Intake = Drivers.Intake;
+        intake = Drivers.intake;
+        outtake = Drivers.outtake;
 
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
@@ -34,8 +35,8 @@ public class RobotStates {
     public static Trigger dsAttached;
 
     // elevator
-    public static Trigger Home;
-    public static Trigger Intake;
+    public static Trigger home;
+    public static Trigger intakePosition;
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
@@ -45,4 +46,8 @@ public class RobotStates {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
+
+    // outtake
+    public static Trigger intake;
+    public static Trigger outtake;
 }

@@ -19,6 +19,7 @@ import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
 import lombok.Getter;
@@ -43,6 +44,8 @@ public class RobotContainer {
     public static Drivers driver1;
     @Getter
     public static Drivers driver2;
+    @Getter
+    public static Outtake outtake;
 
     public RobotContainer() {
         initalizeSubsystems();
@@ -71,6 +74,8 @@ public class RobotContainer {
         driver1 = new Drivers(DriverConstants.driver1Configs);
         Timer.delay(INIT_DELAY);
         driver2 = new Drivers(DriverConstants.driver2Configs);
+        Timer.delay(INIT_DELAY);
+        outtake = new Outtake();
     }
 
     public void resetRobotState() {

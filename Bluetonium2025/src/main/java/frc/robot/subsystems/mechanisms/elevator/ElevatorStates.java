@@ -14,12 +14,12 @@ public class ElevatorStates {
 
     public static void setStates() {
 
-        RobotStates.Home.onTrue(home());
+        RobotStates.home.onTrue(home());
         RobotStates.L1.onTrue(L1());
         RobotStates.L2.onTrue(L2());
         RobotStates.L3.onTrue(L3());
         RobotStates.L4.onTrue(L4());
-        RobotStates.Intake.onTrue(Intake());
+        RobotStates.intakePosition.onTrue(IntakePosition());
         elevatorPosition = elevator::getPosition;
     }
 
@@ -27,7 +27,7 @@ public class ElevatorStates {
         return elevator.requestTargetPosition(ElevatorPositions.HOME).withName("Elevator.Home");
     }
 
-    private static Command Intake() {
+    private static Command IntakePosition() {
         return elevator.requestTargetPosition(ElevatorPositions.INTAKE).withName("Elevator.Intake");
     }
 
