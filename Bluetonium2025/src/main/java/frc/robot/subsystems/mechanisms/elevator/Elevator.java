@@ -105,7 +105,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setup() {
-        ElevatorStates.setStates();
+        ElevatorStates.setupStates();
         motor.stopMotor();
     }
 

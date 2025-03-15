@@ -12,7 +12,7 @@ public class ElevatorStates {
     private static Elevator elevator = RobotContainer.getElevator();
     public static DoubleSupplier elevatorPosition;
 
-    public static void setStates() {
+    public static void setupStates() {
 
         RobotStates.home.onTrue(home());
         RobotStates.L1.onTrue(L1());

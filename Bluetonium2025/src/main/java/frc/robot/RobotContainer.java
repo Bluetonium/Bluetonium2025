@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
+import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.LimelightLocalization;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
@@ -41,11 +42,13 @@ public class RobotContainer {
     @Getter
     private static LimelightLocalization vision;
     @Getter
-    public static Drivers driver1;
+    private static Drivers driver1;
     @Getter
-    public static Drivers driver2;
+    private static Drivers driver2;
     @Getter
-    public static Outtake outtake;
+    private static Outtake outtake;
+    @Getter
+    private static LED leds;
 
     public RobotContainer() {
         initalizeSubsystems();
@@ -71,11 +74,16 @@ public class RobotContainer {
         Timer.delay(INIT_DELAY);
         vision = new LimelightLocalization(swerve);
         Timer.delay(INIT_DELAY);
+        outtake = new Outtake();
+        Timer.delay(INIT_DELAY);
+        leds = new LED();
+        Timer.delay(INIT_DELAY);
+
+        // in order for the testable systems to work, these need to init last... trust
+        // me
         driver1 = new Drivers(DriverConstants.driver1Configs);
         Timer.delay(INIT_DELAY);
         driver2 = new Drivers(DriverConstants.driver2Configs);
-        Timer.delay(INIT_DELAY);
-        outtake = new Outtake();
     }
 
     public void resetRobotState() {
@@ -89,12 +97,13 @@ public class RobotContainer {
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
+        outtake.setup();
+        leds.setup();
         DriverStates.setupTestables();
     }
 
     private void configureLimelights() {
         vision.addLocalizationLL(LimelightConstants.MAIN_LL);
-
     }
 
     private void configureBindings() {
