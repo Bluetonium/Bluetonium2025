@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers.DriverConfigs;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.outtake.Outtake;
 
 public class DriverConstants {
     public static final DriverConfigs driver1Configs = new DriverConfigs();
     public static final DriverConfigs driver2Configs = new DriverConfigs();
 
     private static final Elevator elevator = RobotContainer.getElevator();
+    private static final Outtake outtake = RobotContainer.getOuttake();
 
     private static void checkOverlap(DriverConfigs config1, DriverConfigs config2) {
         Field[] fields = DriverConfigs.class.getDeclaredFields();
@@ -51,7 +53,11 @@ public class DriverConstants {
         ELEVATOR_QUASISTATIC_FORWARD(elevator.sysIdQuasistatic(Direction.kForward)),
         ELEVATOR_QUASISTATIC_REVERSE(elevator.sysIdQuasistatic(Direction.kReverse)),
         ELEVATOR_DYNAMIC_FORWARD(elevator.sysIdDynamic(Direction.kForward)),
-        ELEVATOR_DYNAMIC_REVERSE(elevator.sysIdDynamic(Direction.kReverse));
+        ELEVATOR_DYNAMIC_REVERSE(elevator.sysIdDynamic(Direction.kReverse)),
+        OUTTAKE_QUASISTATIC_FORWARD(outtake.sysIdQuasistatic(Direction.kForward)),
+        OUTTAKE_QUASISTATIC_REVERSE(outtake.sysIdQuasistatic(Direction.kReverse)),
+        OUTTAKE_DYNAMIC_FORWARD(outtake.sysIdDynamic(Direction.kForward)),
+        OUTTAKE_DYNAMIC_REVERSE(outtake.sysIdDynamic(Direction.kReverse));
 
         public final Command command;
 

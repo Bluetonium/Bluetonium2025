@@ -35,6 +35,7 @@ public class Outtake extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Outtake");
+        builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
     }
 
@@ -93,7 +94,7 @@ public class Outtake extends SubsystemBase {
                 () -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
-                () -> {// nothing to do here
+                () -> {
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
