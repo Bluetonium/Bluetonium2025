@@ -84,7 +84,7 @@ public class Outtake extends SubsystemBase {
     public void setup() {
         setDefaultCommand(run(() -> {
             motor.setControl(mmVelocityVoltage.withVelocity(0));
-        }).withName("Stop"));
+        }).withName("Outtake.Stopped"));
 
         OuttakeStates.setupStates();
     }

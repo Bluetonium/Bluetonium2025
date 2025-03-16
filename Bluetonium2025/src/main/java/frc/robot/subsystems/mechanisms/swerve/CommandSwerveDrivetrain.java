@@ -187,7 +187,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                                                                                         // with
                                                                                                         // // (left)
                                 .withRotationalRate(
-                                        -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED)));
+                                        -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED))
+                        .withName("Swerve.Teleop-Drive"));
 
     }
 

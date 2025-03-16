@@ -40,7 +40,8 @@ public class Elevator extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
         builder.setSmartDashboardType("Elevator");
-        builder.addStringProperty("Target Position", () -> elevatorTargetPosition.name(), null);
+        builder.addStringProperty("Target Position",
+                () -> elevatorTargetPosition.name() + "-" + elevatorTargetPosition.inches, null);
         builder.addDoubleProperty("Position", this::getPosition, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
         builder.addDoubleProperty("Current", () -> motor.getStatorCurrent().getValueAsDouble(), null);
@@ -124,11 +125,14 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-        return runOnce(() -> {
+
+        return startRun(() -> {
             final MotionMagicVoltage request = mmVoltage;
             motor.setControl(request.withPosition(position.rotations));
             elevatorTargetPosition = position;
-        }).withName("Elevator Target Position");
+        },
+                () -> {
+                }).until(this::elevatorIsAtDesiredPosition).withName("Elevator Target Position");
 
     }
 
