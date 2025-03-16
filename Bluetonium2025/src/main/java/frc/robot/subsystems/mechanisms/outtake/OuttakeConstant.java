@@ -1,5 +1,6 @@
 package frc.robot.subsystems.mechanisms.outtake;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.utils.sim.RollerConfig;
@@ -8,6 +9,9 @@ public class OuttakeConstant {
     public static final int OUTTAKE_MOTOR_CAN_ID = 16; // we GOTTA figure it out!!!
     public static final NeutralModeValue OUTTAKE_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
     public static final int CORAL_SENSOR_CHANNEL = 1;
+    public static final CurrentLimitsConfigs CURRENT_LIMITS = new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(40)
+            .withSupplyCurrentLimit(30);
 
     // stuff
     public static final double OUTTAKE_VELOCITY = 5;

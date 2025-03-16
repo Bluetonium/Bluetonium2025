@@ -40,6 +40,7 @@ public class Field {
                                                                                      // bumper width
     private static final Pose2d[] REEF_SCORING_LOCATIONS = new Pose2d[6];
     static {
+        
         for (int i = 0; i < 6; i++) {
             double angle = (Math.PI / 3) * i;
             REEF_SCORING_LOCATIONS[i] = new Pose2d(

@@ -72,6 +72,7 @@ public class Elevator extends SubsystemBase {
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.CurrentLimits = ElevatorConstants.CURRENT_LIMITS;
         // PID
         Slot0Configs slot0 = config.Slot0;
         slot0.kS = ElevatorConstants.kS;

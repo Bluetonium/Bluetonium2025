@@ -55,6 +55,7 @@ public class Outtake extends SubsystemBase {
         motor.setNeutralMode(OuttakeConstant.OUTTAKE_MOTOR_NEUTRAL_MODE);
 
         motorConfig = new TalonFXConfiguration();
+        motorConfig.CurrentLimits = OuttakeConstant.CURRENT_LIMITS;
 
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = OuttakeConstant.kP;

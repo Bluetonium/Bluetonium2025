@@ -63,7 +63,6 @@ public class Drivers {
         }
 
         if (configs.elevatorControl) {
-            // TODO finalize these
             home = new Trigger(controller::getYButton);
             intakePosition = new Trigger(controller::getLeftBumperButton);
             L1 = new Trigger(() -> controller.getPOV() == 0);
