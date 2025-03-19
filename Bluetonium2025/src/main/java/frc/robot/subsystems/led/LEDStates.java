@@ -10,7 +10,7 @@ public class LEDStates {
 
     public static void setupStates() {
         panicMode = new Trigger(() -> false);
-        panicMode.whileTrue(leds.setAnimation(LEDConstants.PANIC_MODE_ANIMATION));
+        // panicMode.whileTrue(leds.setAnimation(LEDConstants.PANIC_MODE_ANIMATION));
 
         RobotStates.teleop.whileTrue(leds.setAnimation(LEDConstants.TELEOP_ANIMATION));
         RobotStates.disabled.whileTrue(leds.setAnimation(LEDConstants.DISABLED_ANIMATION));

@@ -4,8 +4,6 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.StrobeAnimation;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,11 +19,10 @@ public class LED extends SubsystemBase {
      */
     public LED() {
         CANdleConfiguration config = new CANdleConfiguration();
-        config.stripType = LEDStripType.RGB; // set the strip type to RGB
+        config.stripType = LEDStripType.GRB; // set the strip type to RGB
         config.brightnessScalar = 0.5; // dim the LEDs to half brightness
         candle.configAllSettings(config);
-        RainbowAnimation rainbow = new RainbowAnimation(1, 1, LEDConstants.LED_COUNT);
-        candle.animate(rainbow);
+        candle.animate(LEDConstants.TELEOP_ANIMATION);
     }
 
     public Command setAnimation(Animation animation) {
@@ -36,9 +33,4 @@ public class LED extends SubsystemBase {
         LEDStates.setupStates();
     }
 
-    public Command panicMode() {
-        return runOnce(() -> {
-            candle.animate(new StrobeAnimation(255, 0, 0));
-        });
-    }
 }
