@@ -17,7 +17,7 @@ import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.limelight.LimelightConstants;
-import frc.robot.subsystems.limelight.LimelightLocalization;
+import frc.robot.subsystems.limelight.Limelights;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
 import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
@@ -39,7 +39,7 @@ public class RobotContainer {
     @Getter
     private static CommandSwerveDrivetrain swerve;
     @Getter
-    private static LimelightLocalization vision;
+    private static Limelights vision;
     @Getter
     private static Drivers driver1;
     @Getter
@@ -60,7 +60,6 @@ public class RobotContainer {
         SmartDashboard.putData("Automous", autoChooser);
 
         // configure everything
-        configureLimelights();
         configureBindings();
         setupSubsystems();
 
@@ -71,7 +70,7 @@ public class RobotContainer {
         Timer.delay(INIT_DELAY);
         swerve = TunerConstants.createDrivetrain();
         Timer.delay(INIT_DELAY);
-        vision = new LimelightLocalization(swerve);
+        vision = new Limelights(LimelightConstants.MAIN_LL);
         Timer.delay(INIT_DELAY);
         outtake = new Outtake();
         Timer.delay(INIT_DELAY);
@@ -98,11 +97,8 @@ public class RobotContainer {
         elevator.setup();
         outtake.setup();
         leds.setup();
+        vision.setup();
         DriverStates.setupTestables();
-    }
-
-    private void configureLimelights() {
-        vision.addLocalizationLL(LimelightConstants.MAIN_LL);
     }
 
     private void configureBindings() {
