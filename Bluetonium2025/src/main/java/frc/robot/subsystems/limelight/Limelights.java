@@ -21,7 +21,7 @@ public class Limelights extends SubsystemBase {
      * @param limelights names of the limelights that will be used
      */
     public Limelights(LimelightConfig... limelights) {
-        limelights = new LimelightConfig[limelights.length];
+        this.limelights = new LimelightConfig[limelights.length];
         for (int i = 0; i < limelights.length; i++) {
             addLimelight(limelights[i], i);
         }
