@@ -1,17 +1,18 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.driver.Drivers;
 
 public class RobotStates {
 
     public static void setupStates() {
-        teleop = new Trigger(DriverStation::isTeleopEnabled);
-        autoMode = new Trigger(DriverStation::isAutonomousEnabled)
-                .or(new Trigger(DriverStation::isAutonomous));
-        testMode = new Trigger(DriverStation::isTestEnabled);
-        disabled = new Trigger(DriverStation::isDisabled);
+
+        teleop = new Trigger(RobotState::isTeleop);
+        autoMode = new Trigger(RobotState::isAutonomous);
+        testMode = new Trigger(RobotState::isTest);
+        disabled = new Trigger(RobotState::isDisabled);
         dsAttached = new Trigger(DriverStation::isDSAttached);
 
         home = Drivers.home;

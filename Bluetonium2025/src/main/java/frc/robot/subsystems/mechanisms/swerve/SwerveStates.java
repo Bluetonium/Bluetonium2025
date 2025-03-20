@@ -25,7 +25,6 @@ public class SwerveStates {
         RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
         RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));
         RobotStates.coralStationAlign.whileTrue(swerve.AlignToCoralStation());
-
     }
 
 }
