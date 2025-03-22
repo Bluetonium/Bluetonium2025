@@ -428,9 +428,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // Drive to reef
     private Command getPathToReef(boolean left) {
         REEF_REGIONS region = getCurrentRegion();
+        try{
         Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
-
         return createPath(targetPos, "Aligning Reef Side : " + region.name());
+        }
+        catch(Exception e){
+            System.out.println("Error in getPathToReef");
+        }
+        return null;
     }
 
     public REEF_REGIONS getCurrentRegion() {

@@ -5,15 +5,33 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Path Left"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "pathToReef"
+            "name": "PathToReef"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "L3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Home"
           }
         }
       ]
