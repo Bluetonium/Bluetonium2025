@@ -14,9 +14,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -84,6 +88,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
+    private final Orchestra orchestra = new Orchestra();
     // private final Map<REEF_REGIONS,Command> pathfinding
 
     /*
@@ -178,6 +183,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void setup() {
         SwerveStates.setStates();
+
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getModules()) {
+            orchestra.addInstrument(module.getDriveMotor());
+            orchestra.addInstrument(module.getSteerMotor());
+        }
 
         setDefaultCommand(
                 // Drivetrain will execute this command periodically
@@ -302,6 +312,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    public Command playMusic(String musicPath) {
+        return startEnd(() -> {
+            orchestra.loadMusic(musicPath);
+            orchestra.play();
+        }, () -> {
+            orchestra.stop();
+        });
     }
 
     /**
