@@ -373,7 +373,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
-                TunerConstants.autoAlignmentConstraints,
+                SwerveConstants.autoAlignmentConstraints,
                 null,
                 new GoalEndState(0, targetPos.getRotation()),
                 false);
