@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
     SendableRegistry.add(CommandScheduler.getInstance(), "Command Scheduler");
     SmartDashboard.putData(CommandScheduler.getInstance());
     robotSim = new RobotSim();
+
   }
 
   @Override
