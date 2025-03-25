@@ -127,8 +127,7 @@ public class Elevator extends SubsystemBase {
     public Command requestTargetPosition(ElevatorPositions position) {
 
         return startRun(() -> {
-            final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(position.rotations));
+            motor.setControl(mmVoltage.withPosition(position.rotations));
             elevatorTargetPosition = position;
         },
                 () -> {

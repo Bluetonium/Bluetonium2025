@@ -2,15 +2,17 @@ package frc.robot.subsystems.led;
 
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
+import frc.robot.subsystems.led.LEDConstants.Animations;
 
 public class LEDStates {
     private static LED leds = RobotContainer.getLeds();
 
     public static void setupStates() {
-        RobotStates.teleop.onTrue(leds.setAnimation(LEDConstants.TELEOP_ANIMATION, "LED.Teleop"));
-        RobotStates.disabled.onTrue(leds.setAnimation(LEDConstants.DISABLED_ANIMATION, "LED.Disabled"));
-        RobotStates.endGame.onTrue(leds.setAnimation(LEDConstants.END_GAME_ANIMATION,
-                "LED.Endgame"));
+        RobotStates.endGame.onTrue(leds.setAnimation(Animations.END_GAME));
+        RobotStates.teleop.onTrue(leds.setAnimation(Animations.TELEOP));
+        RobotStates.disabled.onTrue(leds.setAnimation(Animations.DISABLED));
+        RobotStates.Estopped.onTrue(leds.setAnimation(Animations.ESTOPPED));
+        RobotStates.autoMode.onTrue(leds.setAnimation(Animations.AUTON));
 
     }
 }
