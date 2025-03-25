@@ -3,7 +3,6 @@ package frc.robot.subsystems.led;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 public class LEDConstants {
