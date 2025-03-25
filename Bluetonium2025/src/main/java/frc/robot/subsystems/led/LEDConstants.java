@@ -17,7 +17,8 @@ public class LEDConstants {
                                 10)),
                 END_GAME(new LarsonAnimation(0, 255, 0, 100, 1, LED_COUNT, BounceMode.Front,
                                 10)),
-                ESTOPPED(new StrobeAnimation(255, 0, 0, 0, 0.1, LED_COUNT));
+                ESTOPPED(new StrobeAnimation(255, 0, 0, 0, 0.1, LED_COUNT)),
+                AUTON(new LarsonAnimation(255, 0, 0, 0, 0.5, LED_COUNT, BounceMode.Front, 10));
 
                 public final Animation[] animations;
 

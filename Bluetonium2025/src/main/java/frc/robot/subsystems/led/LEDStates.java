@@ -12,6 +12,7 @@ public class LEDStates {
         RobotStates.teleop.onTrue(leds.setAnimation(Animations.TELEOP));
         RobotStates.disabled.onTrue(leds.setAnimation(Animations.DISABLED));
         RobotStates.Estopped.onTrue(leds.setAnimation(Animations.ESTOPPED));
+        RobotStates.autoMode.onTrue(leds.setAnimation(Animations.AUTON));
 
     }
 }
