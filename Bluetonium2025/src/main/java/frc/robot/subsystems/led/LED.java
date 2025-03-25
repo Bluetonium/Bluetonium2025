@@ -4,9 +4,12 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
+import frc.robot.RobotStates;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,14 +42,21 @@ public class LED extends SubsystemBase {
         super.initSendable(builder);
         builder.setSmartDashboardType("LED");
         builder.addStringProperty("Current Animation", () -> currentAnimation, null);
+        builder.addBooleanProperty("teleop", DriverStation::isTeleopEnabled, null);
+
     }
 
     public Command setAnimation(Animations animations) {
         return runOnce(() -> {
-            for (Animation animation : animations.animations) {
-                animation.setLedOffset(8);
-                candle.animate(animation);
+            if (animations.rgb != null) {
+                candle.setLEDs(animations.rgb[0], animations.rgb[1], animations.rgb[2]);
             }
+
+            for (int i = 0; i < animations.animations.length; i++) {
+                animations.animations[i].setLedOffset(8);
+                candle.animate(animations.animations[i], i);
+            }
+
             for (int i = animations.animations.length; i < candle.getMaxSimultaneousAnimationCount(); i++) {
                 candle.clearAnimation(i);
             }
