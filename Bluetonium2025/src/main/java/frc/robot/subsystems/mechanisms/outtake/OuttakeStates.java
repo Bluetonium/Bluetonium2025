@@ -1,0 +1,18 @@
+package frc.robot.subsystems.mechanisms.outtake;
+
+import frc.robot.RobotContainer;
+import frc.robot.RobotStates;
+
+public class OuttakeStates {
+    private static Outtake outtake = RobotContainer.getOuttake();
+
+    public static void setupStates() {
+        // lmao!!!!!
+        RobotStates.intake.whileTrue(outtake.outtakeAccept());
+        RobotStates.outtake.whileTrue(outtake.outtakeEject());
+        // RobotStates.reef
+        // sys id (this states file dry as hell dawg)
+
+    }
+
+}

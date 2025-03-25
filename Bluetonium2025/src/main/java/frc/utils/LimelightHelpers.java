@@ -34,11 +34,6 @@ public class LimelightHelpers {
 
     private static final Map<String, DoubleArrayEntry> doubleArrayEntries = new ConcurrentHashMap<>();
 
-    public static enum pipelines {
-        LOCALIZATION,
-        NOTAPRILTAGSIDK // we'll do something with this later ig
-    }
-
     public static class LimelightTarget_Retro {
 
         @JsonProperty("t6c_ts")

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
@@ -9,6 +10,11 @@ public final class ElevatorConstants {
     // Motor
     public static final int ELEVATOR_MOTOR_CAN_ID = 14; // find out once more :)
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
+    public static final CurrentLimitsConfigs CURRENT_LIMITS = new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(130)
+            .withSupplyCurrentLimit(70)
+            .withSupplyCurrentLowerTime(1)
+            .withSupplyCurrentLowerLimit(50);
 
     // PID and motion magic
     public static final double kP = 1.6141;
@@ -39,8 +45,11 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        SETUPDEEPHANG(8),
-        DEEPHANG(12);
+        INTAKE(10),
+        L1(4),
+        L2(8),
+        L3(12),
+        L4(32);
 
         public final double rotations;
         public final double inches;
