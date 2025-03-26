@@ -1,9 +1,11 @@
 package frc.robot.subsystems.led;
 
+import java.util.random.RandomGenerator.LeapableGenerator;
+
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
@@ -13,13 +15,12 @@ public class LEDConstants {
 
         public static enum Animations {
                 // TODO revise these to be actually good
-                DISABLED(255, 128, 0),
-                TELEOP(new LarsonAnimation(0, 0, 255, 100, 0.5, LED_COUNT, BounceMode.Front,
-                                10),
-                                new SingleFadeAnimation(255, 255, 255, 255, 0, LED_COUNT)),
-                END_GAME(new LarsonAnimation(0, 255, 0, 100, 1, LED_COUNT, BounceMode.Front,
-                                10)),
-                ESTOPPED(255, 0, 0),
+                DISABLED(255, 0, 0),
+                TELEOP(
+                                new LarsonAnimation(0, 0, 255, 100, 0.5, LED_COUNT, BounceMode.Front,
+                                                10, 0)),
+                END_GAME(new StrobeAnimation(0, 0, 255, 255, .5, LED_COUNT)),
+                ESTOPPED(new StrobeAnimation(255, 0, 255, 255, .5, LED_COUNT)),
                 AUTON(new LarsonAnimation(255, 0, 0, 0, 0.5, LED_COUNT, BounceMode.Front, 10)),
                 DISCONNECTED(new ColorFlowAnimation(255, 0, 0, 0, 0.5, LED_COUNT, Direction.Forward));
 

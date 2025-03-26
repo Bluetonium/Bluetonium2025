@@ -42,21 +42,19 @@ public class LED extends SubsystemBase {
 
     public Command setAnimation(Animations animations) {
         return runOnce(() -> {
-            if (animations.rgb != null) {
-                candle.setLEDs(animations.rgb[0], animations.rgb[1], animations.rgb[2]);
-            }
 
             for (int i = 0; i < animations.animations.length; i++) {
-                animations.animations[i].setLedOffset(8);
                 candle.animate(animations.animations[i], i);
             }
 
             for (int i = animations.animations.length; i < candle.getMaxSimultaneousAnimationCount(); i++) {
                 candle.clearAnimation(i);
             }
-            currentAnimation = animations.name();
 
-            System.out.println("SET ANIMATION " + currentAnimation);
+            if (animations.rgb != null) {
+                candle.setLEDs(animations.rgb[0], animations.rgb[1], animations.rgb[2]);
+            }
+            currentAnimation = animations.name();
         }).withName("LED." + animations.name()).ignoringDisable(true);
     }
 

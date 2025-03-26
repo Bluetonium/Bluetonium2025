@@ -13,8 +13,7 @@ public class LEDStates {
         RobotStates.teleop.onTrue(leds.setAnimation(Animations.TELEOP));
 
         RobotStates.disabled.and(
-                RobotStates.Estopped.negate(),
-                RobotStates.dsAttached)
+                RobotStates.Estopped.negate()).and(RobotStates.dsAttached)
                 .onTrue(leds.setAnimation(Animations.DISABLED));
 
         RobotStates.Estopped.onTrue(leds.setAnimation(Animations.ESTOPPED));
