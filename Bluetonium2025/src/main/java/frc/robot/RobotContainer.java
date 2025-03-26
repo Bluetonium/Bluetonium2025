@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
@@ -84,20 +83,12 @@ public class RobotContainer {
         driver2 = new Drivers(DriverConstants.driver2Configs);
     }
 
-    public void resetRobotState() {
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        RobotStates.setupStates();
-        setupSubsystems();
-
-    }
-
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
         outtake.setup();
-        leds.setup();
         vision.setup();
+        leds.setup();
         DriverStates.setupTestables();
     }
 

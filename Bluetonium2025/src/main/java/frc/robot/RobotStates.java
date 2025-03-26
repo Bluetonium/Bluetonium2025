@@ -34,7 +34,7 @@ public class RobotStates {
     public static Trigger outtake;
 
     public static void setupStates() {
-        teleop = new Trigger(DriverStation::isTeleopEnabled);
+        teleop = new Trigger(DriverStation::isTeleopEnabled).or(DriverStation::isTeleop);
         autoMode = new Trigger(RobotState::isAutonomous);
         testMode = new Trigger(RobotState::isTest);
         disabled = new Trigger(RobotState::isDisabled);

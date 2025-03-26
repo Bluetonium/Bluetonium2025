@@ -1,15 +1,11 @@
 package frc.robot.subsystems.led;
 
-import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
-import frc.robot.RobotStates;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,8 +38,6 @@ public class LED extends SubsystemBase {
         super.initSendable(builder);
         builder.setSmartDashboardType("LED");
         builder.addStringProperty("Current Animation", () -> currentAnimation, null);
-        builder.addBooleanProperty("teleop", DriverStation::isTeleopEnabled, null);
-
     }
 
     public Command setAnimation(Animations animations) {
@@ -61,6 +55,8 @@ public class LED extends SubsystemBase {
                 candle.clearAnimation(i);
             }
             currentAnimation = animations.name();
+
+            System.out.println("SET ANIMATION " + currentAnimation);
         }).withName("LED." + animations.name()).ignoringDisable(true);
     }
 
