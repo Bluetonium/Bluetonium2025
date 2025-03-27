@@ -82,6 +82,10 @@ public class Drivers {
         }
     }
 
+    public boolean isDisconnected() {
+        return !controller.isConnected();
+    }
+
     public Drivers(DriverConfigs driverConfigs) {
         controller = new XboxController(driverConfigs.port);
         applyConfigs(driverConfigs);
