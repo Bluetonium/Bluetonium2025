@@ -20,6 +20,8 @@ public class OuttakeConstant {
         public static final double ACCELERATION = 10;
         public static final double EJECTION_DELAY = 1;// delay between not sensing a coral and stopping ejecting
 
+        public static final double GEAR_RATIO = 5;
+
         // PID (we'll figure it out eventually!!!)
         public static final double kP = 0.10958;
         public static final double kI = 0;

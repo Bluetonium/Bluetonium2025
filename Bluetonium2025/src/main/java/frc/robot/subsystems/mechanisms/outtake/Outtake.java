@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
@@ -31,6 +32,8 @@ public class Outtake extends SubsystemBase {
     private TalonFXConfiguration motorConfig;
     private DigitalInput coralSensor;
 
+    public boolean hasCoral = false;
+
     private MotionMagicVelocityVoltage mmVelocityVoltage = new MotionMagicVelocityVoltage(0)
             .withAcceleration(OuttakeConstant.ACCELERATION);
 
@@ -39,6 +42,8 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
+        builder.addBooleanProperty("Coral Sensor", coralSensor::get, null);
+        builder.addBooleanProperty("Has Coral", () -> hasCoral, null);
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -60,6 +65,9 @@ public class Outtake extends SubsystemBase {
         motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motorConfig.CurrentLimits = OuttakeConstant.CURRENT_LIMITS;
+
+        FeedbackConfigs feedback = motorConfig.Feedback;
+        feedback.SensorToMechanismRatio = OuttakeConstant.GEAR_RATIO;
 
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = OuttakeConstant.kP;
@@ -98,18 +106,16 @@ public class Outtake extends SubsystemBase {
     public Command outtakeAccept() {
         return new FunctionalCommand(
                 () -> {
-                    // motor.set(0.3);
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {
                 },
                 (interupted) -> {
-                    // motor.set(0);
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
+                    hasCoral = coralSensor.get();
                 },
                 () -> {
-                    return false;
-                    // return coralSensor.get();
+                    return coralSensor.get();
                 },
                 this).withName("OutakeAccept");
     }
