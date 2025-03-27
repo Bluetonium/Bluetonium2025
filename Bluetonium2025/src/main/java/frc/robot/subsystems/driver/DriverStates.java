@@ -3,7 +3,6 @@ package frc.robot.subsystems.driver;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.driver.DriverConstants.TestableSystems;
 
 public class DriverStates {

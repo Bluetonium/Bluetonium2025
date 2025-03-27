@@ -26,6 +26,8 @@ public class Drivers {
     public static DoubleSupplier chassisControlTranslation;
     public static DoubleSupplier chassisControlStrafe;
     public static DoubleSupplier chassisControlRotation;
+    public static DoubleSupplier pov;
+
 
     // elevator
     public static DoubleSupplier elevatorAdjustment;
@@ -39,6 +41,7 @@ public class Drivers {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
+    public static Trigger microAdjust;
     // Elevator
     public static Trigger home;
     public static Trigger intakePosition;
@@ -56,15 +59,10 @@ public class Drivers {
 
             // dpad micro adjustments
 
-            if (controller.getPOV() != -1) {
-                double rad = Math.toRadians(controller.getPOV()); // far easier than a big ol if chain/switch statement, even if it is more confusing
-                chassisControlTranslation = () -> Math.cos(rad)*0.2;
-                chassisControlStrafe = () -> Math.sin(rad)*0.2;
-            }
-
             chassisControlTranslation = controller::getLeftY;
             chassisControlStrafe = controller::getLeftX;
             chassisControlRotation = controller::getRightX;
+            pov = controller::getPOV;
 
             wheelsXPosition = new Trigger(controller::getXButton);
             steerWheels = new Trigger(controller::getAButton);
@@ -72,6 +70,7 @@ public class Drivers {
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
+            microAdjust = new Trigger(() -> controller.getPOV() != -1); //splendid
         }
 
         if (configs.elevatorControl) {

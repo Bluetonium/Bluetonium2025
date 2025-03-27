@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -34,6 +35,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -193,15 +195,38 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     /**
      * 
-     * exists
+     * exists for dpad purposes
      */
-    /*
-    public Command driveRelative(double translation, double rotation) {
-        return applyRequest(
-
+    public Command driveRelative(double translation, double strafe, double rotation) {
+        ChassisSpeeds speeds = new ChassisSpeeds(strafe,translation,rotation);
+        return applyRequest(    
+            () -> pathDriveRealtive/*can i just say that its spelled wrong ok anyway back to coding*/.withSpeeds(speeds)
         );
     }
-    */
+
+    public Command dpadRelative(DoubleSupplier POV) {
+        double speedModif = 0.3; //too lazy to have it as a parameter
+        double pov = POV.getAsDouble();
+        if (pov != -1){
+            double rads = Math.toRadians(pov);
+            return driveRelative(Math.cos(rads) * speedModif,Math.sin(rads) * speedModif,0);
+        } else {
+            //redundancy my beloved
+            System.out.println("something is going wrong if this is printing");
+            return driveRelative(0,0,0);
+        }
+        
+    }
+
+/*
+ * 
+ * if (controller.getPOV() != -1){
+                double rads = Math.toRadians(controller.getPOV());
+                povTranslation = () -> Math.cos(rads);
+                povStrafe = () -> Math.sin(rads);
+            }
+ */
+
     private void configurePathPlanner() {
         RobotConfig config;
         try {
