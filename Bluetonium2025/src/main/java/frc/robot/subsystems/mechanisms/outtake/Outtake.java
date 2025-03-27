@@ -4,11 +4,14 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -29,6 +32,8 @@ public class Outtake extends SubsystemBase {
     private TalonFXConfiguration motorConfig;
     private DigitalInput coralSensor;
 
+    public boolean hasCoral = false;
+
     private MotionMagicVelocityVoltage mmVelocityVoltage = new MotionMagicVelocityVoltage(0)
             .withAcceleration(OuttakeConstant.ACCELERATION);
 
@@ -37,6 +42,8 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
+        builder.addBooleanProperty("Coral Sensor", coralSensor::get, null);
+        builder.addBooleanProperty("Has Coral", () -> hasCoral, null);
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -45,7 +52,7 @@ public class Outtake extends SubsystemBase {
                     Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
                           // Log state with Phoenix SignalLogger class
-                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+                    (state) -> SignalLogger.writeString("SysIdOuttake_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
                     null,
@@ -56,12 +63,19 @@ public class Outtake extends SubsystemBase {
         motor.setNeutralMode(OuttakeConstant.OUTTAKE_MOTOR_NEUTRAL_MODE);
 
         motorConfig = new TalonFXConfiguration();
+        motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motorConfig.CurrentLimits = OuttakeConstant.CURRENT_LIMITS;
+
+        FeedbackConfigs feedback = motorConfig.Feedback;
+        feedback.SensorToMechanismRatio = OuttakeConstant.GEAR_RATIO;
 
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = OuttakeConstant.kP;
         slot0.kI = OuttakeConstant.kI;
         slot0.kD = OuttakeConstant.kD;
+        slot0.kS = OuttakeConstant.kS;
+        slot0.kV = OuttakeConstant.kV;
+        slot0.kA = OuttakeConstant.kA;
 
         applyConfig();
 
@@ -98,9 +112,10 @@ public class Outtake extends SubsystemBase {
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
+                    // hasCoral = coralSensor.get();
                 },
                 () -> {
-                    return coralSensor.get();
+                    return false;
                 },
                 this).withName("OutakeAccept");
     }
@@ -114,16 +129,18 @@ public class Outtake extends SubsystemBase {
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
-                    if (!coralSensor.get() && ejectionTimer.isRunning()) {
+                    if (!coralSensor.get() && !ejectionTimer.isRunning()) {
                         ejectionTimer.start();
                     }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                     ejectionTimer.stop();
+                    // hasCoral = coralSensor.get();
                 },
                 () -> {
-                    return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
+                    return false;
+                    // return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
                 }, this).withName("Outtake Eject");
     }
 

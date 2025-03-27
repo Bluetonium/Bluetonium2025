@@ -13,7 +13,8 @@ public class ElevatorStates {
     public static DoubleSupplier elevatorPosition;
 
     public static void setupStates() {
-
+        RobotStates.disabled.onTrue(elevator.setCoast(true));
+        RobotStates.disabled.negate().onTrue(elevator.setCoast(false).andThen(elevator.holdPosition()));
         RobotStates.home.onTrue(home());
         RobotStates.L1.onTrue(L1());
         RobotStates.L2.onTrue(L2());
