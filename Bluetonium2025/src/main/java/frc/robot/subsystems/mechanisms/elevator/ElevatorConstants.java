@@ -45,10 +45,10 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        INTAKE(10),
+        INTAKE(3.2),
         L1(4),
-        L2(8),
-        L3(12),
+        L2(9.69),
+        L3(18.16),
         L4(32);
 
         public final double rotations;

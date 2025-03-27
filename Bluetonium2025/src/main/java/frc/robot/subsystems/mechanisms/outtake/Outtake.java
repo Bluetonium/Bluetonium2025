@@ -9,6 +9,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -45,7 +47,7 @@ public class Outtake extends SubsystemBase {
                     Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
                           // Log state with Phoenix SignalLogger class
-                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+                    (state) -> SignalLogger.writeString("SysIdOuttake_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
                     null,
@@ -56,12 +58,16 @@ public class Outtake extends SubsystemBase {
         motor.setNeutralMode(OuttakeConstant.OUTTAKE_MOTOR_NEUTRAL_MODE);
 
         motorConfig = new TalonFXConfiguration();
+        motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motorConfig.CurrentLimits = OuttakeConstant.CURRENT_LIMITS;
 
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = OuttakeConstant.kP;
         slot0.kI = OuttakeConstant.kI;
         slot0.kD = OuttakeConstant.kD;
+        slot0.kS = OuttakeConstant.kS;
+        slot0.kV = OuttakeConstant.kV;
+        slot0.kA = OuttakeConstant.kA;
 
         applyConfig();
 
@@ -92,15 +98,18 @@ public class Outtake extends SubsystemBase {
     public Command outtakeAccept() {
         return new FunctionalCommand(
                 () -> {
+                    // motor.set(0.3);
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {
                 },
                 (interupted) -> {
+                    // motor.set(0);
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                 },
                 () -> {
-                    return coralSensor.get();
+                    return false;
+                    // return coralSensor.get();
                 },
                 this).withName("OutakeAccept");
     }
@@ -123,7 +132,8 @@ public class Outtake extends SubsystemBase {
                     ejectionTimer.stop();
                 },
                 () -> {
-                    return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
+                    return false;
+                    // return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
                 }, this).withName("Outtake Eject");
     }
 
