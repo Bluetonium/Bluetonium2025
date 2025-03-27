@@ -1,7 +1,5 @@
 package frc.robot.subsystems.led;
 
-import java.util.random.RandomGenerator.LeapableGenerator;
-
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
@@ -11,7 +9,7 @@ import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 public class LEDConstants {
         public static int LED_COUNT = 65 + 8;
-        public static int CAN_ID = 23;
+        public static int CAN_ID = 17;
 
         public static enum Animations {
                 // TODO revise these to be actually good

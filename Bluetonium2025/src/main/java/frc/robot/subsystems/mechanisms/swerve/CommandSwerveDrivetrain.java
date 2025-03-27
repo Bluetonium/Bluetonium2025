@@ -185,6 +185,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveStates.setStates();
 
         for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getModules()) {
+
             orchestra.addInstrument(module.getDriveMotor());
             orchestra.addInstrument(module.getSteerMotor());
         }
@@ -320,7 +321,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             orchestra.play();
         }, () -> {
             orchestra.stop();
-        });
+        }).ignoringDisable(true);
     }
 
     /**
