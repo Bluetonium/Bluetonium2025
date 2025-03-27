@@ -17,7 +17,7 @@ public class LEDConstants {
                                 new LarsonAnimation(0, 0, 255, 100, 0.5, LED_COUNT, BounceMode.Front,
                                                 10, 0)),
                 END_GAME(new StrobeAnimation(0, 0, 255, 255, .5, LED_COUNT)),
-                ESTOPPED(new StrobeAnimation(255, 0, 255, 255, .5, LED_COUNT)),
+                ESTOPPED(new StrobeAnimation(255, 0, 0, 255, .5, LED_COUNT)),
                 AUTON(new LarsonAnimation(255, 0, 0, 0, 0.5, LED_COUNT, BounceMode.Front, 10)),
                 DISCONNECTED(new ColorFlowAnimation(255, 0, 0, 0, 0.5, LED_COUNT, Direction.Forward));
 
