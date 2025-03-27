@@ -44,7 +44,7 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
-        builder.addBooleanProperty("Coral Sensor", coralSensor::get, null);
+        builder.addBooleanProperty("Coral Sensor", () -> !coralSensor.get(), null);
         builder.addBooleanProperty("Has Coral", () -> hasCoral, null);
     }
 
@@ -106,18 +106,24 @@ public class Outtake extends SubsystemBase {
     }
 
     public Command outtakeAccept() {
+        Timer acceptTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
+                    acceptTimer.reset();
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {
+                    if (!coralSensor.get() && !acceptTimer.isRunning()) {
+                        acceptTimer.start();
+                    }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
-                    // hasCoral = coralSensor.get();
+                    hasCoral = !coralSensor.get();
                 },
                 () -> {
-                    return false;
+                    return acceptTimer.hasElapsed(OuttakeConstant.ACCEPT_DELAY);
+                   
                 },
                 this).withName("OutakeAccept");
     }
@@ -131,18 +137,17 @@ public class Outtake extends SubsystemBase {
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
-                    if (!coralSensor.get() && !ejectionTimer.isRunning()) {
+                    if (coralSensor.get() && !ejectionTimer.isRunning()) {
                         ejectionTimer.start();
                     }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                     ejectionTimer.stop();
-                    // hasCoral = coralSensor.get();
+                     hasCoral = !coralSensor.get();
                 },
                 () -> {
-                    return false;
-                    // return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
+                    return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
                 }, this).withName("Outtake Eject");
     }
 

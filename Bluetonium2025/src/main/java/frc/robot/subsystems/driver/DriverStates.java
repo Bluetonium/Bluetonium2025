@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.driver.DriverConstants.TestableSystems;
 
 public class DriverStates {
-    private static SendableChooser<TestableSystems> testChooser;
-    public static Trigger controllerDisconnect = Trigger.kFalse;
+    private  static SendableChooser<TestableSystems> testChooser;
+    //public static Trigger controllerDisconnect = Trigger.kFalse;
 
     public static void setupTestables() {
         testChooser = new SendableChooser<>();

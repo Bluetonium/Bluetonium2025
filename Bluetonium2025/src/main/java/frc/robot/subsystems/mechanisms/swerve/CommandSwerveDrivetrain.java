@@ -79,7 +79,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
     // Requests
-    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
+    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner and dpad
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -191,7 +191,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .withName("Swerve.Teleop-Drive"));
 
     }
+    /**
+     * 
+     * exists
+     */
+    /*
+    public Command driveRelative(double translation, double rotation) {
+        return applyRequest(
 
+        );
+    }
+    */
     private void configurePathPlanner() {
         RobotConfig config;
         try {
