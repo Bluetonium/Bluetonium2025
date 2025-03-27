@@ -24,8 +24,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.utils.sim.RollerSim;
+import lombok.Getter;
 
 public class Outtake extends SubsystemBase {
+    @Getter
     private TalonFX motor;
     private RollerSim sim;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);

@@ -6,11 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
@@ -31,6 +35,7 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
     private Command currentAuto;
+    private static final Orchestra orchestra = new Orchestra();
 
     // Subsystems
     @Getter
@@ -62,6 +67,8 @@ public class RobotContainer {
         configureBindings();
         setupSubsystems();
 
+        orchestra.addInstrument(elevator.getMotor());
+        orchestra.addInstrument(outtake.getMotor());
     }
 
     private void initalizeSubsystems() {
@@ -99,4 +106,14 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return currentAuto;
     }
+
+    public static Command playSong(String song) {
+        return Commands.startEnd(() -> {
+            orchestra.loadMusic(Filesystem.getDeployDirectory() + "/Music/" + song);
+            orchestra.play();
+        }, () -> {
+            orchestra.stop();
+        }, elevator, outtake);
+    }
+
 }

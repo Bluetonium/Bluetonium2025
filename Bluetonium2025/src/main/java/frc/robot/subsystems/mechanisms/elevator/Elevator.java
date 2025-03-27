@@ -28,6 +28,7 @@ import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
 public class Elevator extends SubsystemBase {
+    @Getter
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
