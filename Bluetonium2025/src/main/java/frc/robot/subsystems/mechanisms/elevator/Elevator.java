@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
 import frc.robot.RobotSim;
+import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
@@ -74,7 +77,10 @@ public class Elevator extends SubsystemBase {
 
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        if (Robot.isSimulation())
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        else
+            config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.CurrentLimits = ElevatorConstants.CURRENT_LIMITS;
         // PID
         Slot0Configs slot0 = config.Slot0;
@@ -111,6 +117,13 @@ public class Elevator extends SubsystemBase {
     public void setup() {
         ElevatorStates.setupStates();
         motor.stopMotor();
+
+        setDefaultCommand(run(() -> {
+            double currentPosition = motor.getPosition().getValueAsDouble();
+            currentPosition += MathUtil.applyDeadband(Drivers.elevatorAdjustment.getAsDouble() * -1, 0.2) / (1.0 / 30);
+            currentPosition = MathUtil.clamp(currentPosition, 0, ElevatorConstants.HIGH_POSITION);
+            motor.setControl(mmVoltage.withPosition(currentPosition));
+        }));
     }
 
     private void applyConfig() {
@@ -127,13 +140,12 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-
         return startRun(() -> {
             motor.setControl(mmVoltage.withPosition(position.rotations));
             elevatorTargetPosition = position;
         },
                 () -> {
-                }).until(this::elevatorIsAtDesiredPosition).withName("Elevator Target Position");
+                }).until(this::elevatorIsAtDesiredPosition).withName("Elevator." + position.name());
 
     }
 

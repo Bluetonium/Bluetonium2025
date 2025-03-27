@@ -22,9 +22,13 @@ public class Drivers {
     private final XboxController controller;
 
     // Control axis
+    // chassis
     public static DoubleSupplier chassisControlTranslation;
     public static DoubleSupplier chassisControlStrafe;
     public static DoubleSupplier chassisControlRotation;
+
+    // elevator
+    public static DoubleSupplier elevatorAdjustment;
 
     // Triggers
 
@@ -63,6 +67,7 @@ public class Drivers {
         }
 
         if (configs.elevatorControl) {
+            elevatorAdjustment = controller::getLeftY;
             home = new Trigger(controller::getYButton);
             intakePosition = new Trigger(controller::getLeftBumperButton);
             L1 = new Trigger(() -> controller.getPOV() == 0);
