@@ -8,7 +8,7 @@ import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 public class LEDConstants {
-        public static int LED_COUNT = 65;
+        public static int LED_COUNT = 65 + 8;
         public static int CAN_ID = 17;
 
         public static enum Animations {
