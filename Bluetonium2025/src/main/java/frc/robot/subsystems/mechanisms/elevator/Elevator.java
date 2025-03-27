@@ -14,7 +14,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotSim;
-import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
@@ -114,16 +112,11 @@ public class Elevator extends SubsystemBase {
         sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Elevator");
     }
 
+
+
     public void setup() {
         ElevatorStates.setupStates();
         motor.stopMotor();
-
-        setDefaultCommand(run(() -> {
-            double currentPosition = motor.getPosition().getValueAsDouble();
-            currentPosition += MathUtil.applyDeadband(Drivers.elevatorAdjustment.getAsDouble() * -1, 0.2) / (1.0 / 30);
-            currentPosition = MathUtil.clamp(currentPosition, 0, ElevatorConstants.HIGH_POSITION);
-            motor.setControl(mmVoltage.withPosition(currentPosition));
-        }));
     }
 
     private void applyConfig() {

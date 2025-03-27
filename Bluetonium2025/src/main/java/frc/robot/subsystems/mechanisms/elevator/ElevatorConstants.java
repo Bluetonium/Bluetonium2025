@@ -28,7 +28,7 @@ public final class ElevatorConstants {
     public static final double ACCELERATION = 100;
 
     // safety
-    public static final double POSITION_TOLERANCE = 0.5; // bear in mind that this is used to determine if it is safe
+    public static final double POSITION_TOLERANCE = 0.2; // bear in mind that this is used to determine if it is safe
                                                          // rather than actually move the elevator itself
 
     // Physical stuff
