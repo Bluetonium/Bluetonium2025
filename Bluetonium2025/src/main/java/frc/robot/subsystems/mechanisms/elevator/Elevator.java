@@ -112,8 +112,6 @@ public class Elevator extends SubsystemBase {
         sim = new LinearSim(ElevatorConstants.SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Elevator");
     }
 
-
-
     public void setup() {
         ElevatorStates.setupStates();
         motor.stopMotor();
@@ -140,6 +138,12 @@ public class Elevator extends SubsystemBase {
                 () -> {
                 }).until(this::elevatorIsAtDesiredPosition).withName("Elevator." + position.name());
 
+    }
+
+    public Command holdPosition() {
+        return runOnce(() -> {
+            motor.setControl(mmVoltage.withPosition(motor.getPosition().getValueAsDouble()));
+        });
     }
 
     public Command setCoast(boolean coast) {

@@ -12,7 +12,6 @@ public class LEDConstants {
         public static int CAN_ID = 17;
 
         public static enum Animations {
-                // TODO revise these to be actually good
                 DISABLED(255, 0, 0),
                 TELEOP(
                                 new LarsonAnimation(0, 0, 255, 100, 0.5, LED_COUNT, BounceMode.Front,

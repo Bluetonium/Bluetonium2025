@@ -11,8 +11,8 @@ public final class ElevatorConstants {
     public static final int ELEVATOR_MOTOR_CAN_ID = 14; // find out once more :)
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
     public static final CurrentLimitsConfigs CURRENT_LIMITS = new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(130)
-            .withSupplyCurrentLimit(70)
+            .withStatorCurrentLimit(50)
+            .withSupplyCurrentLimit(30)
             .withSupplyCurrentLowerTime(1)
             .withSupplyCurrentLowerLimit(50);
 
