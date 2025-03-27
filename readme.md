@@ -27,9 +27,15 @@
 
 ## Led Codes
 * Solid red - disabled
+  ![Solid Red](LedAnimations/RedSolid.png)
 * Blue larson - teleop
+  ![Blue Larson](LedAnimations/BlueLarson.gif)
 * Strobe blue - end game
-* Strobe red - E-stopped 
+  ![Strobe Blue](LedAnimations/BlueStrobe.gif)
+* Strobe red - E-stopped
+![Strobe Red](LedAnimations/RedStrobe.gif)
 * Larson Red - auton
+![Larson Red](LedAnimations/RedLarson.gif)
 * Red color flow - disconnected
 * Solid white - controller disconnect (coming soon)
+![Solid White](LedAnimations/WhiteSolid.png)
