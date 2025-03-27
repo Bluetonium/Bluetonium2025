@@ -52,8 +52,16 @@ public class Drivers {
     public static Trigger outtake;
 
     private void applyConfigs(DriverConfigs configs) {
-
         if (configs.chassisDriving) {
+
+            // dpad micro adjustments
+
+            if (controller.getPOV() != -1) {
+                double rad = Math.toRadians(controller.getPOV()); // far easier than a big ol if chain/switch statement, even if it is more confusing
+                chassisControlTranslation = () -> Math.cos(rad)*0.2;
+                chassisControlStrafe = () -> Math.sin(rad)*0.2;
+            }
+
             chassisControlTranslation = controller::getLeftY;
             chassisControlStrafe = controller::getLeftX;
             chassisControlRotation = controller::getRightX;
