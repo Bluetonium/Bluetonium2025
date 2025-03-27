@@ -129,13 +129,14 @@ public class Outtake extends SubsystemBase {
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
-                    if (!coralSensor.get() && ejectionTimer.isRunning()) {
+                    if (!coralSensor.get() && !ejectionTimer.isRunning()) {
                         ejectionTimer.start();
                     }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                     ejectionTimer.stop();
+                    hasCoral = coralSensor.get();
                 },
                 () -> {
                     return false;
