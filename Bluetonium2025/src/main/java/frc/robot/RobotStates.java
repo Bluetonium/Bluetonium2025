@@ -7,12 +7,14 @@ import frc.robot.subsystems.driver.Drivers;
 
 public class RobotStates {
 
+    // states
     public static Trigger teleop;
     public static Trigger autoMode;
     public static Trigger testMode;
     public static Trigger disabled;
     public static Trigger dsAttached;
     public static Trigger endGame;
+    public static Trigger Estopped;
 
     // elevator
     public static Trigger home;
@@ -32,12 +34,14 @@ public class RobotStates {
     public static Trigger outtake;
 
     public static void setupStates() {
-        teleop = new Trigger(RobotState::isTeleop);
+        teleop = new Trigger(DriverStation::isTeleopEnabled);
         autoMode = new Trigger(RobotState::isAutonomous);
         testMode = new Trigger(RobotState::isTest);
         disabled = new Trigger(RobotState::isDisabled);
         dsAttached = new Trigger(DriverStation::isDSAttached);
-        endGame = new Trigger(() -> DriverStation.getMatchTime() < 20).and(teleop);
+        Estopped = new Trigger(DriverStation::isEStopped);
+
+        endGame = teleop.and(() -> DriverStation.getMatchTime() < 20);
 
         home = Drivers.home;
         intakePosition = Drivers.intakePosition;

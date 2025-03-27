@@ -1,6 +1,7 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
 import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -11,6 +12,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -127,13 +129,21 @@ public class Elevator extends SubsystemBase {
     public Command requestTargetPosition(ElevatorPositions position) {
 
         return startRun(() -> {
-            final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(position.rotations));
+            motor.setControl(mmVoltage.withPosition(position.rotations));
             elevatorTargetPosition = position;
         },
                 () -> {
                 }).until(this::elevatorIsAtDesiredPosition).withName("Elevator Target Position");
 
+    }
+
+    public Command setCoast(boolean coast) {
+        return runOnce(() -> {
+            config.MotorOutput.NeutralMode = (coast) ? NeutralModeValue.Coast
+                    : ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
+            applyConfig();
+        }).ignoringDisable(true)
+                .withName("Elevator.setNeutralMode");
     }
 
     public Command stopEverything() {
