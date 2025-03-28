@@ -30,7 +30,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -43,11 +45,14 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
 import frc.utils.Field;
+import frc.utils.LimelightHelpers;
 import frc.utils.Field.REEF_REGIONS;
 
 /**
@@ -440,6 +445,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public REEF_REGIONS getCurrentRegion() {
         return Field.getReefRegion(getState().Pose.getTranslation());
+    }
+
+    private Command FineTuneReef(){
+        return new RunCommand(() -> {
+            double tx = LimelightHelpers.getTX(""); // Get horizontal offset
+            double kP = 0.02; // Proportional gain (tune as needed)
+            double minSpeed = 0.08; // Ensure robot moves even with small errors
+            double maxSpeed = 0.3; // Prevent excessive speed
+
+            // Calculate speed dynamically based on error
+            final double calculatedSpeed = kP * tx;
+
+            // Ensure the speed is at least minSpeed but not over maxSpeed
+            if (Math.abs(tx) > 1.0) { // Only correct if error is significant
+                final double strafeSpeed = MathUtil.clamp(calculatedSpeed, -maxSpeed, maxSpeed);
+                Drivers.chassisControlStrafe = () -> Math.copySign(Math.max(minSpeed, Math.abs(strafeSpeed)), strafeSpeed);
+            } else {
+                Drivers.chassisControlStrafe = () -> 0;
+            }
+        }, RobotContainer.getSwerve()).until(() -> Math.abs(LimelightHelpers.getTX("")) < 0.5);
     }
 
     @Override
