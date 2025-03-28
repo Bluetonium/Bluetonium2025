@@ -32,7 +32,7 @@ public final class ElevatorConstants {
                                                          // rather than actually move the elevator itself
 
     // Physical stuff
-    public static final double MAX_EXTENSION = 34.5;
+    public static final double MAX_EXTENSION = 22;
     public static final double LOW_POSITION = 0.0;
     public static final double HIGH_POSITION = MAX_EXTENSION * 0.999;
     public static final double GEAR_RATIO = 20;
