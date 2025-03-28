@@ -40,6 +40,7 @@ public class RobotStates {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
+    public static Trigger microAdjust;
 
     // outtake
     public static Trigger intake;
@@ -67,6 +68,7 @@ public class RobotStates {
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
         coralStationAlign = Drivers.coralStationAlign;
+        microAdjust = Drivers.microAdjust;
 
         loadMusic();
     }

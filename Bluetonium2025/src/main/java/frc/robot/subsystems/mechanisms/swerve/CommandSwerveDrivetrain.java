@@ -198,25 +198,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * exists for dpad purposes
      */
     public Command driveRelative(double translation, double strafe, double rotation) {
-        ChassisSpeeds speeds = new ChassisSpeeds(strafe,translation,rotation);
-        return applyRequest(    
-            () -> pathDriveRealtive/*can i just say that its spelled wrong ok anyway back to coding*/.withSpeeds(speeds)
-        );
+        return run(() -> {
+            System.out.println(translation + " " + strafe);
+            ChassisSpeeds speeds = new ChassisSpeeds(strafe,translation,rotation);
+            pathDriveRealtive/*can i just say that its spelled wrong ok anyway back to coding*/.withSpeeds(speeds);
+        });
     }
 
     public Command dpadRelative(DoubleSupplier POV) {
-        double speedModif = 0.3; //too lazy to have it as a parameter
-        double pov = POV.getAsDouble();
-        if (pov != -1){
-            double rads = Math.toRadians(pov);
-            return driveRelative(Math.cos(rads) * speedModif,Math.sin(rads) * speedModif,0);
-        } else {
-            //redundancy my beloved
-            System.out.println("something is going wrong if this is printing");
-            return driveRelative(0,0,0);
-        }
-        
-    }
+
+        // couldnt figure it out with run() or whatever so have this abomination against nature itself instead
+        return applyRequest(()->pathDriveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble()))*5,Math.sin(Math.toRadians(POV.getAsDouble()))*5,0)));
+    }  
 
 /*
  * 
