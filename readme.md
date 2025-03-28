@@ -19,7 +19,6 @@
 * pov 0 - L1 (8 numpad)
 * pov 90 - L2 (6 numpad)
 * pov 180 - L3 (2 numpad)
-* pov 270 - L4 (4 numpad)
 * y - home (also can be used for intake assist)
 * a - intake coral
 * b - outtake coral
