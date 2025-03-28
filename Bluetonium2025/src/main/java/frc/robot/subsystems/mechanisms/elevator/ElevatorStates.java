@@ -19,7 +19,7 @@ public class ElevatorStates {
         RobotStates.L1.onTrue(L1());
         RobotStates.L2.onTrue(L2());
         RobotStates.L3.onTrue(L3());
-        RobotStates.L4.onTrue(L4());
+        // RobotStates.L4.onTrue(L4());
         RobotStates.intakePosition.onTrue(IntakePosition());
         elevatorPosition = elevator::getPosition;
     }
@@ -47,6 +47,7 @@ public class ElevatorStates {
                 .withName("Elevator.L3");
     }
 
+    @SuppressWarnings("unused")
     private static Command L4() {
         return elevator.requestTargetPosition(ElevatorPositions.L4)
                 .withName("Elevator.L4");

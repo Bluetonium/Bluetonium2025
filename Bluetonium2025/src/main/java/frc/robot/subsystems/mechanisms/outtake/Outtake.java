@@ -2,6 +2,8 @@ package frc.robot.subsystems.mechanisms.outtake;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -24,13 +26,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.utils.sim.RollerSim;
+import lombok.Getter;
 
 public class Outtake extends SubsystemBase {
+    @Getter
     private TalonFX motor;
     private RollerSim sim;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private TalonFXConfiguration motorConfig;
-    private DigitalInput coralSensor;
+
+    private BooleanSupplier coralSensor;
+    private DigitalInput digitalInput;
 
     public boolean hasCoral = false;
 
@@ -42,7 +48,7 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
-        builder.addBooleanProperty("Coral Sensor", coralSensor::get, null);
+        builder.addBooleanProperty("Coral Sensor", () -> !coralSensor.getAsBoolean(), null);
         builder.addBooleanProperty("Has Coral", () -> hasCoral, null);
     }
 
@@ -79,7 +85,8 @@ public class Outtake extends SubsystemBase {
 
         applyConfig();
 
-        coralSensor = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
+        digitalInput = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
+        coralSensor = () -> !digitalInput.get();
 
         sim = new RollerSim(OuttakeConstant.ROLLER_SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Outtake");
 
@@ -104,18 +111,25 @@ public class Outtake extends SubsystemBase {
     }
 
     public Command outtakeAccept() {
+        Timer acceptTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
+                    acceptTimer.stop();
+                    acceptTimer.reset();
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {
+                    if (coralSensor.getAsBoolean() && !acceptTimer.isRunning()) {
+                        acceptTimer.start();
+                    }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
-                    // hasCoral = coralSensor.get();
+                    hasCoral = coralSensor.getAsBoolean();
                 },
                 () -> {
-                    return false;
+                    return acceptTimer.hasElapsed(OuttakeConstant.ACCEPT_DELAY);
+
                 },
                 this).withName("OutakeAccept");
     }
@@ -124,23 +138,22 @@ public class Outtake extends SubsystemBase {
         Timer ejectionTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
+                    ejectionTimer.stop();
                     ejectionTimer.reset();
-
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
-                    if (!coralSensor.get() && !ejectionTimer.isRunning()) {
+                    if (!coralSensor.getAsBoolean() && !ejectionTimer.isRunning()) {
                         ejectionTimer.start();
                     }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                     ejectionTimer.stop();
-                    // hasCoral = coralSensor.get();
+                    hasCoral = coralSensor.getAsBoolean();
                 },
                 () -> {
-                    return false;
-                    // return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
+                    return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);
                 }, this).withName("Outtake Eject");
     }
 

@@ -9,17 +9,18 @@ public class OuttakeConstant {
         public static final int OUTTAKE_MOTOR_CAN_ID = 16; // we GOTTA figure it out!!!
         public static final NeutralModeValue OUTTAKE_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more
                                                                                                   // :)
-        public static final int CORAL_SENSOR_CHANNEL = 1;
+        public static final int CORAL_SENSOR_CHANNEL = 9;
         public static final CurrentLimitsConfigs CURRENT_LIMITS = new CurrentLimitsConfigs()
                         .withStatorCurrentLimit(70)
                         .withSupplyCurrentLimit(40);
 
         public static final double GEAR_RATIO = 5;
         // stuff
-        public static final double OUTTAKE_VELOCITY = 20;
+        public static final double OUTTAKE_VELOCITY = 10;
         public static final double INTAKE_VELOCITY = 5;
         public static final double ACCELERATION = 100;
         public static final double EJECTION_DELAY = 1;// delay between not sensing a coral and stopping ejecting
+        public static final double ACCEPT_DELAY = 0.3;// delay between not sensing a coral and stopping ejecting
 
         // PID (we'll figure it out eventually!!!)
         public static final double kP = 0.69993;

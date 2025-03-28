@@ -12,15 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -38,6 +35,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -84,11 +82,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     // Requests
     private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
+                                                                                                           // and dpad
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
-    private final Orchestra orchestra = new Orchestra();
     // private final Map<REEF_REGIONS,Command> pathfinding
 
     /*
@@ -184,12 +182,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void setup() {
         SwerveStates.setStates();
 
-        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getModules()) {
-
-            orchestra.addInstrument(module.getDriveMotor());
-            orchestra.addInstrument(module.getSteerMotor());
-        }
-
         setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 applyRequest(
@@ -202,6 +194,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .withName("Swerve.Teleop-Drive"));
 
     }
+
+    /**
+     * 
+     * exists for dpad purposes
+     */
+    public Command driveRelative(double translation, double strafe, double rotation) {
+        return run(() -> {
+            System.out.println(translation + " " + strafe);
+            ChassisSpeeds speeds = new ChassisSpeeds(strafe, translation, rotation);
+            pathDriveRealtive/* can i just say that its spelled wrong ok anyway back to coding */.withSpeeds(speeds);
+        });
+    }
+
+    public Command dpadRelative(DoubleSupplier POV) {
+
+        // couldnt figure it out with run() or whatever so have this abomination against
+        // nature itself instead
+        return applyRequest(
+                () -> pathDriveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble())) * 5,
+                        Math.sin(Math.toRadians(POV.getAsDouble())) * 5, 0)));
+    }
+
+    /*
+     * 
+     * if (controller.getPOV() != -1){
+     * double rads = Math.toRadians(controller.getPOV());
+     * povTranslation = () -> Math.cos(rads);
+     * povStrafe = () -> Math.sin(rads);
+     * }
+     */
 
     private void configurePathPlanner() {
         RobotConfig config;
@@ -313,15 +335,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
-    }
-
-    public Command playMusic(String musicPath) {
-        return startEnd(() -> {
-            orchestra.loadMusic(musicPath);
-            orchestra.play();
-        }, () -> {
-            orchestra.stop();
-        }).ignoringDisable(true);
     }
 
     /**
@@ -448,11 +461,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // Drive to reef
     private Command getPathToReef(boolean left) {
         REEF_REGIONS region = getCurrentRegion();
-        try{
-        Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
-        return createPath(targetPos, "Aligning Reef Side : " + region.name());
-        }
-        catch(Exception e){
+        try {
+            Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
+            return createPath(targetPos, "Aligning Reef Side : " + region.name());
+        } catch (Exception e) {
             System.out.println("Error in getPathToReef");
         }
         return null;

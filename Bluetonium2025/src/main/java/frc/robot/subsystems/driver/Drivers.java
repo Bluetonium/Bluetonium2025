@@ -26,6 +26,8 @@ public class Drivers {
     public static DoubleSupplier chassisControlTranslation;
     public static DoubleSupplier chassisControlStrafe;
     public static DoubleSupplier chassisControlRotation;
+    public static DoubleSupplier pov;
+
 
     // elevator
     public static DoubleSupplier elevatorAdjustment;
@@ -39,6 +41,7 @@ public class Drivers {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
+    public static Trigger microAdjust;
     // Elevator
     public static Trigger home;
     public static Trigger intakePosition;
@@ -52,11 +55,14 @@ public class Drivers {
     public static Trigger outtake;
 
     private void applyConfigs(DriverConfigs configs) {
-
         if (configs.chassisDriving) {
+
+            // dpad micro adjustments
+
             chassisControlTranslation = controller::getLeftY;
             chassisControlStrafe = controller::getLeftX;
             chassisControlRotation = controller::getRightX;
+            pov = controller::getPOV;
 
             wheelsXPosition = new Trigger(controller::getXButton);
             steerWheels = new Trigger(controller::getAButton);
@@ -64,6 +70,7 @@ public class Drivers {
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
+            microAdjust = new Trigger(() -> controller.getPOV() != -1); //splendid
         }
 
         if (configs.elevatorControl) {
@@ -80,6 +87,10 @@ public class Drivers {
             intake = new Trigger(controller::getAButton);
             outtake = new Trigger(controller::getBButton);
         }
+    }
+
+    public boolean isDisconnected() {
+        return !controller.isConnected();
     }
 
     public Drivers(DriverConfigs driverConfigs) {

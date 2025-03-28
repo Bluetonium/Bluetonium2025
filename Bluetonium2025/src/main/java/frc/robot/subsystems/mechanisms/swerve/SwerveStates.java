@@ -15,6 +15,7 @@ public class SwerveStates {
     private static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public static void setStates() {
+       // Drivers.
         Drivers.wheelsXPosition.whileTrue(swerve.applyRequest(() -> brake));
         Drivers.steerWheels.whileTrue(swerve.applyRequest(
                 () -> point.withModuleDirection(
@@ -22,6 +23,7 @@ public class SwerveStates {
                                 -Drivers.chassisControlStrafe.getAsDouble()))));
 
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
+        RobotStates.microAdjust.whileTrue(swerve.dpadRelative(Drivers.pov));
         RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
         RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));
         RobotStates.coralStationAlign.whileTrue(swerve.AlignToCoralStation());

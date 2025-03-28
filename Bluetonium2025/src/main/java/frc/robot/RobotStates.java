@@ -1,7 +1,19 @@
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.driver.Drivers;
 
@@ -28,6 +40,7 @@ public class RobotStates {
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
+    public static Trigger microAdjust;
 
     // outtake
     public static Trigger intake;
@@ -55,5 +68,37 @@ public class RobotStates {
         reefAlignLeft = Drivers.reefAlignLeft;
         reefAlignRight = Drivers.reefAlignRight;
         coralStationAlign = Drivers.coralStationAlign;
+        microAdjust = Drivers.microAdjust;
+
+        loadMusic();
     }
+
+    private static void loadMusic() {
+        SendableChooser<String> chooser = new SendableChooser<>();
+        System.out.println(Filesystem.getDeployDirectory() + "/Music/");
+        try (Stream<Path> filesStream = Files.list(Paths.get(Filesystem.getDeployDirectory() + "/Music/"))) {
+            List<String> fileNames = filesStream
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toList());
+
+            fileNames.forEach((name) -> {
+                chooser.addOption(name, name);
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        SmartDashboard.putData("Music Choice", chooser);
+        SmartDashboard.putBoolean("Play Music", false);
+
+        new Trigger(
+                () -> SmartDashboard.getBoolean("PlayMusic", false))
+                .whileTrue(
+                        Commands.deferredProxy(() -> {
+                            return RobotContainer.playSong(chooser.getSelected());
+                        }));
+    }
+
 }
