@@ -1,6 +1,7 @@
 package frc.robot.subsystems.mechanisms.elevator;
 
 import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -11,6 +12,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -19,12 +21,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
 import frc.robot.RobotSim;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.utils.sim.LinearSim;
 import lombok.Getter;
 
 public class Elevator extends SubsystemBase {
+    @Getter
     private TalonFX motor;
     private TalonFXConfiguration config;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
@@ -72,7 +76,10 @@ public class Elevator extends SubsystemBase {
 
         config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        if (Robot.isSimulation())
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        else
+            config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.CurrentLimits = ElevatorConstants.CURRENT_LIMITS;
         // PID
         Slot0Configs slot0 = config.Slot0;
@@ -125,15 +132,28 @@ public class Elevator extends SubsystemBase {
      * @param inRotations if we're just doing raw rotations rather than 0-1
      */
     public Command requestTargetPosition(ElevatorPositions position) {
-
         return startRun(() -> {
-            final MotionMagicVoltage request = mmVoltage;
-            motor.setControl(request.withPosition(position.rotations));
+            motor.setControl(mmVoltage.withPosition(position.rotations));
             elevatorTargetPosition = position;
         },
                 () -> {
-                }).until(this::elevatorIsAtDesiredPosition).withName("Elevator Target Position");
+                }).until(this::elevatorIsAtDesiredPosition).withName("Elevator." + position.name());
 
+    }
+
+    public Command holdPosition() {
+        return runOnce(() -> {
+            motor.setControl(mmVoltage.withPosition(motor.getPosition().getValueAsDouble()));
+        });
+    }
+
+    public Command setCoast(boolean coast) {
+        return runOnce(() -> {
+            config.MotorOutput.NeutralMode = (coast) ? NeutralModeValue.Coast
+                    : ElevatorConstants.ELEVATOR_MOTOR_NEUTRAL_MODE;
+            applyConfig();
+        }).ignoringDisable(true)
+                .withName("Elevator.setNeutralMode");
     }
 
     public Command stopEverything() {

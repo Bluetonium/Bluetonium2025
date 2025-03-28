@@ -2,13 +2,18 @@ package frc.robot.subsystems.mechanisms.outtake;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,13 +26,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotSim;
 import frc.utils.sim.RollerSim;
+import lombok.Getter;
 
 public class Outtake extends SubsystemBase {
+    @Getter
     private TalonFX motor;
     private RollerSim sim;
     private final VoltageOut m_sysIdControl = new VoltageOut(0);
     private TalonFXConfiguration motorConfig;
-    private DigitalInput coralSensor;
+
+    private BooleanSupplier coralSensor;
+    private DigitalInput digitalInput;
+
+    public boolean hasCoral = false;
 
     private MotionMagicVelocityVoltage mmVelocityVoltage = new MotionMagicVelocityVoltage(0)
             .withAcceleration(OuttakeConstant.ACCELERATION);
@@ -37,6 +48,8 @@ public class Outtake extends SubsystemBase {
         builder.setSmartDashboardType("Outtake");
         builder.addDoubleProperty("Target Velocity", () -> mmVelocityVoltage.Velocity, null);
         builder.addDoubleProperty("Velocity", () -> motor.getVelocity().getValueAsDouble(), null);
+        builder.addBooleanProperty("Coral Sensor", () -> !coralSensor.getAsBoolean(), null);
+        builder.addBooleanProperty("Has Coral", () -> hasCoral, null);
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -45,7 +58,7 @@ public class Outtake extends SubsystemBase {
                     Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
                     null, // Use default timeout (10 s)
                           // Log state with Phoenix SignalLogger class
-                    (state) -> SignalLogger.writeString("SysIdArm_State", state.toString())),
+                    (state) -> SignalLogger.writeString("SysIdOuttake_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     (volts) -> motor.setControl(m_sysIdControl.withOutput(volts.in(Volts))),
                     null,
@@ -56,16 +69,24 @@ public class Outtake extends SubsystemBase {
         motor.setNeutralMode(OuttakeConstant.OUTTAKE_MOTOR_NEUTRAL_MODE);
 
         motorConfig = new TalonFXConfiguration();
+        motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motorConfig.CurrentLimits = OuttakeConstant.CURRENT_LIMITS;
+
+        FeedbackConfigs feedback = motorConfig.Feedback;
+        feedback.SensorToMechanismRatio = OuttakeConstant.GEAR_RATIO;
 
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = OuttakeConstant.kP;
         slot0.kI = OuttakeConstant.kI;
         slot0.kD = OuttakeConstant.kD;
+        slot0.kS = OuttakeConstant.kS;
+        slot0.kV = OuttakeConstant.kV;
+        slot0.kA = OuttakeConstant.kA;
 
         applyConfig();
 
-        coralSensor = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
+        digitalInput = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
+        coralSensor = () -> !digitalInput.get();
 
         sim = new RollerSim(OuttakeConstant.ROLLER_SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Outtake");
 
@@ -90,17 +111,25 @@ public class Outtake extends SubsystemBase {
     }
 
     public Command outtakeAccept() {
+        Timer acceptTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
+                    acceptTimer.stop();
+                    acceptTimer.reset();
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.INTAKE_VELOCITY));
                 },
                 () -> {
+                    if (coralSensor.getAsBoolean() && !acceptTimer.isRunning()) {
+                        acceptTimer.start();
+                    }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
+                    hasCoral = coralSensor.getAsBoolean();
                 },
                 () -> {
-                    return coralSensor.get();
+                    return acceptTimer.hasElapsed(OuttakeConstant.ACCEPT_DELAY);
+
                 },
                 this).withName("OutakeAccept");
     }
@@ -109,18 +138,19 @@ public class Outtake extends SubsystemBase {
         Timer ejectionTimer = new Timer();
         return new FunctionalCommand(
                 () -> {
+                    ejectionTimer.stop();
                     ejectionTimer.reset();
-
                     motor.setControl(mmVelocityVoltage.withVelocity(OuttakeConstant.OUTTAKE_VELOCITY));
                 },
                 () -> {
-                    if (!coralSensor.get() && ejectionTimer.isRunning()) {
+                    if (!coralSensor.getAsBoolean() && !ejectionTimer.isRunning()) {
                         ejectionTimer.start();
                     }
                 },
                 (interupted) -> {
                     motor.setControl(mmVelocityVoltage.withVelocity(0));
                     ejectionTimer.stop();
+                    hasCoral = coralSensor.getAsBoolean();
                 },
                 () -> {
                     return ejectionTimer.hasElapsed(OuttakeConstant.EJECTION_DELAY);

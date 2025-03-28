@@ -7,12 +7,8 @@ public class OuttakeStates {
     private static Outtake outtake = RobotContainer.getOuttake();
 
     public static void setupStates() {
-        // lmao!!!!!
-        RobotStates.intake.whileTrue(outtake.outtakeAccept());
-        RobotStates.outtake.whileTrue(outtake.outtakeEject());
-        // RobotStates.reef
-        // sys id (this states file dry as hell dawg)
-
+        RobotStates.intake.and(() -> !outtake.hasCoral).whileTrue(outtake.outtakeAccept());
+        RobotStates.outtake.and(() -> outtake.hasCoral).whileTrue(outtake.outtakeEject());
     }
 
 }

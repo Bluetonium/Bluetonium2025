@@ -11,8 +11,8 @@ public final class ElevatorConstants {
     public static final int ELEVATOR_MOTOR_CAN_ID = 14; // find out once more :)
     public static final NeutralModeValue ELEVATOR_MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake; // find out once more :)
     public static final CurrentLimitsConfigs CURRENT_LIMITS = new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(130)
-            .withSupplyCurrentLimit(70)
+            .withStatorCurrentLimit(50)
+            .withSupplyCurrentLimit(30)
             .withSupplyCurrentLowerTime(1)
             .withSupplyCurrentLowerLimit(50);
 
@@ -28,11 +28,11 @@ public final class ElevatorConstants {
     public static final double ACCELERATION = 100;
 
     // safety
-    public static final double POSITION_TOLERANCE = 0.5; // bear in mind that this is used to determine if it is safe
+    public static final double POSITION_TOLERANCE = 0.2; // bear in mind that this is used to determine if it is safe
                                                          // rather than actually move the elevator itself
 
     // Physical stuff
-    public static final double MAX_EXTENSION = 34.5;
+    public static final double MAX_EXTENSION = 22;
     public static final double LOW_POSITION = 0.0;
     public static final double HIGH_POSITION = MAX_EXTENSION * 0.999;
     public static final double GEAR_RATIO = 20;
@@ -45,10 +45,10 @@ public final class ElevatorConstants {
 
     public static enum ElevatorPositions {
         HOME(1),
-        INTAKE(10),
+        INTAKE(3.2),
         L1(4),
-        L2(8),
-        L3(12),
+        L2(9.69),
+        L3(18.16),
         L4(32);
 
         public final double rotations;

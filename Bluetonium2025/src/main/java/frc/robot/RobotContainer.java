@@ -6,14 +6,16 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.driver.DriverConstants;
 import frc.robot.subsystems.driver.DriverStates;
 import frc.robot.subsystems.driver.Drivers;
@@ -35,6 +37,7 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
     private Command currentAuto;
+    private static final Orchestra orchestra = new Orchestra();
 
     // Subsystems
     @Getter
@@ -68,6 +71,8 @@ public class RobotContainer {
         configureBindings();
         setupSubsystems();
 
+        orchestra.addInstrument(elevator.getMotor());
+        orchestra.addInstrument(outtake.getMotor());
     }
 
     private void initalizeSubsystems() {
@@ -75,7 +80,9 @@ public class RobotContainer {
         Timer.delay(INIT_DELAY);
         swerve = TunerConstants.createDrivetrain();
         Timer.delay(INIT_DELAY);
-        vision = new Limelights(LimelightConstants.MAIN_LL);
+        vision = new Limelights(LimelightConstants.UPPER_LL,
+                LimelightConstants.LOWER_LEFT_LL,
+                LimelightConstants.LOWER_RIGHT_LL);
         Timer.delay(INIT_DELAY);
         outtake = new Outtake();
         Timer.delay(INIT_DELAY);
@@ -89,22 +96,12 @@ public class RobotContainer {
         driver2 = new Drivers(DriverConstants.driver2Configs);
     }
 
-    public void resetRobotState() {
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        RobotStates.setupStates();
-        setupSubsystems();
-
-    }
-
     private void setupSubsystems() {
         swerve.setup();
         elevator.setup();
         outtake.setup();
-        // arm.setup();
-        // intake.setup();
-        leds.setup();
         vision.setup();
+        leds.setup();
         DriverStates.setupTestables();
     }
 
@@ -116,9 +113,19 @@ public class RobotContainer {
         return currentAuto;
     }
 
-    public void registerCommands(){
+    public void registerCommands() {
         NamedCommands.registerCommand("PathToReef", swerve.AlignToReefRegion(false));
         NamedCommands.registerCommand("L3", elevator.requestTargetPosition(ElevatorPositions.L3));
         NamedCommands.registerCommand("Home", elevator.requestTargetPosition(ElevatorPositions.HOME));
     }
+
+    public static Command playSong(String song) {
+        return Commands.startEnd(() -> {
+            orchestra.loadMusic(Filesystem.getDeployDirectory() + "/Music/" + song);
+            orchestra.play();
+        }, () -> {
+            orchestra.stop();
+        }, elevator, outtake);
+    }
+
 }

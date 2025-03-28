@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.driver.Drivers;
 import lombok.Getter;
 
 public class Robot extends TimedRobot {
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
     SendableRegistry.add(CommandScheduler.getInstance(), "Command Scheduler");
     SmartDashboard.putData(CommandScheduler.getInstance());
     robotSim = new RobotSim();
+
   }
 
   @Override
@@ -47,9 +49,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_robotContainer.resetRobotState();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -66,7 +66,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     SignalLogger.start();
-    m_robotContainer.resetRobotState();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -74,6 +73,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    System.out.println(Drivers.microAdjust.getAsBoolean());
+
   }
 
   @Override
