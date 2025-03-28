@@ -80,7 +80,9 @@ public class RobotContainer {
         Timer.delay(INIT_DELAY);
         swerve = TunerConstants.createDrivetrain();
         Timer.delay(INIT_DELAY);
-        vision = new Limelights(LimelightConstants.MAIN_LL);
+        vision = new Limelights(LimelightConstants.UPPER_LL,
+                LimelightConstants.LOWER_LEFT_LL,
+                LimelightConstants.LOWER_RIGHT_LL);
         Timer.delay(INIT_DELAY);
         outtake = new Outtake();
         Timer.delay(INIT_DELAY);
