@@ -37,5 +37,6 @@
 * Larson Red - auton
 ![Larson Red](LedAnimations/RedLarson.gif)
 * Red color flow - disconnected
+![Flow Red](LedAnimations/RedFlow.gif)
 * Solid white - controller disconnect (coming soon)
 ![Solid White](LedAnimations/WhiteSolid.png)
