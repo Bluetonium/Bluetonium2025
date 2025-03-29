@@ -42,12 +42,21 @@ public class Limelights extends SubsystemBase {
     }
 
     private Command configureForLocalization() {
-        return runOnce(() -> {
+        return startRun(() -> {
             for (LimelightConfig limelight : limelights) {
                 LimelightHelpers.setPipelineIndex(limelight.name, Pipelines.LOCALIZATION.pipeline);
             }
-        });
+        }, () -> {
+        }).withName("Localization");
 
+    }
+
+    public void setPipeline(LimelightConfig config, Pipelines pipeline) {
+        LimelightHelpers.setPipelineIndex(config.name, pipeline.pipeline);
+    }
+
+    public double getTx(LimelightConfig limelight) {
+        return LimelightHelpers.getTX(limelight.name);
     }
 
     @Override
