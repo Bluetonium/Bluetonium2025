@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.Limelights;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
+import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.mechanisms.outtake.Outtake;
 import frc.robot.subsystems.mechanisms.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants;
@@ -56,6 +58,8 @@ public class RobotContainer {
     public RobotContainer() {
         initalizeSubsystems();
         RobotStates.setupStates();
+
+        registerCommands();
 
         // Auto chooser
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -107,6 +111,12 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return currentAuto;
+    }
+
+    public void registerCommands() {
+        NamedCommands.registerCommand("PathToReef", swerve.AlignToReefRegion(false));
+        NamedCommands.registerCommand("L3", elevator.requestTargetPosition(ElevatorPositions.L3));
+        NamedCommands.registerCommand("Home", elevator.requestTargetPosition(ElevatorPositions.HOME));
     }
 
     public static Command playSong(String song) {
