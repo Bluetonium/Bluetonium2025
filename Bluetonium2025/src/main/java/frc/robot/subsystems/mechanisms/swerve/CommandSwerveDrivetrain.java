@@ -81,7 +81,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
     // Requests
-    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner and dpad
+    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
+                                                                                                           // and dpad
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -193,6 +194,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .withName("Swerve.Teleop-Drive"));
 
     }
+
     /**
      * 
      * exists for dpad purposes
@@ -200,25 +202,45 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command driveRelative(double translation, double strafe, double rotation) {
         return run(() -> {
             System.out.println(translation + " " + strafe);
-            ChassisSpeeds speeds = new ChassisSpeeds(strafe,translation,rotation);
-            pathDriveRealtive/*can i just say that its spelled wrong ok anyway back to coding*/.withSpeeds(speeds);
+            ChassisSpeeds speeds = new ChassisSpeeds(strafe, translation, rotation);
+            pathDriveRealtive/* can i just say that its spelled wrong ok anyway back to coding */.withSpeeds(speeds);
         });
     }
 
     public Command dpadRelative(DoubleSupplier POV) {
 
-        // couldnt figure it out with run() or whatever so have this abomination against nature itself instead
-        return applyRequest(()->pathDriveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble()))*5,Math.sin(Math.toRadians(POV.getAsDouble()))*5,0)));
-    }  
+        // couldnt figure it out with run() or whatever so have this abomination against
+        // nature itself instead
+        return applyRequest(
+                () -> pathDriveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble())) * 5,
+                        Math.sin(Math.toRadians(POV.getAsDouble())) * 5, 0)));
+    }
 
-/*
- * 
- * if (controller.getPOV() != -1){
-                double rads = Math.toRadians(controller.getPOV());
-                povTranslation = () -> Math.cos(rads);
-                povStrafe = () -> Math.sin(rads);
-            }
- */
+    public Command slowSwerve() {
+        return applyRequest(
+                () -> drive
+                        .withVelocityX(
+                                -Drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED
+                                        * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        .withVelocityY(-Drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED
+                                * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        // left
+                        // with
+                        // // (left)
+                        .withRotationalRate(
+                                -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED))
+                .withName("Swerve.Teleop-Drive");
+
+    }
+
+    /*
+     * 
+     * if (controller.getPOV() != -1){
+     * double rads = Math.toRadians(controller.getPOV());
+     * povTranslation = () -> Math.cos(rads);
+     * povStrafe = () -> Math.sin(rads);
+     * }
+     */
 
     private void configurePathPlanner() {
         RobotConfig config;

@@ -28,7 +28,6 @@ public class Drivers {
     public static DoubleSupplier chassisControlRotation;
     public static DoubleSupplier pov;
 
-
     // elevator
     public static DoubleSupplier elevatorAdjustment;
 
@@ -42,6 +41,7 @@ public class Drivers {
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
     public static Trigger microAdjust;
+    public static Trigger triggerMicroAdjust;
     // Elevator
     public static Trigger home;
     public static Trigger intakePosition;
@@ -70,7 +70,9 @@ public class Drivers {
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
-            microAdjust = new Trigger(() -> controller.getPOV() != -1); //splendid
+            microAdjust = new Trigger(() -> controller.getPOV() != -1); // splendid
+            // triggerMicroAdjust = new Trigger(controller::getAButton);
+            triggerMicroAdjust = new Trigger(() -> controller.getRightTriggerAxis() > 0.5);
         }
 
         if (configs.elevatorControl) {
