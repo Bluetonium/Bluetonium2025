@@ -48,7 +48,7 @@ public class Drivers {
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
-    public static Trigger L4;
+    public static Trigger algaeRemove;
 
     // Outtake
     public static Trigger intake;
@@ -82,7 +82,7 @@ public class Drivers {
             L1 = new Trigger(() -> controller.getPOV() == 0);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
-            L4 = new Trigger(() -> controller.getPOV() == 270);
+            algaeRemove = new Trigger(() -> controller.getPOV() == 270);
         }
 
         if (configs.outtakeControl) {
