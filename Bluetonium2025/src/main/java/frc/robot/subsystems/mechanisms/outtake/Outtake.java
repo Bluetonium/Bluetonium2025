@@ -87,6 +87,7 @@ public class Outtake extends SubsystemBase {
 
         digitalInput = new DigitalInput(OuttakeConstant.CORAL_SENSOR_CHANNEL);
         coralSensor = () -> !digitalInput.get();
+        hasCoral = coralSensor.getAsBoolean();
 
         sim = new RollerSim(OuttakeConstant.ROLLER_SIM_CONFIG, RobotSim.rightView, motor.getSimState(), "Outtake");
 

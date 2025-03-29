@@ -3,6 +3,7 @@ package frc.robot.subsystems.limelight;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -21,6 +22,7 @@ public class Limelights extends SubsystemBase {
      * @param limelights names of the limelights that will be used
      */
     public Limelights(LimelightConfig... limelights) {
+
         this.limelights = new LimelightConfig[limelights.length];
         for (int i = 0; i < limelights.length; i++) {
             addLimelight(limelights[i], i);
@@ -61,6 +63,8 @@ public class Limelights extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (RobotState.isAutonomous())
+            return;
         for (LimelightConfig limelight : limelights) {
             if (LimelightHelpers.getCurrentPipelineIndex(limelight.name) != Pipelines.LOCALIZATION.pipeline)
                 continue;
@@ -70,10 +74,10 @@ public class Limelights extends SubsystemBase {
 
             LimelightHelpers.PoseEstimate estimatedPosition = LimelightHelpers
                     .getBotPoseEstimate_wpiBlue_MegaTag2(limelight.name);
+
             if (estimatedPosition == null || estimatedPosition.tagCount == 0
                     || Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720)
                 continue;// reject measurements if not seeing a tag or going too fast
-
             double timeStamp = drivetrain.getState().Timestamp - estimatedPosition.latency / 1000;
             drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, Integer.MAX_VALUE));
             drivetrain.addVisionMeasurement(estimatedPosition.pose,
