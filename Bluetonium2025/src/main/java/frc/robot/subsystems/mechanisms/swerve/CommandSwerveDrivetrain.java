@@ -222,6 +222,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         Math.sin(Math.toRadians(POV.getAsDouble())) * 5, 0)));
     }
 
+    public Command slowSwerve() {
+        return applyRequest(
+                () -> drive
+                        .withVelocityX(
+                                -Drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED
+                                        * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        .withVelocityY(-Drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED
+                                * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        // left
+                        // with
+                        // // (left)
+                        .withRotationalRate(
+                                -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED))
+                .withName("Swerve.Teleop-Drive");
+
+    }
+
     /*
      * 
      * if (controller.getPOV() != -1){

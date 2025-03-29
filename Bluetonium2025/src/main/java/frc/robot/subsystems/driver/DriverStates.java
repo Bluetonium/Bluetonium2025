@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.driver.DriverConstants.TestableSystems;
 
 public class DriverStates {
-    private  static SendableChooser<TestableSystems> testChooser;
-    //public static Trigger controllerDisconnect = Trigger.kFalse;
+    private static SendableChooser<TestableSystems> testChooser;
+    // public static Trigger controllerDisconnect = Trigger.kFalse;
 
     public static void setupTestables() {
         testChooser = new SendableChooser<>();
@@ -16,8 +16,6 @@ public class DriverStates {
         }
         SmartDashboard.putData("Test Command Chooser", testChooser);
         SmartDashboard.putData("Test Command", Commands.none());
-        // testChooser.setDefaultOption("funny",
-        // DriverConstants.TestableSystems.ARM_DYANMIC_FORWARD);
         testChooser.onChange((system) -> {
             if (system != null)
                 SmartDashboard.putData("Test Command", system.command);

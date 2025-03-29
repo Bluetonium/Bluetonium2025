@@ -10,4 +10,5 @@ public class SwerveConstants {
     public static double alignmentKp = 0.02;
     public static double alignmentMaxSpeed = 0.5;
     public static double alingmentMinSpeed = 0.05;
+    public static final double SLOW_SPEED_MODIFIER = 0.2;
 }
