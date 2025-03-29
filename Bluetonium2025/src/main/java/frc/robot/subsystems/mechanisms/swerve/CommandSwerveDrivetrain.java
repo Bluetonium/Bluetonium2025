@@ -201,18 +201,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     }
 
-    /**
-     * 
-     * exists for dpad purposes
-     */
-    public Command driveRelative(double translation, double strafe, double rotation) {
-        return run(() -> {
-            System.out.println(translation + " " + strafe);
-            ChassisSpeeds speeds = new ChassisSpeeds(strafe, translation, rotation);
-            driveRealtive/* can i just say that its spelled wrong ok anyway back to coding */.withSpeeds(speeds);
-        });
-    }
-
     public Command dpadRelative(DoubleSupplier POV) {
 
         // couldnt figure it out with run() or whatever so have this abomination against
