@@ -67,6 +67,8 @@ public class Limelights extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (RobotState.isAutonomous())
+            return;
 
         for (LimelightConfig limelight : limelights) {
             if (LimelightHelpers.getCurrentPipelineIndex(limelight.name) != Pipelines.LOCALIZATION.pipeline)
