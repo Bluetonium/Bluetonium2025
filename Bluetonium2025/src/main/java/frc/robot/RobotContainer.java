@@ -59,7 +59,8 @@ public class RobotContainer {
     public RobotContainer() {
         initalizeSubsystems();
         RobotStates.setupStates();
-
+        
+        registerCommands();
         // Auto chooser
         autoChooser = AutoBuilder.buildAutoChooser();
         currentAuto = autoChooser.getSelected();
@@ -73,7 +74,6 @@ public class RobotContainer {
         orchestra.addInstrument(elevator.getMotor());
         orchestra.addInstrument(outtake.getMotor());
 
-        registerCommands();
     }
 
     private void initalizeSubsystems() {
