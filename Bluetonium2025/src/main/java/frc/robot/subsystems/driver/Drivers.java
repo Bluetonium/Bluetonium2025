@@ -28,7 +28,6 @@ public class Drivers {
     public static DoubleSupplier chassisControlRotation;
     public static DoubleSupplier pov;
 
-
     // elevator
     public static DoubleSupplier elevatorAdjustment;
 
@@ -42,13 +41,14 @@ public class Drivers {
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
     public static Trigger microAdjust;
+    public static Trigger triggerMicroAdjust;
     // Elevator
     public static Trigger home;
     public static Trigger intakePosition;
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
-    public static Trigger L4;
+    public static Trigger algaeRemove;
 
     // Outtake
     public static Trigger intake;
@@ -70,7 +70,9 @@ public class Drivers {
             reefAlignLeft = new Trigger(controller::getLeftBumperButton);
             reefAlignRight = new Trigger(controller::getRightBumperButton);
             coralStationAlign = new Trigger(controller::getYButton);
-            microAdjust = new Trigger(() -> controller.getPOV() != -1); //splendid
+            microAdjust = new Trigger(() -> controller.getPOV() != -1); // splendid
+            // triggerMicroAdjust = new Trigger(controller::getAButton);
+            triggerMicroAdjust = new Trigger(() -> controller.getRightTriggerAxis() > 0.5);
         }
 
         if (configs.elevatorControl) {
@@ -80,7 +82,7 @@ public class Drivers {
             L1 = new Trigger(() -> controller.getPOV() == 0);
             L2 = new Trigger(() -> controller.getPOV() == 90);
             L3 = new Trigger(() -> controller.getPOV() == 180);
-            L4 = new Trigger(() -> controller.getPOV() == 270);
+            algaeRemove = new Trigger(() -> controller.getPOV() == 270);
         }
 
         if (configs.outtakeControl) {

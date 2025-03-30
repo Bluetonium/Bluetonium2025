@@ -31,6 +31,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,13 +42,19 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.driver.Drivers;
+import frc.robot.subsystems.limelight.LimelightConfig;
+import frc.robot.subsystems.limelight.Limelights;
+import frc.robot.subsystems.limelight.LimelightConstants.Pipelines;
 import frc.robot.subsystems.mechanisms.swerve.TunerConstants.TunerSwerveDrivetrain;
 import frc.utils.Field;
 import frc.utils.Field.REEF_REGIONS;
@@ -81,7 +88,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
     // Requests
-    private final SwerveRequest.ApplyRobotSpeeds pathDriveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner and dpad
+    private final SwerveRequest.ApplyRobotSpeeds driveRealtive = new SwerveRequest.ApplyRobotSpeeds(); // pathplanner
+                                                                                                       // and dpad
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR_SPEED * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -193,32 +201,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .withName("Swerve.Teleop-Drive"));
 
     }
-    /**
-     * 
-     * exists for dpad purposes
-     */
-    public Command driveRelative(double translation, double strafe, double rotation) {
-        return run(() -> {
-            System.out.println(translation + " " + strafe);
-            ChassisSpeeds speeds = new ChassisSpeeds(strafe,translation,rotation);
-            pathDriveRealtive/*can i just say that its spelled wrong ok anyway back to coding*/.withSpeeds(speeds);
-        });
-    }
 
     public Command dpadRelative(DoubleSupplier POV) {
 
-        // couldnt figure it out with run() or whatever so have this abomination against nature itself instead
-        return applyRequest(()->pathDriveRealtive.withSpeeds(new ChassisSpeeds(Math.cos(Math.toRadians(POV.getAsDouble()))*0.5,-Math.sin(Math.toRadians(POV.getAsDouble()))*0.5,0)));
-    }  
+        // couldnt figure it out with run() or whatever so have this abomination against
+        // nature itself instead
+        return applyRequest(
+                () -> driveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble())) * 5,
+                        Math.sin(Math.toRadians(POV.getAsDouble())) * 5, 0)));
+    }
 
-/*
- * 
- * if (controller.getPOV() != -1){
-                double rads = Math.toRadians(controller.getPOV());
-                povTranslation = () -> Math.cos(rads);
-                povStrafe = () -> Math.sin(rads);
-            }
- */
+    public Command slowSwerve() {
+        return applyRequest(
+                () -> drive
+                        .withVelocityX(
+                                -Drivers.chassisControlTranslation.getAsDouble() * MAX_SPEED
+                                        * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        .withVelocityY(-Drivers.chassisControlStrafe.getAsDouble() * MAX_SPEED
+                                * SwerveConstants.SLOW_SPEED_MODIFIER) // Drive
+                        // left
+                        // with
+                        // // (left)
+                        .withRotationalRate(
+                                -Drivers.chassisControlRotation.getAsDouble() * MAX_ANGULAR_SPEED))
+                .withName("Swerve.Teleop-Drive");
+
+    }
+
+    /*
+     * 
+     * if (controller.getPOV() != -1){
+     * double rads = Math.toRadians(controller.getPOV());
+     * povTranslation = () -> Math.cos(rads);
+     * povStrafe = () -> Math.sin(rads);
+     * }
+     */
 
     private void configurePathPlanner() {
         RobotConfig config;
@@ -237,7 +254,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::resetPose,
                 () -> getState().Speeds,
                 (speeds, feedforwards) -> setControl(
-                        pathDriveRealtive.withSpeeds(speeds)
+                        driveRealtive.withSpeeds(speeds)
                                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
                 PPdriveController,
@@ -456,7 +473,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // Drive to reef
     private Command getPathToReef(boolean left) {
         REEF_REGIONS region = getCurrentRegion();
-
         try {
             Pose2d targetPos = Field.rotateIfRed(Field.reefRegionToPose(region, left));
             return createPath(targetPos, "Aligning Reef Side : " + region.name());
@@ -464,11 +480,43 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             System.out.println("Error in getPathToReef");
         }
         return null;
-
     }
 
     public REEF_REGIONS getCurrentRegion() {
         return Field.getReefRegion(getState().Pose.getTranslation());
+    }
+
+    public Command AprilTagAlign(LimelightConfig usedLimelight, Pipelines pipeline) {
+        Limelights vision = RobotContainer.getVision();
+        return new FunctionalCommand(() -> {
+            vision.setPipeline(usedLimelight, pipeline);
+        },
+                () -> {
+                    final double calculatedSpeed = MathUtil.clamp(
+                            SwerveConstants.alignmentKp * vision.getTx(usedLimelight),
+                            -SwerveConstants.alignmentMaxSpeed,
+                            SwerveConstants.alignmentMaxSpeed);
+
+                    final double strafeSpeed = Math.copySign(
+                            Math.max(SwerveConstants.alignmentMinSpeed, // minor spelling mistake, i win
+                                    Math.abs(calculatedSpeed)),
+                            calculatedSpeed);
+
+                    driveRealtive
+                            .withSpeeds(new ChassisSpeeds(0,
+                                    strafeSpeed,
+                                    0));
+                    this.setControl(driveRealtive);
+
+                },
+                (interupted) -> {
+                    this.setControl(driveRealtive.withSpeeds(new ChassisSpeeds(0, 0, 0)));
+                },
+                () -> {
+                    SmartDashboard.putNumber("AlignTX", vision.getTx(usedLimelight));
+                    return Math.abs(vision.getTx(usedLimelight)) < 0.5;
+                }, this, vision).withName("aprilTagAlign");
+
     }
 
     @Override

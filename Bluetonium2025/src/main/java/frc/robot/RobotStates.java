@@ -34,13 +34,14 @@ public class RobotStates {
     public static Trigger L1;
     public static Trigger L2;
     public static Trigger L3;
-    public static Trigger L4;
+    public static Trigger algaeRemove;
 
     // chassis
     public static Trigger reefAlignLeft;
     public static Trigger reefAlignRight;
     public static Trigger coralStationAlign;
     public static Trigger microAdjust;
+    public static Trigger triggerMicroAdjust;
 
     // outtake
     public static Trigger intake;
@@ -61,7 +62,7 @@ public class RobotStates {
         L1 = Drivers.L1;
         L2 = Drivers.L2;
         L3 = Drivers.L3;
-        L4 = Drivers.L4;
+        algaeRemove = Drivers.algaeRemove;
         intake = Drivers.intake;
         outtake = Drivers.outtake;
 
@@ -69,6 +70,7 @@ public class RobotStates {
         reefAlignRight = Drivers.reefAlignRight;
         coralStationAlign = Drivers.coralStationAlign;
         microAdjust = Drivers.microAdjust;
+        triggerMicroAdjust = Drivers.triggerMicroAdjust;
 
         loadMusic();
     }

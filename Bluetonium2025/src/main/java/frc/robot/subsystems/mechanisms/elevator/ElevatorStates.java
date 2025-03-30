@@ -19,7 +19,7 @@ public class ElevatorStates {
         RobotStates.L1.onTrue(L1());
         RobotStates.L2.onTrue(L2());
         RobotStates.L3.onTrue(L3());
-        // RobotStates.L4.onTrue(L4());
+        RobotStates.algaeRemove.onTrue(ALGAE_REMOVE());
         RobotStates.intakePosition.onTrue(IntakePosition());
         elevatorPosition = elevator::getPosition;
     }
@@ -48,8 +48,8 @@ public class ElevatorStates {
     }
 
     @SuppressWarnings("unused")
-    private static Command L4() {
-        return elevator.requestTargetPosition(ElevatorPositions.L4)
+    private static Command ALGAE_REMOVE() {
+        return elevator.requestTargetPosition(ElevatorPositions.ALGAE_REMOVE)
                 .withName("Elevator.L4");
     }
 
