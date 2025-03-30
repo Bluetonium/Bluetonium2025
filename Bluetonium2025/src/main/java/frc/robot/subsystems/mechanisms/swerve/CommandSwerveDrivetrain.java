@@ -513,8 +513,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     this.setControl(driveRealtive.withSpeeds(new ChassisSpeeds(0, 0, 0)));
                 },
                 () -> {
-                    SmartDashboard.putNumber("AlignTX", vision.getTx(usedLimelight));
-                    return Math.abs(vision.getTx(usedLimelight)) < 0.5;
+
+                    return Math.abs(vision.getTx(usedLimelight)) < 4;
                 }, this, vision).withName("aprilTagAlign");
 
     }

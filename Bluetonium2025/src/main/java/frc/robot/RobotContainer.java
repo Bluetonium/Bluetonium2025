@@ -62,7 +62,7 @@ public class RobotContainer {
     public RobotContainer() {
         initalizeSubsystems();
         RobotStates.setupStates();
-        
+
         registerCommands();
         // Auto chooser
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -119,7 +119,7 @@ public class RobotContainer {
 
     public void registerCommands() {
         NamedCommands.registerCommand("PathToReef", swerve.AlignToReefRegion(false));
-        NamedCommands.registerCommand("L3", elevator.requestTargetPosition(ElevatorPositions.L3));
+        NamedCommands.registerCommand("L2", elevator.requestTargetPosition(ElevatorPositions.L2));
         NamedCommands.registerCommand("Home", elevator.requestTargetPosition(ElevatorPositions.HOME));
         NamedCommands.registerCommand("EjectCoral", outtake.outtakeEject());
         NamedCommands.registerCommand("AlgaeRemove", elevator.requestTargetPosition(ElevatorPositions.ALGAE_REMOVE));
