@@ -22,6 +22,7 @@ import frc.robot.subsystems.driver.Drivers;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.limelight.LimelightConstants;
 import frc.robot.subsystems.limelight.Limelights;
+import frc.robot.subsystems.limelight.LimelightConstants.Pipelines;
 import frc.robot.subsystems.mechanisms.elevator.Elevator;
 import frc.robot.subsystems.mechanisms.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.mechanisms.outtake.Outtake;
@@ -59,8 +60,6 @@ public class RobotContainer {
         initalizeSubsystems();
         RobotStates.setupStates();
 
-        registerCommands();
-
         // Auto chooser
         autoChooser = AutoBuilder.buildAutoChooser();
         currentAuto = autoChooser.getSelected();
@@ -73,6 +72,8 @@ public class RobotContainer {
 
         orchestra.addInstrument(elevator.getMotor());
         orchestra.addInstrument(outtake.getMotor());
+
+        registerCommands();
     }
 
     private void initalizeSubsystems() {
@@ -117,6 +118,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("PathToReef", swerve.AlignToReefRegion(false));
         NamedCommands.registerCommand("L3", elevator.requestTargetPosition(ElevatorPositions.L3));
         NamedCommands.registerCommand("Home", elevator.requestTargetPosition(ElevatorPositions.HOME));
+        NamedCommands.registerCommand("EjectCoral", outtake.outtakeEject());
+        NamedCommands.registerCommand("AlgaeRemove", elevator.requestTargetPosition(ElevatorPositions.ALGAE_REMOVE));
+        NamedCommands.registerCommand("IntakePosition", elevator.requestTargetPosition(ElevatorPositions.INTAKE));
+        NamedCommands.registerCommand("AlignBranchLeft",
+                swerve.AprilTagAlign(LimelightConstants.LOWER_RIGHT_LL, Pipelines.REEF_TARGETING));
+        NamedCommands.registerCommand("AlignBranchRight",
+                swerve.AprilTagAlign(LimelightConstants.LOWER_LEFT_LL, Pipelines.REEF_TARGETING));
     }
 
     public static Command playSong(String song) {

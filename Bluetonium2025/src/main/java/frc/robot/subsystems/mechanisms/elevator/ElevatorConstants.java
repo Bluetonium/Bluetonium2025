@@ -47,8 +47,8 @@ public final class ElevatorConstants {
         HOME(1),
         INTAKE(3.2),
         L1(4),
-        L2(9.69),
-        L3(18.16),
+        L2(8.5),
+        L3(18),
         ALGAE_REMOVE(21);
 
         public final double rotations;

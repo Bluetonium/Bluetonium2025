@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 7.57840909090909,
-        "y": 4.010042613636363
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.076886369656496,
-        "y": 4.011040590992213
+        "x": 6.940881147540983,
+        "y": 4.666342213114754
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.122556818181818,
-        "y": 4.010042613636363
+        "x": 5.274590163934427,
+        "y": 5.085911885245901
       },
       "prevControl": {
-        "x": 5.872568791254436,
-        "y": 4.007595902996579
+        "x": 6.4254079649839175,
+        "y": 5.433561521734125
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Branch I location"
     }
   ],
   "rotationTargets": [],
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -179.37724431279364
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": null,
