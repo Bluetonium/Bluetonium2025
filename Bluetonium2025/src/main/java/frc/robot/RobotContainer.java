@@ -37,7 +37,8 @@ public class RobotContainer {
     private final double INIT_DELAY = 0.1;
 
     private final SendableChooser<Command> autoChooser;
-    private Command currentAuto;
+    @Getter
+    private static Command currentAuto;
     private static final Orchestra orchestra = new Orchestra();
 
     // Subsystems
@@ -55,6 +56,8 @@ public class RobotContainer {
     private static Outtake outtake;
     @Getter
     private static LED leds;
+
+
 
     public RobotContainer() {
         initalizeSubsystems();
