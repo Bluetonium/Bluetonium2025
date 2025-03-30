@@ -33,12 +33,6 @@
           "data": {
             "name": "EjectCoral"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakePosition"
-          }
         }
       ]
     }
