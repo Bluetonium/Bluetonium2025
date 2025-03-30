@@ -208,7 +208,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command dpadRelative(DoubleSupplier POV) {
 
         // couldnt figure it out with run() or whatever so have this abomination against nature itself instead
-        return applyRequest(()->pathDriveRealtive.withSpeeds(new ChassisSpeeds(-Math.cos(Math.toRadians(POV.getAsDouble()))*5,Math.sin(Math.toRadians(POV.getAsDouble()))*5,0)));
+        return applyRequest(()->pathDriveRealtive.withSpeeds(new ChassisSpeeds(Math.cos(Math.toRadians(POV.getAsDouble()))*0.5,-Math.sin(Math.toRadians(POV.getAsDouble()))*0.5,0)));
     }  
 
 /*
