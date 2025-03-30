@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.RobotContainer;
 import frc.robot.RobotStates;
 import frc.robot.subsystems.driver.Drivers;
+import frc.robot.subsystems.limelight.LimelightConstants;
+import frc.robot.subsystems.limelight.LimelightConstants.Pipelines;
 
 public class SwerveStates {
     private static CommandSwerveDrivetrain swerve = RobotContainer.getSwerve();
@@ -25,8 +27,10 @@ public class SwerveStates {
         Drivers.zeroHeading.onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
         RobotStates.microAdjust.whileTrue(swerve.dpadRelative(Drivers.pov));
         RobotStates.triggerMicroAdjust.whileTrue(swerve.slowSwerve());
-        RobotStates.reefAlignLeft.whileTrue(swerve.AlignToReefRegion(true));
-        RobotStates.reefAlignRight.whileTrue(swerve.AlignToReefRegion(false));
+        RobotStates.reefAlignLeft
+                .whileTrue(swerve.AprilTagAlign(LimelightConstants.LOWER_RIGHT_LL, Pipelines.REEF_TARGETING));
+        RobotStates.reefAlignRight
+                .whileTrue(swerve.AprilTagAlign(LimelightConstants.LOWER_LEFT_LL, Pipelines.REEF_TARGETING));
         RobotStates.coralStationAlign.whileTrue(swerve.AlignToCoralStation());
     }
 

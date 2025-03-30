@@ -53,8 +53,12 @@ public class Limelights extends SubsystemBase {
 
     }
 
-    public void setPipeline(LimelightConfig config, Pipelines pipeline) {
-        LimelightHelpers.setPipelineIndex(config.name, pipeline.pipeline);
+    public void setPipeline(LimelightConfig limelight, Pipelines pipeline) {
+        LimelightHelpers.setPipelineIndex(limelight.name, pipeline.pipeline);
+    }
+
+    public boolean hasTarget(LimelightConfig limelight) {
+        return LimelightHelpers.getTV(limelight.name);
     }
 
     public double getTx(LimelightConfig limelight) {

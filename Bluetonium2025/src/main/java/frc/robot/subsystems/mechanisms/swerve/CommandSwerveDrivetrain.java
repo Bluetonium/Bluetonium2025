@@ -42,6 +42,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -485,14 +486,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return Field.getReefRegion(getState().Pose.getTranslation());
     }
 
-    @SuppressWarnings("unused")
     public Command AprilTagAlign(LimelightConfig usedLimelight, Pipelines pipeline) {
-
         Limelights vision = RobotContainer.getVision();
         return new FunctionalCommand(() -> {
             vision.setPipeline(usedLimelight, pipeline);
         },
                 () -> {
+                    if (!vision.hasTarget(usedLimelight))
+                        return;
                     final double calculatedSpeed = SwerveConstants.alignmentKp * vision.getTx(usedLimelight);
                     final double strafeSpeed = MathUtil.clamp(calculatedSpeed, -SwerveConstants.alignmentMaxSpeed,
                             SwerveConstants.alignmentMaxSpeed);
@@ -500,8 +501,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     driveRealtive
                             .withSpeeds(new ChassisSpeeds(0,
                                     Math.copySign(
-                                            Math.max(SwerveConstants.alingmentMinSpeed,
-                                                    Math.abs(SwerveConstants.alingmentMinSpeed)),
+                                            Math.max(SwerveConstants.alignmentMinSpeed, // minor spelling mistake, i win
+                                                    Math.abs(SwerveConstants.alignmentMinSpeed)),
                                             strafeSpeed),
                                     0));
                     this.setControl(driveRealtive);
@@ -511,8 +512,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     this.setControl(driveRealtive.withSpeeds(new ChassisSpeeds(0, 0, 0)));
                 },
                 () -> {
+                    SmartDashboard.putNumber("AlignTX", vision.getTx(usedLimelight));
                     return Math.abs(vision.getTx(usedLimelight)) < 0.5;
-                }, this, vision);
+                }, this, vision).withName("aprilTagAlign");
 
     }
 
