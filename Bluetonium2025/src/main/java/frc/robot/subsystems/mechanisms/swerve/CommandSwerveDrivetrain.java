@@ -492,18 +492,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             vision.setPipeline(usedLimelight, pipeline);
         },
                 () -> {
-                    if (!vision.hasTarget(usedLimelight))
-                        return;
-                    final double calculatedSpeed = SwerveConstants.alignmentKp * vision.getTx(usedLimelight);
-                    final double strafeSpeed = MathUtil.clamp(calculatedSpeed, -SwerveConstants.alignmentMaxSpeed,
+                    final double calculatedSpeed = MathUtil.clamp(
+                            SwerveConstants.alignmentKp * vision.getTx(usedLimelight),
+                            -SwerveConstants.alignmentMaxSpeed,
                             SwerveConstants.alignmentMaxSpeed);
+
+                    final double strafeSpeed = Math.copySign(
+                            Math.max(SwerveConstants.alignmentMinSpeed, // minor spelling mistake, i win
+                                    Math.abs(calculatedSpeed)),
+                            calculatedSpeed);
 
                     driveRealtive
                             .withSpeeds(new ChassisSpeeds(0,
-                                    Math.copySign(
-                                            Math.max(SwerveConstants.alignmentMinSpeed, // minor spelling mistake, i win
-                                                    Math.abs(SwerveConstants.alignmentMinSpeed)),
-                                            strafeSpeed),
+                                    strafeSpeed,
                                     0));
                     this.setControl(driveRealtive);
 
