@@ -47,7 +47,6 @@ public class ElevatorStates {
                 .withName("Elevator.L3");
     }
 
-    @SuppressWarnings("unused")
     private static Command ALGAE_REMOVE() {
         return elevator.requestTargetPosition(ElevatorPositions.ALGAE_REMOVE)
                 .withName("Elevator.L4");
